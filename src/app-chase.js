@@ -6,25 +6,39 @@
 // ---------------------------------------------------------------------------
 
 function renderChase(main) {
+  // Season classification runs before anything else is decided (build-notes.md
+  // "off-season" fix, 2026-08-04) — it's a calendar judgment, not a network
+  // one, so it doesn't wait on (or depend on) the NOAA fetch. When nothing in
+  // the pool is plausibly open, the region/beginner controls have nothing to
+  // act on — showing them anyway would invite tweaking filters on a ranking
+  // that isn't going to appear, so they're omitted rather than disabled.
+  const now = new Date();
+  const seasonInfo = classifySeasonState(RESORTS, now);
+  state.chaseSeasonInfo = seasonInfo;
+  const showControls = seasonInfo.state !== "off-season";
+
   main.innerHTML = `
     <div class="page-column">
       <h1 class="display-h1">Where's it dumping?</h1>
-      <div class="chase-controls" style="margin-top:var(--space-4)">
-        <div id="chase-origin-control"></div>
-        <label class="tap-chip" style="width:auto;min-width:220px" id="chase-beginner-toggle-wrap">
-          <span class="tap-chip__indicator tap-chip__indicator--check" id="chase-beginner-indicator">${ICONS.check}</span>
-          <span class="tap-chip__body">
-            <span class="tap-chip__label">Include beginner-friendly options</span>
-            <span class="tap-chip__sublabel">Off by default — this list leans toward serious terrain.</span>
-          </span>
-        </label>
-      </div>
+      ${showControls ? `
+        <div class="chase-controls" style="margin-top:var(--space-4)">
+          <div id="chase-origin-control"></div>
+          <label class="tap-chip" style="width:auto;min-width:220px" id="chase-beginner-toggle-wrap">
+            <span class="tap-chip__indicator tap-chip__indicator--check" id="chase-beginner-indicator">${ICONS.check}</span>
+            <span class="tap-chip__body">
+              <span class="tap-chip__label">Include beginner-friendly options</span>
+              <span class="tap-chip__sublabel">Off by default — this list leans toward serious terrain.</span>
+            </span>
+          </label>
+        </div>` : ""}
       <div id="chase-freshness"></div>
       <div id="chase-body"></div>
     </div>`;
 
-  renderChaseOriginControl();
-  wireBeginnerToggle();
+  if (showControls) {
+    renderChaseOriginControl();
+    wireBeginnerToggle();
+  }
   document.title = "Where it's dumping this week";
   setOgMeta({
     title: "Where it's dumping this week",
@@ -71,10 +85,35 @@ function wireBeginnerToggle() {
 
 function loadAndRenderChase() {
   const body = document.getElementById("chase-body");
-  const usResorts = RESORTS.filter((r) => r.country === "USA" && r.lat != null);
+  const now = new Date();
+  const seasonInfo = classifySeasonState(RESORTS, now);
+  state.chaseSeasonInfo = seasonInfo;
+
+  if (seasonInfo.state === "off-season") {
+    // Nothing in the pool is realistically open — don't fetch, don't rank,
+    // don't render a solemn list of near-zero forecasts. Say so plainly.
+    renderChaseOffSeason(body);
+    return;
+  }
 
   if (state.chaseCache) {
     renderChaseList();
+    return;
+  }
+
+  // Shoulder season (October, May): only fetch/rank resorts that are
+  // themselves plausibly open by SEASON_OPEN_FRACTION's definition — a
+  // resort that's still weeks from its published open date isn't made
+  // "open" by a live forecast existing for its coordinates.
+  const usResorts = RESORTS.filter((r) => r.country === "USA" && r.lat != null &&
+    (seasonInfo.state !== "shoulder" || seasonFraction(r, now) >= SEASON_OPEN_FRACTION));
+
+  if (!usResorts.length) {
+    // Safety net for the very start of the shoulder ramp, where the
+    // aggregate classification says "shoulder" but no single resort
+    // individually clears the per-resort bar yet — fall back to the same
+    // honest off-season screen rather than an empty ranked list.
+    renderChaseOffSeason(body);
     return;
   }
 
@@ -133,13 +172,26 @@ function renderChaseList(isRefresh) {
   const ranked = rankChaseTheSnow(forecasts, state.chaseAnswers, RESORTS);
   const canada = rankCanadaTypicalSeason(RESORTS);
 
+  // Shoulder-season notice (October, May): the list below only includes
+  // resorts that are individually plausibly open (see loadAndRenderChase's
+  // season-window filter) — this says so plainly rather than letting a
+  // shorter-than-usual list read as a data problem.
+  const seasonNoticeHtml = (state.chaseSeasonInfo && state.chaseSeasonInfo.state === "shoulder")
+    ? `<div class="canada-divider" id="season-shoulder-notice">
+        <span class="canada-divider__icon" aria-hidden="true">${ICONS.snow}</span>
+        <div class="canada-divider__body">
+          <p class="body-sm">Not every resort is open yet this time of year. This list only includes places that are typically running by now.</p>
+        </div>
+      </div>`
+    : "";
+
   if (!ranked.length) {
-    body.innerHTML = `<div class="center-state">${ICONS.warning}<p class="body-md">No resorts matched right now — try including beginner-friendly options.</p></div>` + canadaSectionHtml(canada);
+    body.innerHTML = seasonNoticeHtml + `<div class="center-state">${ICONS.warning}<p class="body-md">No resorts matched right now — try including beginner-friendly options.</p></div>` + canadaSectionHtml(canada);
     wireCanadaHandled();
     return;
   }
 
-  body.innerHTML = `<ol class="chase-list" id="chase-us-list">` +
+  body.innerHTML = seasonNoticeHtml + `<ol class="chase-list" id="chase-us-list">` +
     ranked.map((row, i) => chaseRowHtml(row, i + 1)).join("") +
     `</ol>` + canadaSectionHtml(canada);
 
@@ -207,12 +259,16 @@ function canadaSectionHtml(canada) {
       </div>
     </div>
     <ol class="chase-list" id="chase-canada-list">
-      ${canada.map((resort, i) => canadaRowHtml(resort, i + 1)).join("")}
+      ${canada.map((resort, i) => typicalSeasonRowHtml(resort, i + 1)).join("")}
     </ol>`;
 }
 
-function canadaRowHtml(resort, rank) {
-  const region = `${resort.state_province}, Canada`;
+// Shared by the Canada section (always "typical season, not live" — NOAA
+// has no non-US coverage) and the off-season preview below (deliberately
+// the same visual/semantic treatment: both are honestly-labeled annual
+// averages, never presented as this week's conditions).
+function typicalSeasonRowHtml(resort, rank) {
+  const region = resort.state_province + (resort.country === "Canada" ? ", Canada" : "");
   const nicoleFlag = resort.hot_take ? `<span class="chase-flag chase-flag--nicole">● Nicole's take →</span>` : "";
   return `
     <li>
@@ -245,6 +301,78 @@ function wireCanadaHandled() {
   });
 }
 
+// ---------------------------------------------------------------------------
+// Off-season state (fix round, 2026-08-04). Design intent: this is not a
+// banner bolted onto the normal ranked list — it fully replaces it. The
+// screen states its situation plainly (nothing's realistically open), gives
+// the one genuinely useful next action for August (plan ahead), and — since
+// hiding all snow data outright would leave a visitor with nothing —
+// optionally surfaces a clearly-labeled, collapsed-by-default preview of
+// where it typically dumps in a normal mid-winter, built from the same
+// honestly-labeled "typical season, not a forecast" pattern already used for
+// Canada. It never claims that preview is current.
+// ---------------------------------------------------------------------------
+
+function topTypicalSeasonPreview(pool, n) {
+  return pool
+    .filter((r) => r.avg_annual_snowfall_in != null)
+    .slice()
+    .sort((a, b) => b.avg_annual_snowfall_in - a.avg_annual_snowfall_in)
+    .slice(0, n);
+}
+
+function offSeasonPreviewHtml(preview) {
+  const panelId = "offseason-preview-panel";
+  return `
+    <div class="offseason-preview">
+      <button type="button" class="notes-row__expand-btn" aria-expanded="false" aria-controls="${panelId}" id="offseason-preview-toggle">
+        <span>See where it typically dumps in mid-winter</span>
+        <span class="stat-tile__expand-icon" aria-hidden="true">${ICONS.chevronDown}</span>
+      </button>
+      <div id="${panelId}" hidden>
+        <div class="canada-divider" style="margin-top:var(--space-3)">
+          <span class="canada-divider__icon" aria-hidden="true">${ICONS.signalSlash}</span>
+          <div class="canada-divider__body">
+            <span class="typical-season-tag">Typical season, not a forecast</span>
+            <p class="body-sm">Based on typical snowfall for this time of year in a normal season, not what's happening right now.</p>
+          </div>
+        </div>
+        <ol class="chase-list">
+          ${preview.map((resort, i) => typicalSeasonRowHtml(resort, i + 1)).join("")}
+        </ol>
+      </div>
+    </div>`;
+}
+
+function renderChaseOffSeason(body) {
+  const preview = topTypicalSeasonPreview(RESORTS, 5);
+  body.innerHTML = `
+    <div class="center-state">
+      ${ICONS.snow}
+      <h2 class="display-h3">Nothing's open right now</h2>
+      <p class="body-md" style="max-width:32rem">Most resorts open in November. Plan a trip now, then come back to chase the snow once the season starts.</p>
+      <button class="btn btn-primary" id="offseason-plan-cta" type="button">Plan a trip</button>
+    </div>
+    ${preview.length ? offSeasonPreviewHtml(preview) : ""}`;
+
+  document.getElementById("offseason-plan-cta").addEventListener("click", () => navigate("plan"));
+
+  const toggleBtn = document.getElementById("offseason-preview-toggle");
+  if (toggleBtn) {
+    toggleBtn.addEventListener("click", () => {
+      const panel = document.getElementById(toggleBtn.getAttribute("aria-controls"));
+      if (!panel) return;
+      panel.hidden = !panel.hidden;
+      toggleBtn.setAttribute("aria-expanded", String(!panel.hidden));
+    });
+  }
+
+  body.querySelectorAll(".chase-row[data-rid]").forEach((rowEl) => {
+    rowEl.addEventListener("click", () => showChaseRowDetail(rowEl.dataset.rid));
+    rowEl.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); showChaseRowDetail(rowEl.dataset.rid); } });
+  });
+}
+
 function showChaseRowDetail(rid) {
   const resort = RESORTS_BY_ID[rid];
   if (!resort) return;
@@ -253,7 +381,14 @@ function showChaseRowDetail(rid) {
   // draw from in this mode).
   const bullets = [];
   const fc = state.chaseCache && state.chaseCache.forecasts[rid];
-  if (fc) bullets.push(fc.isLive ? `${fc.totalInches}" forecast over the next 7 days.` : `Typical for this time of year: about ${fc.totalInches}" a week during the core season.`);
+  if (fc) {
+    bullets.push(fc.isLive ? `${fc.totalInches}" forecast over the next 7 days.` : `Typical for this time of year: about ${fc.totalInches}" a week during the core season.`);
+  } else if (resort.avg_annual_snowfall_in != null) {
+    // Off-season preview row — there's no forecast fetch in this state at
+    // all (see renderChaseOffSeason), so the only honest snow fact
+    // available is the published annual average, clearly framed as such.
+    bullets.push(`Averages about ${resort.avg_annual_snowfall_in}" a year in a typical season.`);
+  }
   // sanitizeDatasetProse strips research-register framing before this raw
   // dataset field reaches a reader (Fix 3, synthetic-user-testing.md) — same
   // helper as the result card's ski-school disclosure and Range Readout.
