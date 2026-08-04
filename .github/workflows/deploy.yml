@@ -1,0 +1,39 @@
+name: Deploy to Firebase Hosting
+
+# Runs every time you push to main (including from GitHub Desktop).
+# You can also trigger it by hand from the Actions tab.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get the code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Build the site
+        run: python build.py
+
+      - name: Check the build actually produced something
+        run: |
+          test -f public/index.html || { echo "public/index.html missing"; exit 1; }
+          SIZE=$(wc -c < public/index.html)
+          echo "public/index.html is $SIZE bytes"
+          test "$SIZE" -gt 100000 || { echo "index.html looks too small - build likely failed"; exit 1; }
+          grep -q 'rel="manifest"' public/index.html || { echo "hosting head tags missing"; exit 1; }
+
+      - name: Deploy to Firebase Hosting
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          channelId: live
+          projectId: rather-be-knee-deep
