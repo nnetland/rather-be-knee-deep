@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rather Be Knee Deep — find your next ski trip</title>
+<meta name="description" content="Answer a few quick questions, or see where it's dumping this week — plus everywhere Nicole's actually skied.">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Rather Be Knee Deep">
+<meta property="og:title" content="Find your next ski trip">
+<meta property="og:description" content="Answer a few quick questions, or see where it's dumping this week — plus everywhere Nicole's actually skied.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Find your next ski trip">
+<meta name="twitter:description" content="Answer a few quick questions, or see where it's dumping this week — plus everywhere Nicole's actually skied.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Manrope:wght@400;500;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+
+<style>
+/* Font fallback stack applies immediately; Google Fonts progressively enhance
+   once loaded — the app is fully usable typographically before/without them. */
+/*__STYLES__*/
+</style>
+</head>
+<body>
+<a class="skip-link" href="#app-main">Skip to content</a>
+<div id="reveal-announcer" class="visually-hidden" aria-live="polite"></div>
+<div id="forecast-status-announcer" class="visually-hidden" aria-live="polite"></div>
+<div id="app-toast" class="toast" role="status"></div>
+
+<div class="app-shell">
+  <nav class="top-nav" id="top-nav" aria-label="Main" hidden>
+    <button class="nav-item" type="button" data-route="plan">
+      <span aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 19h18L14.5 6 10 13l-2.5-3L3 19z"/></svg></span><span>Plan</span>
+    </button>
+    <button class="nav-item" type="button" data-route="chase">
+      <span aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2v20M4.9 5l14.2 14M4.9 19L19.1 5"/></svg></span><span>Chase</span>
+    </button>
+    <button class="nav-item" type="button" data-route="nicoles">
+      <span aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></span><span>Nicole's List</span>
+    </button>
+  </nav>
+
+  <main id="app-main" class="app-main" tabindex="-1"></main>
+
+  <nav class="bottom-nav" id="bottom-nav" aria-label="Main" hidden>
+    <button class="nav-item" type="button" data-route="plan">
+      <span aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 19h18L14.5 6 10 13l-2.5-3L3 19z"/></svg></span><span>Plan</span>
+    </button>
+    <button class="nav-item" type="button" data-route="chase">
+      <span aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2v20M4.9 5l14.2 14M4.9 19L19.1 5"/></svg></span><span>Chase</span>
+    </button>
+    <button class="nav-item" type="button" data-route="nicoles">
+      <span aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></span><span>Nicole's List</span>
+    </button>
+  </nav>
+</div>
+
+<script>
+/*__DATA_JS__*/
+</script>
+<script>
+/*__ICONS_JS__*/
+</script>
+<script>
+/*__BADGES_JS__*/
+</script>
+<script>
+/*__ENGINE_JS__*/
+</script>
+<script>
+/*__NOAA_JS__*/
+</script>
+<script>
+/*__APP_JS__*/
+</script>
+<script>
+/*__APP_CHASE_JS__*/
+</script>
+<script>
+/*__APP_NICOLES_JS__*/
+</script>
+<script>
+document.querySelectorAll('.nav-item').forEach((btn) => {
+  btn.addEventListener('click', () => navigate(btn.dataset.route));
+});
+
+// Global error boundary: if anything truly unexpected throws during
+// rendering, surface copy-deck's error.generic rather than a blank/broken
+// screen — every other failure mode in this app (NOAA, share) already has
+// its own honest, specific handling; this is the last-resort catch-all.
+window.addEventListener('error', (e) => {
+  const main = document.getElementById('app-main');
+  if (main && !main.querySelector('.center-state')) {
+    main.innerHTML = `<div class="page-column"><div class="center-state">${ICONS.warning}
+      <p class="body-md">Something didn't load. Check your connection and try again.</p>
+      <button class="btn btn-primary" id="global-retry" type="button">Try again</button>
+    </div></div>`;
+    const retry = document.getElementById('global-retry');
+    if (retry) retry.addEventListener('click', () => { navigate('splash'); });
+  }
+});
+
+parseInitialRoute();
+render();
+if (resumedQuizFromLink) {
+  // Defense-in-depth for the URL-hash quiz-progress fix: a focus/DOM move
+  // alone doesn't tell a user resuming from a reload *that* they resumed —
+  // this is an explicit, visible acknowledgment rather than a silent
+  // restore (heuristic-evaluation.md's stated preference either way).
+  showToast("Welcome back — picking up where you left off.");
+}
+</script>
+</body>
+</html>

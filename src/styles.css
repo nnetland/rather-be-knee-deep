@@ -1,0 +1,922 @@
+/* =========================================================================
+   Rather Be Knee Deep — styles
+   Token architecture: global -> semantic -> component, per visual-system.md
+   ========================================================================= */
+
+:root {
+  /* Global colour primitives */
+  --purple-900: #17102B; --purple-700: #564C72; --purple-500: #9A8ACF;
+  --purple-300: #DCD6F0; --purple-100: #F2EFFA;
+  --indigo-600: #5B3DF0; --indigo-400: #7F68F3; --indigo-350: #8C78F5;
+  --coral-600: #E72400; --coral-500: #FF5A3C;
+  --teal-700: #00695C; --teal-600: #008D7B; --teal-400: #00B39A;
+  --mint-700: #0B6B4B; --mint-600: #0F8E63; --mint-200: #C9F5DE; --mint-900: #12301F;
+  --gold-500: #FFC22B; --gold-700: #75600A; --gold-300: #DCC050;
+  --cold-700: #0E7AA6; --cold-600: #0F86B6;
+  --warm-700: #AA671A; --warm-600: #C97A1F; --warm-800: #7D4B12;
+  --trail-green-700: #1A8655; --trail-green-600: #1C8F5A;
+  --trail-blue-600: #1E6FD9; --trail-blue-500: #2E7CE2;
+  --night-900: #14101F; --night-800: #1E1830; --night-700: #271F3D;
+  --night-500: #675797; --night-300: #2B2440;
+  --snow-000: #FFFFFF;
+  --mist-100: #F5F2FF; --mist-300: #B8AED6;
+
+  /* Badge-system primitives (badge-system.md §7 "Token evolution") — a
+     badge background is a large solid fill, not text, so it runs more
+     saturated than the accent.*.text tokens above (those are deliberately
+     darkened/desaturated to pass 4.5:1 as running text and would look muddy
+     as a sticker). These nine are new global primitives, all neutrals or
+     badge-fill variants, none replacing or conflicting with an existing
+     semantic token — the badge system borrows the family, not the rules.
+     Documented here for the token trail; the badge SVG library itself
+     (build/src/badges.js) uses literal hex, not var(), so inline badge
+     markup renders identically regardless of stylesheet load timing — see
+     badges.js's header comment for why. */
+  --mint-500: #16A974; --warm-500: #F0982A; --cold-500: #1AA3DC; --coral-450: #FF4C34;
+  --sand-300: #F0C89A; --sand-500: #E0A868; --sand-800: #7A4E28;
+  --stone-300: #E7E4DE; --stone-600: #8D897F;
+  --brown-700: #6B4423;
+
+  /* Semantic tokens — light mode (default) */
+  --bg-page: var(--snow-000);
+  --bg-tint: var(--purple-100);
+  --bg-surface: var(--snow-000);
+  --bg-elevated: var(--snow-000);
+  --text-primary: var(--purple-900);
+  --text-secondary: var(--purple-700);
+  --text-on-brand: #FFFFFF;
+  --border-hairline: var(--purple-300);
+  --border-interactive: var(--purple-500);
+  --border-selected: var(--indigo-600);
+  --brand-primary: var(--indigo-600);
+  --brand-primary-text: var(--indigo-600);
+  --accent-coral-text: var(--coral-600);
+  --accent-coral-fill: var(--coral-500);
+  --accent-gold: var(--gold-500);
+  /* --accent-gold-text: an AA-safe, visually distinct hue for "Nicole's take"
+     chip text (M5 fix). This token was referenced by CSS but never defined,
+     so it silently fell back to --warm-700 — the exact same colour as the
+     crowd-warning flag, defeating the "gold always means Nicole" colour
+     rule Jordan (deuteranopia) relies on. gold-700/gold-300 are a deeper,
+     more olive/ochre gold than warm-700/warm-600's orange-amber — same
+     family as accent.gold, but a distinct, AA-safe hue (raw gold-500 fails
+     as text at 1.6:1). */
+  --accent-gold-text: var(--gold-700);
+  --accent-teal-text: var(--teal-700);
+  --accent-mint-text: var(--mint-700);
+  --accent-mint-fill: var(--mint-200);
+  --accent-cold-text: var(--cold-700);
+  --accent-warm-text: var(--warm-700);
+  /* --accent-warm-text-tint: M4 contrast fix. --accent-warm-text was
+     verified at 4.50:1 against bg.page (white) but the forecast-fallback
+     badge actually renders on bg.tint (#F2EFFA), where the same token drops
+     to 3.97:1 — below AA. warm-800 clears 4.5:1 on both bg.page and
+     bg.tint. */
+  --accent-warm-text-tint: var(--warm-800);
+  --trail-beginner: var(--trail-green-700);
+  --trail-intermediate: var(--trail-blue-600);
+  --trail-advanced: var(--text-primary);
+
+  --shadow-sm: 0 1px 2px rgba(23,16,43,0.06), 0 1px 1px rgba(91,61,240,0.05);
+  --shadow-md: 0 4px 12px rgba(23,16,43,0.09), 0 2px 4px rgba(91,61,240,0.06);
+  --shadow-lg: 0 12px 28px rgba(23,16,43,0.16), 0 4px 10px rgba(91,61,240,0.08);
+  --top-highlight: none;
+
+  --radius-sm: 8px; --radius-md: 12px; --radius-lg: 16px; --radius-xl: 20px; --radius-pill: 999px;
+  --border-hairline-w: 1px; --border-default-w: 1.5px; --border-selected-w: 2px; --border-focus-w: 3px;
+
+  --dur-instant: 100ms; --dur-fast: 160ms; --dur-base: 220ms; --dur-slow: 360ms;
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-entrance: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-exit: cubic-bezier(0.4, 0, 1, 1);
+
+  --space-1: .25rem; --space-2: .5rem; --space-3: .75rem; --space-4: 1rem;
+  --space-5: 1.25rem; --space-6: 1.5rem; --space-8: 2rem; --space-10: 2.5rem;
+  --space-12: 3rem; --space-16: 4rem; --space-20: 5rem;
+
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-page: var(--night-900);
+    --bg-tint: var(--night-800);
+    --bg-surface: var(--night-800);
+    --bg-elevated: var(--night-700);
+    --text-primary: var(--mist-100);
+    --text-secondary: var(--mist-300);
+    --border-hairline: var(--night-300);
+    --border-interactive: var(--night-500);
+    --border-selected: var(--indigo-600);
+    --brand-primary: var(--indigo-600);
+    /* M4 contrast fix: --indigo-400 (4.61:1) was verified against flat
+       bg.page (#14101F) but is actually rendered on bg.tint/elevated
+       surfaces (nav active-tab label, "Make your own pick" secondary
+       button, "See more of Nicole's picks" link, Nicole's List selected
+       filter chip) where it drops to 4.21:1 — below AA. indigo-350 clears
+       4.5:1 against night-800 AND night-700, independently verified. */
+    --brand-primary-text: var(--indigo-350);
+    --accent-coral-text: var(--coral-500);
+    --accent-teal-text: var(--teal-600);
+    --accent-mint-text: var(--mint-600);
+    --accent-gold: var(--gold-500);
+    --accent-gold-text: var(--gold-300);
+    --accent-cold-text: var(--cold-600);
+    --accent-warm-text: var(--warm-600);
+    --accent-warm-text-tint: var(--warm-600); /* already ≥4.5:1 on night-800 in dark mode — no separate shift needed */
+    --trail-beginner: var(--trail-green-600);
+    --trail-intermediate: var(--trail-blue-500);
+    --trail-advanced: var(--text-primary);
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.4);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.4);
+    --shadow-lg: 0 12px 28px rgba(0,0,0,0.5);
+    --top-highlight: 1px solid rgba(245,242,255,0.06);
+    color-scheme: dark;
+  }
+}
+
+/* =========================================================================
+   Base / reset
+   ========================================================================= */
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--bg-page);
+  color: var(--text-primary);
+  font-family: 'Manrope', system-ui, sans-serif;
+  font-size: 1rem;
+  line-height: 1.5;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+h1, h2, h3, p, dl, dd { margin: 0; }
+button { font-family: inherit; color: inherit; }
+a { color: var(--brand-primary-text); }
+img, svg { display: block; max-width: 100%; }
+ul { margin: 0; padding: 0; list-style: none; }
+.visually-hidden {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+}
+.skip-link {
+  position: absolute; left: var(--space-3); top: -100px; z-index: 200;
+  background: var(--brand-primary); color: #fff; padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md); transition: top var(--dur-fast) var(--ease-standard);
+}
+.skip-link:focus { top: var(--space-3); }
+
+:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--bg-page), 0 0 0 5px var(--brand-primary);
+  transition: box-shadow var(--dur-instant) var(--ease-standard);
+  border-radius: var(--radius-sm);
+}
+
+/* Typography tokens */
+.display-hero {
+  font-family: 'Baloo 2', sans-serif; font-weight: 800;
+  font-size: clamp(2rem, 5vw, 2.75rem); line-height: 1.1; letter-spacing: -0.01em;
+}
+.display-h1 { font-family: 'Baloo 2', sans-serif; font-weight: 700; font-size: clamp(1.625rem, 4vw, 2.125rem); line-height: 1.2; letter-spacing: -0.005em; }
+.display-h2 { font-family: 'Baloo 2', sans-serif; font-weight: 700; font-size: clamp(1.3125rem, 3vw, 1.5625rem); line-height: 1.25; letter-spacing: -0.0025em; }
+.display-h3 { font-family: 'Baloo 2', sans-serif; font-weight: 600; font-size: clamp(1.0625rem, 2vw, 1.1875rem); line-height: 1.3; }
+.body-md { font-family: 'Manrope', sans-serif; font-weight: 400; font-size: 1rem; line-height: 1.5; }
+.body-sm { font-family: 'Manrope', sans-serif; font-weight: 500; font-size: .8125rem; line-height: 1.4; }
+.label { font-family: 'Manrope', sans-serif; font-weight: 700; font-size: .75rem; line-height: 1.3; letter-spacing: .06em; text-transform: uppercase; }
+.data-stat { font-family: 'IBM Plex Mono', monospace; font-weight: 600; font-size: clamp(1.375rem, 3vw, 1.625rem); line-height: 1.2; font-variant-numeric: tabular-nums; }
+.data-inline { font-family: 'IBM Plex Mono', monospace; font-weight: 500; font-size: .875rem; line-height: 1.3; font-variant-numeric: tabular-nums; }
+.data-label { font-family: 'Manrope', sans-serif; font-weight: 700; font-size: .625rem; line-height: 1.3; letter-spacing: .08em; text-transform: uppercase; color: var(--text-secondary); }
+
+/* =========================================================================
+   App shell / nav
+   ========================================================================= */
+.app-shell { min-height: 100vh; display: flex; flex-direction: column; }
+/* C1 fix: 72px was a hardcoded px nav-clearance value while every other
+   spacing token in the system is rem-based specifically so it scales with
+   zoom (visual-system.md §6). .nav-item's own padding/font-size are
+   rem-based and grow at 200% zoom, so a fixed 72px undershot the nav's real
+   height and content overlapped it. 4.5rem tracks the same root font-size
+   the nav itself scales from. */
+.app-main { flex: 1; width: 100%; padding-bottom: calc(4.5rem + var(--space-6)); }
+.app-main.no-bottom-nav { padding-bottom: var(--space-6); }
+.page-column { max-width: 40rem; margin: 0 auto; padding: var(--space-6) var(--space-4); }
+@media (min-width: 768px) { .page-column { padding: var(--space-8) var(--space-6); } }
+
+.top-nav {
+  display: none;
+}
+.bottom-nav {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 50;
+  display: flex; background: var(--bg-surface); border-top: 1.5px solid var(--border-hairline);
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+.bottom-nav[hidden] { display: none; }
+.nav-item {
+  flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 2px; min-height: 56px; padding: var(--space-2) var(--space-1);
+  background: none; border: none; cursor: pointer; color: var(--text-secondary);
+  font-family: 'Manrope', sans-serif; font-weight: 600; font-size: .6875rem;
+}
+.nav-item[aria-current="page"] { color: var(--brand-primary-text); }
+.nav-item svg { width: 22px; height: 22px; }
+
+@media (min-width: 768px) {
+  .bottom-nav { display: none; }
+  .top-nav {
+    display: flex; justify-content: center; gap: var(--space-2);
+    background: var(--bg-surface); border-bottom: 1.5px solid var(--border-hairline);
+    padding: var(--space-3) var(--space-4);
+  }
+  .top-nav[hidden] { display: none; }
+  .top-nav .nav-item { flex: none; flex-direction: row; min-width: 140px; border-radius: var(--radius-md); }
+  .app-main { padding-bottom: var(--space-6); }
+}
+
+/* =========================================================================
+   Tap-chip / option-card
+   ========================================================================= */
+.tap-chip {
+  display: flex; align-items: center; gap: var(--space-3);
+  min-height: 56px; width: 100%; padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md); border: var(--border-default-w) solid var(--border-interactive);
+  background: var(--bg-surface); cursor: pointer; text-align: left;
+  transition: box-shadow var(--dur-fast) var(--ease-standard), background-color var(--dur-fast) var(--ease-standard), border-color var(--dur-fast) var(--ease-standard);
+}
+.tap-chip:hover { border-color: var(--brand-primary); background: var(--bg-tint); box-shadow: var(--shadow-sm); }
+.tap-chip--selected {
+  border-color: var(--brand-primary); border-width: var(--border-selected-w);
+  box-shadow: inset 0 0 0 0 transparent;
+  background-color: color-mix(in srgb, var(--brand-primary) 10%, var(--bg-surface));
+}
+.tap-chip__indicator {
+  flex: none; width: 22px; height: 22px; border: 1.5px solid var(--border-interactive);
+  display: flex; align-items: center; justify-content: center; color: #fff;
+}
+.tap-chip__indicator--radio { border-radius: 50%; }
+.tap-chip__indicator--check { border-radius: 5px; }
+.tap-chip--selected .tap-chip__indicator { background: var(--brand-primary); border-color: var(--brand-primary); }
+.tap-chip__indicator svg { width: 13px; height: 13px; opacity: 0; transition: opacity var(--dur-fast) var(--ease-standard); }
+.tap-chip--selected .tap-chip__indicator svg { opacity: 1; }
+.tap-chip__body { flex: 1; min-width: 0; }
+.tap-chip__label { font-family: 'Manrope', sans-serif; font-weight: 400; font-size: 1rem; color: var(--text-primary); }
+.tap-chip--selected .tap-chip__label { font-weight: 600; }
+.tap-chip__sublabel { font-family: 'Manrope', sans-serif; font-weight: 500; font-size: .8125rem; color: var(--text-secondary); margin-top: 2px; }
+.tap-chip:disabled { background: color-mix(in srgb, var(--bg-tint) 60%, transparent); color: var(--text-secondary); border-color: var(--border-hairline); cursor: not-allowed; }
+
+/* C1 fix (200% zoom): fixed device-width media-query breakpoints don't
+   react to root-font-size-based zoom — the browser still reports the same
+   device px width, so a 2-column rule stayed active even after 200% zoom
+   doubled every rem-based padding/font-size, occluding option text behind
+   the fixed bottom nav and overflowing the viewport. `auto-fit`/`minmax`
+   sizes columns from the actual rendered container width at layout time
+   instead of a media query, so it collapses to 1 column automatically
+   whenever the real available width shrinks — whether that's a narrow
+   device or 200% zoom on a wide one — exactly the pattern visual-system.md
+   §6 already used for the stat strip. */
+.chip-grid { display: grid; grid-template-columns: 1fr; gap: var(--space-3); }
+.chip-grid--2col { grid-template-columns: repeat(auto-fit, minmax(8.75rem, 1fr)); }
+.region-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(8.75rem, 1fr)); gap: var(--space-3); }
+
+@media (prefers-reduced-motion: reduce) {
+  .tap-chip { transition: none; }
+  .tap-chip__indicator svg { transition: opacity var(--dur-fast) ease; }
+}
+
+/* =========================================================================
+   Buttons
+   ========================================================================= */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2);
+  min-height: 48px; padding: var(--space-3) var(--space-6);
+  border-radius: var(--radius-md); border: 1.5px solid transparent;
+  font-family: 'Manrope', sans-serif; font-weight: 700; font-size: 1rem;
+  cursor: pointer; transition: background-color var(--dur-fast) var(--ease-standard), opacity var(--dur-fast) var(--ease-standard);
+}
+.btn-primary { background: var(--brand-primary); color: #fff; }
+.btn-primary:hover { background: color-mix(in srgb, var(--brand-primary) 88%, black); }
+.btn-secondary { background: transparent; color: var(--brand-primary-text); border-color: var(--border-interactive); }
+.btn-secondary:hover { background: var(--bg-tint); }
+.btn-text {
+  background: none; border: none; color: var(--brand-primary-text); font-weight: 700;
+  min-height: 44px; padding: var(--space-2) var(--space-1); cursor: pointer;
+}
+.btn:disabled { opacity: .5; cursor: not-allowed; }
+.btn-block { width: 100%; }
+.btn svg { width: 20px; height: 20px; flex: none; }
+.inline-icon-sm { display: inline-flex; width: 12px; height: 12px; vertical-align: -1px; }
+.inline-icon-sm svg { width: 100%; height: 100%; }
+
+/* =========================================================================
+   Progress indicator
+   ========================================================================= */
+.progress-wrap { display: flex; align-items: center; gap: var(--space-3); margin-bottom: var(--space-6); }
+.progress-label { flex: none; font-family: 'Manrope', sans-serif; font-weight: 500; font-size: .8125rem; color: var(--text-secondary); white-space: nowrap; }
+.progress-track { flex: 1; display: flex; gap: 4px; }
+.progress-segment { flex: 1; height: 6px; border-radius: var(--radius-pill); background: var(--bg-tint); position: relative; overflow: visible; }
+.progress-segment__fill {
+  position: absolute; inset: 0; border-radius: var(--radius-pill); background: var(--brand-primary);
+  transform: scaleX(0); transform-origin: left; transition: transform var(--dur-fast) var(--ease-standard);
+}
+.progress-segment--complete .progress-segment__fill, .progress-segment--current .progress-segment__fill { transform: scaleX(1); }
+.progress-segment__dot {
+  position: absolute; top: -6px; left: 50%; width: 6px; height: 6px; margin-left: -3px;
+  border-radius: 50%; background: var(--brand-primary); opacity: 0; transition: opacity var(--dur-fast) var(--ease-standard);
+}
+.progress-segment--current .progress-segment__dot { opacity: 1; }
+@media (prefers-reduced-motion: reduce) {
+  .progress-segment__fill, .progress-segment__dot { transition: none; }
+}
+
+/* =========================================================================
+   Quiz step transitions
+   ========================================================================= */
+.quiz-step { will-change: transform, opacity; }
+.quiz-step--out-forward { animation: qs-out-fwd 160ms cubic-bezier(.4,0,1,1) both; }
+.quiz-step--in-forward { animation: qs-in-fwd 200ms cubic-bezier(.16,1,.3,1) both; }
+.quiz-step--out-backward { animation: qs-out-bwd 160ms cubic-bezier(.4,0,1,1) both; }
+.quiz-step--in-backward { animation: qs-in-bwd 200ms cubic-bezier(.16,1,.3,1) both; }
+@keyframes qs-out-fwd { to { opacity: 0; transform: translateX(-16px); } }
+@keyframes qs-in-fwd { from { opacity: 0; transform: translateX(16px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes qs-out-bwd { to { opacity: 0; transform: translateX(16px); } }
+@keyframes qs-in-bwd { from { opacity: 0; transform: translateX(-16px); } to { opacity: 1; transform: translateX(0); } }
+@media (prefers-reduced-motion: reduce) {
+  .quiz-step--out-forward, .quiz-step--out-backward { animation: qs-fade-out 160ms ease both; }
+  .quiz-step--in-forward, .quiz-step--in-backward { animation: qs-fade-in 160ms ease both; }
+  @keyframes qs-fade-out { to { opacity: 0; } }
+  @keyframes qs-fade-in { from { opacity: 0; } to { opacity: 1; } }
+}
+
+.quiz-card { display: flex; flex-direction: column; gap: var(--space-5); }
+.quiz-title { margin-bottom: var(--space-1); }
+.quiz-helper { color: var(--text-secondary); }
+.quiz-nav { display: flex; justify-content: space-between; align-items: center; gap: var(--space-3); margin-top: var(--space-4); }
+
+/* =========================================================================
+   Splash
+   ========================================================================= */
+.splash { display: flex; flex-direction: column; gap: var(--space-8); padding-top: var(--space-6); }
+.splash-eyebrow { color: var(--text-secondary); font-family: 'Manrope', sans-serif; font-size: 1.0625rem; max-width: 32rem; }
+.splash-modes { display: grid; grid-template-columns: 1fr; gap: var(--space-4); }
+@media (min-width: 560px) { .splash-modes { grid-template-columns: 1fr 1fr; } }
+.mode-card {
+  display: flex; flex-direction: column; gap: var(--space-3); text-align: left;
+  padding: var(--space-6); border-radius: var(--radius-lg); border: var(--border-default-w) solid var(--border-interactive);
+  background: var(--bg-surface); cursor: pointer; min-height: 160px;
+  transition: box-shadow var(--dur-fast) var(--ease-standard), border-color var(--dur-fast) var(--ease-standard), background-color var(--dur-fast) var(--ease-standard);
+}
+.mode-card:hover { border-color: var(--brand-primary); box-shadow: var(--shadow-md); background: var(--bg-tint); }
+.mode-card__icon { width: 40px; height: 40px; color: var(--brand-primary-text); }
+.mode-card__label { font-family: 'Baloo 2', sans-serif; font-weight: 700; font-size: 1.375rem; }
+.mode-card__support { color: var(--text-secondary); }
+.splash-footer { text-align: center; }
+
+/* =========================================================================
+   Result card — the shareable product
+   ========================================================================= */
+.result-wrap { max-width: 30rem; margin: 0 auto; padding: var(--space-4); }
+@media (min-width: 768px) { .result-wrap { padding: var(--space-6) 0; } }
+.result-card {
+  background: var(--bg-surface); border-radius: var(--radius-xl); box-shadow: var(--shadow-lg);
+  border: var(--border-default-w) solid var(--border-hairline); border-top: var(--top-highlight, var(--border-default-w) solid var(--border-hairline));
+  padding: var(--space-5);
+}
+@media (min-width: 768px) { .result-card { padding: var(--space-8); } }
+.attribution { display: flex; align-items: center; gap: var(--space-2); margin-bottom: var(--space-4); }
+.attribution__mark { width: 20px; height: 20px; color: var(--brand-primary-text); flex: none; }
+.attribution__word { color: var(--text-secondary); }
+.result-eyebrow { color: var(--text-secondary); margin-bottom: var(--space-1); }
+/* Badge panel — replaces the old wide-landscape illustration-panel. A
+   circular die-cut badge has different proportions than the 4:3 illustration
+   it replaces (badge-system.md's own framing: "the result card was designed
+   around a wide landscape image and a circular badge has different
+   proportions"), so this isn't a straight class-for-class swap: instead of
+   a full-width rectangle with the image cropped to fill it (`object-fit:
+   cover`, which would slice a circle into an off-centre oval), the panel is
+   a centered flex stage the badge sits on top of, at its own fixed
+   diameter, on a soft tint background so the die-cut edge — including the
+   spec's own hairline keyline — reads clearly against the card. Sized at
+   the spec's ~200px hero-card scale (badge-system.md §8 "Legibility at
+   scale"), with a smaller floor on the narrowest supported width so the
+   badge and its surrounding padding never exceed the 320px card. */
+.badge-panel {
+  display: flex; align-items: center; justify-content: center;
+  border-radius: var(--radius-lg); border: var(--border-default-w) solid var(--border-hairline);
+  padding: var(--space-4) 0; margin-bottom: var(--space-5); background: var(--bg-tint);
+}
+/* Tightened per design review (2026-08-03): the badge previously sized off
+   viewport width (42vw) against a panel whose actual width tracks the card's
+   own padding, not the viewport directly — at 390px that put the badge at
+   roughly half the panel's width, leaving a wide ring of dead `--bg-tint`
+   space on every side. Sizing off the panel's own content box (%, not vw)
+   is the correct relative unit here — the badge now claims most of its
+   container regardless of how card/wrap padding shifts at any width, and a
+   fixed 1:1 `aspect-ratio` (matching the badge's own 240x240 viewBox) keeps
+   height in lockstep with width without a second, independently-guessed
+   clamp. Ceiling stays at badge-system.md §8's own 200px hero-card scale —
+   this fix reaches that size sooner/more reliably, it doesn't exceed it. */
+.badge-panel svg { width: clamp(168px, 78%, 200px); aspect-ratio: 1 / 1; height: auto; display: block; }
+@media (min-width: 600px) { .badge-panel svg { width: 200px; height: 200px; } }
+.result-headline { margin-bottom: var(--space-5); }
+.result-headline .resort-name { color: var(--brand-primary-text); }
+.result-headline .location { display: block; color: var(--text-secondary); font-family: 'Manrope', sans-serif; font-weight: 500; font-size: .9375rem; margin-top: var(--space-1); }
+.reason-heading { margin-bottom: var(--space-3); }
+.reason-list { display: flex; flex-direction: column; gap: var(--space-3); margin-bottom: var(--space-5); }
+.reason-bullet { display: flex; gap: var(--space-3); align-items: flex-start; }
+.reason-bullet__icon { flex: none; width: 22px; height: 22px; color: var(--brand-primary-text); margin-top: 1px; }
+.reason-bullet__text { color: var(--text-primary); }
+
+/* Zoom-round fix: same fixed-px-track bug the C1/critical-fix-#4 pass closed
+   for .chip-grid--2col/.region-grid (styles.css, "C1 fix" above), just missed
+   on this sibling component built the same round. `minmax(84px, 1fr)` didn't
+   grow with root font-size, so at 200% zoom the grid still tried to fit as
+   many ~84px-wide (now visually ~42px-equivalent) tracks as before, and
+   adjacent tiles' now-much-larger text painted directly on top of each
+   other ("2,100ft" over "SKIABLE ACRES") instead of wrapping to fewer
+   columns. 5.25rem is the same 84px at the 16px default root, but scales
+   with zoom exactly like chip-grid's 8.75rem does. */
+.stat-strip {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(5.25rem, 1fr));
+  border: var(--border-hairline-w) solid var(--border-hairline); border-radius: var(--radius-md);
+  margin-bottom: var(--space-5); overflow: hidden;
+}
+/* Rebalance (design review, 2026-08-03): this shared class has two call
+   sites with genuinely different item-count shapes — the header numeric
+   strip always has exactly 4 tiles (vertical drop, skiable acres, average
+   snowfall, cost — "Cost" is unconditional, `resort.cost_tier || "—"` in
+   buildStatStrip), the terrain-mix strip below it has 1 (null-data
+   fallback) or 3. The old fixed `repeat(3,1fr)`/`repeat(4,1fr)` breakpoint
+   overrides here forced *every* `.stat-strip` onto the same column count
+   regardless of how many tiles it actually held, which defeats
+   `auto-fit`'s own built-in behavior of collapsing genuinely-empty tracks —
+   the terrain strip's 3 items got stretched into a 4-column track at
+   768px+, leaving a permanent empty fourth cell, the same "lone orphan"
+   bug class as the header strip's mobile case. Removing the fixed
+   overrides here and leaving plain `auto-fit(minmax(5.25rem,1fr))` in place
+   lets the terrain strip reflow correctly at any width with no explicit
+   breakpoint needed — however many tiles it has, unused tracks collapse to
+   zero instead of rendering as a gap. The header strip needs a different,
+   item-count-aware treatment (`--quad`, below) precisely because auto-fit's
+   width-based column guessing can't guarantee an even 2x2 for a always-4
+   grid at in-between widths the way an explicit `repeat()` can. */
+/* minmax(0, 1fr), not bare 1fr: a bare `1fr` track is `minmax(auto, 1fr)`,
+   and `auto`'s floor is the item's min-content width — at 200% zoom
+   (`.stat-tile__value`'s font-size clamp bottoms out at its rem-based
+   floor, not its vw-based preferred value, so it grows substantially) a
+   tile's own text can force its track wider than the viewport has room
+   for, the exact zoom-overflow bug class this file's other grids were
+   already fixed against. `minmax(0, 1fr)` lets the track shrink below that
+   content size instead; paired with `.stat-tile`'s own `min-width: 0`
+   below (needed because a flex/grid item's default automatic minimum size
+   is its content size, not zero — the same fix `min-width:0` already
+   applies elsewhere in this file for exactly this reason) and
+   `.stat-tile__value`'s `overflow-wrap: anywhere` so an unbroken token
+   like "3,000" can still wrap as a last resort rather than overflow. */
+.stat-strip--quad { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+@media (min-width: 600px) {
+  .stat-strip--quad { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .stat-strip--quad .stat-tile:nth-child(2n) { border-right: var(--border-hairline-w) solid var(--border-hairline); }
+  .stat-strip--quad .stat-tile:nth-child(3n) { border-right: var(--border-hairline-w) solid var(--border-hairline); }
+  .stat-strip--quad .stat-tile:nth-child(4n) { border-right: none; }
+}
+.stat-tile {
+  padding: var(--space-3) var(--space-3); border-right: var(--border-hairline-w) solid var(--border-hairline);
+  border-bottom: var(--border-hairline-w) solid var(--border-hairline); min-height: 76px; min-width: 0;
+  display: flex; flex-direction: column; justify-content: center; gap: 2px;
+}
+.stat-tile:nth-child(2n) { border-right: none; }
+@media (min-width: 600px) { .stat-tile { border-right: var(--border-hairline-w) solid var(--border-hairline); } .stat-tile:nth-child(3n) { border-right: none; } }
+@media (min-width: 768px) { .stat-tile:nth-child(3n) { border-right: var(--border-hairline-w) solid var(--border-hairline); } .stat-tile:nth-child(4n) { border-right: none; } }
+.stat-tile__value { color: var(--text-primary); overflow-wrap: anywhere; }
+.stat-tile__value .unit { font-family: 'IBM Plex Mono', monospace; font-weight: 500; font-size: .8125rem; margin-left: 2px; }
+.stat-tile__value--null { color: var(--text-secondary); }
+.stat-tile__sublabel { color: var(--text-secondary); font-family: 'Manrope', sans-serif; font-size: .75rem; }
+
+/* Ski-school evidence disclosure (heuristic-evaluation.md, H2/H6/H10 major
+   finding) — an expand-in-place pattern, matching the one already used well
+   elsewhere (Nicole's List hot-take preview), rather than a bare label with
+   nothing behind it. */
+.stat-tile--expandable { padding: 0; }
+.stat-tile__expand-btn {
+  display: flex; align-items: center; justify-content: space-between; gap: var(--space-2);
+  width: 100%; min-height: 44px; padding: var(--space-3); background: none; border: none; cursor: pointer;
+  font-family: inherit; text-align: left; color: inherit;
+}
+.stat-tile__expand-icon { flex: none; width: 16px; height: 16px; color: var(--text-secondary); transition: transform var(--dur-fast) var(--ease-standard); }
+.stat-tile__expand-btn[aria-expanded="true"] .stat-tile__expand-icon,
+.notes-row__expand-btn[aria-expanded="true"] .stat-tile__expand-icon { transform: rotate(180deg); }
+@media (prefers-reduced-motion: reduce) { .stat-tile__expand-icon { transition: none; } }
+.stat-tile__basis { color: var(--text-secondary); padding: 0 var(--space-3) var(--space-3); }
+
+/* "Notes" tier (design-critic.md finding 4 fix) — the prose-length fields
+   (Crowds, Pass, Ski school, Off the mountain) as a label/value list rather
+   than cells forced into a symmetrical grid. Each row's height comes only
+   from its own content, so a 7-word caption next to a 2-word one no longer
+   produces a shared, uneven row height or a dangling empty grid cell. */
+.notes-list { display: flex; flex-direction: column; margin: 0; margin-top: var(--space-3); }
+/* Zoom-round fix: the label column was `minmax(5.5rem, 30%)` — a rem-based
+   minimum paired with a percentage maximum. Those two bounds don't scale
+   together: the row's own pixel width is bounded by the (roughly
+   zoom-invariant) viewport, so the 30% maximum stays roughly constant in
+   real px regardless of zoom, while 5.5rem doubles at 200% zoom exactly
+   like every other rem value in this file. Once the minimum exceeds the
+   maximum, CSS grid resolves `minmax()` to the minimum outright (the
+   maximum is dropped) — so at 200% zoom the label column ballooned to
+   ~176px of a ~244px-wide row, leaving the value column so little space
+   that ordinary values ("Usually crowded", "Ikon pass") wrapped one or two
+   letters per line: technically zero overflow, but genuinely illegible,
+   the same failure mode as the overlap bug just via wrapping instead of
+   collision. A single percentage (no rem floor) keeps both columns a
+   stable proportion of the row at every zoom level — the label is already
+   designed to wrap onto 2-3 lines when it needs to ("Off the mountain"
+   already does at normal widths), so there's no regression in letting it
+   do that consistently instead of forcing extra width for itself. */
+.notes-row {
+  display: grid; grid-template-columns: 30% 1fr; gap: var(--space-3);
+  align-items: baseline; padding: var(--space-3) 0; border-bottom: var(--border-hairline-w) solid var(--border-hairline);
+}
+.notes-row:first-child { border-top: var(--border-hairline-w) solid var(--border-hairline); }
+.notes-row dt, .notes-row dd { margin: 0; }
+/* Grid items default to `min-width: auto` (their content's min-content
+   width, not zero) — once a value like "Independent (no multi-resort pass)"
+   contains a word wider than its now-stable ~70% column, `min-width: 0`
+   lets the column actually shrink to the space the grid gives it instead of
+   growing the track to fit the word; `overflow-wrap` then wraps (rather
+   than overflows) that one still-too-long word. */
+.notes-row dd { color: var(--text-primary); min-width: 0; overflow-wrap: break-word; }
+.notes-row__expand-btn {
+  display: flex; align-items: center; gap: var(--space-2); width: 100%; min-height: 44px; padding: 0;
+  background: none; border: none; cursor: pointer; font-family: inherit; font-size: 1rem; text-align: left; color: inherit;
+  /* Zoom-round fix: a flex container's children default to `min-width: auto`
+     (content-based) and this button never set `flex-wrap`, so once the
+     label column's rem-based minimum (above) leaves this button very little
+     room at 200% zoom, its own two children (the label text and the fixed
+     16px chevron) refused to shrink below their combined min-content width
+     and — with no wrap allowed — the chevron visibly escaped the button's
+     box entirely rather than wrapping under the text. `min-width: 0` lets
+     the button itself actually take the narrow width it's given;
+     `flex-wrap: wrap` is the guaranteed fallback if that's still not enough
+     room (chevron drops to its own line rather than escaping sideways). */
+  min-width: 0; flex-wrap: wrap;
+}
+.notes-row__expand-btn > span:first-child { min-width: 0; overflow-wrap: break-word; }
+.notes-row__expand-btn .stat-tile__basis, .notes-row .stat-tile__basis { padding: var(--space-2) 0 0; }
+
+.footer-cta { display: flex; flex-direction: column; gap: var(--space-3); align-items: stretch; padding-top: var(--space-2); }
+.footer-cta .btn-text { text-align: center; }
+
+/* =========================================================================
+   Nicole's Hot Take block
+   ========================================================================= */
+.hot-take {
+  background: var(--bg-tint); border-radius: var(--radius-lg); border: var(--border-default-w) solid var(--accent-gold);
+  padding: var(--space-4) var(--space-5); margin-bottom: var(--space-5); position: relative; overflow: hidden;
+}
+.hot-take__header { display: flex; align-items: center; gap: var(--space-2); margin-bottom: var(--space-3); }
+.hot-take__avatar {
+  width: 26px; height: 26px; border-radius: 50%; background: var(--accent-gold); color: var(--purple-900);
+  display: flex; align-items: center; justify-content: center; font-family: 'Baloo 2', sans-serif; font-weight: 600; font-size: .9375rem; flex: none;
+}
+.hot-take__label { color: var(--text-secondary); flex: 1; }
+.hot-take__rating { color: var(--text-primary); }
+.hot-take__quote-mark { position: absolute; top: -6px; left: var(--space-3); font-family: 'Baloo 2', sans-serif; font-size: 4.5rem; color: var(--accent-gold); opacity: .15; line-height: 1; pointer-events: none; }
+.hot-take__body { font-family: 'Manrope', sans-serif; font-size: 1.0625rem; line-height: 1.55; color: var(--text-primary); position: relative; }
+.hot-take__attribution { display: block; margin-top: var(--space-3); color: var(--text-secondary); font-family: 'Manrope', sans-serif; font-size: .8125rem; }
+
+/* =========================================================================
+   Range Readout
+   ========================================================================= */
+.range-readout { margin-bottom: var(--space-5); border-top: var(--border-hairline-w) solid var(--border-hairline); padding-top: var(--space-5); }
+.range-readout__heading { margin-bottom: var(--space-1); }
+.range-readout__subline { color: var(--text-secondary); margin-bottom: var(--space-4); }
+.range-track { display: flex; gap: 2px; margin: 3.5rem 0 var(--space-2); position: relative; }
+.range-seg { flex: 1; height: 8px; border-radius: 2px; position: relative; }
+.range-seg__glyph { position: absolute; top: 14px; left: 50%; transform: translateX(-50%); width: 12px; height: 12px; }
+.range-bridge-wrap { position: absolute; left: 0; right: 0; top: -10px; height: 6px; }
+/* The bridge is one continuous sweep (single transform, per motion-spec §5.1 —
+   "one confident, continuous sweep... not two separately animated pieces"),
+   but it's painted as two adjoining halves so the strong side can render
+   solid while the weak side renders dashed/desaturated — the visual literally
+   mirrors the min-max "worse of the two ends" logic instead of hiding it. */
+.range-bridge {
+  position: absolute; inset: 0; display: flex;
+  transform: scaleX(0); transform-origin: left; transition: transform 220ms var(--ease-standard);
+}
+.range-bridge.is-revealed { transform: scaleX(1); }
+.range-bridge__half { flex: 1 1 50%; height: 6px; background: var(--brand-primary); }
+.range-bridge__half--floor { border-radius: 3px 0 0 3px; }
+.range-bridge__half--ceiling { border-radius: 0 3px 3px 0; }
+.range-bridge__half--weak { background: repeating-linear-gradient(90deg, var(--border-interactive) 0 6px, transparent 6px 10px); }
+.range-pin {
+  position: absolute; top: -38px; display: flex; flex-direction: column; align-items: center; gap: 4px;
+  opacity: 0; transition: opacity 120ms var(--ease-standard); transform: translateX(-50%);
+  /* Zoom-round fix: without an explicit width here, this flex container
+     shrink-wraps to its widest child — the flag, which needs a fixed
+     `width` of its own (see .range-pin__flag below) to avoid a separate
+     shrink-to-fit bug. That coupling meant this container's own *box*
+     (translateX(-50%)'d the same as the flag) still bled past the viewport
+     at an edge anchor even after the edge-start/edge-end modifiers
+     corrected the flag's own rendered position — an invisible box, but
+     still real geometry that grows scrollable overflow. Pinning this
+     container to the marker's own width decouples the two: the flag (below)
+     still renders whatever width/position it needs to (a flex cross-axis
+     item isn't clipped to an undersized container), it just no longer
+     drags this element's own layout box along with it.
+  */
+  width: 14px;
+}
+.range-pin.is-revealed { opacity: 1; }
+/* Zoom-round fix: at 200% zoom (root font-size scaled the same way the rest
+   of the type system is, per this file's zoom-fix comments above), the
+   floor/ceiling pin labels are positioned off percentage-based anchors that
+   don't move, while the label text itself grows in real px as a rem-sized
+   font. For most floor/ceiling pairs there's enough anchor-to-anchor
+   distance to absorb that growth; for the narrowest possible pair (adjacent
+   tiers, e.g. "Never skied" next to "Beginner") there isn't, and the two
+   labels render as one garbled overlapping string. `.range-track--tight`
+   (added in JS only when floor/ceiling are adjacent — the same "narrowest
+   possible gap" condition diagnosed in the review) moves the ceiling label
+   to its own vertical band below the track — two labels in different
+   vertical bands can never collide horizontally no matter how wide either
+   one renders.
+   `.range-pin__flag` itself needs a fixed `width` here, not `max-width`: the
+   ceiling pin sits at `left: 100%` of its wrapper with nothing to its right,
+   and the floor pin at `left: 0%` with nothing to its left — an
+   absolutely-positioned, auto-width element in that position shrink-to-fits
+   against essentially zero *available* space on the open side. With
+   `white-space: normal` that starved shrink-to-fit collapsed "Expert" into a
+   vertical single-letter column even at 100% zoom (a real regression caught
+   in this round's own screenshot re-check, not a pre-existing bug) — a fixed
+   width sidesteps the shrink-to-fit calculation entirely, so wrapping only
+   ever happens because the text is actually too long for the box, never
+   because the box had nothing to size itself against. */
+.range-pin__flag {
+  font-family: 'Manrope', sans-serif; font-weight: 700; font-size: .6875rem; color: var(--text-primary);
+  width: 6.5rem; white-space: normal; overflow-wrap: break-word; text-align: center; line-height: 1.25;
+}
+/* Zoom-round fix, edge case found re-verifying the fix above: the outer
+   `.range-pin` stays centered on its anchor via `translateX(-50%)` (it must
+   — the marker inside it has to sit precisely on the anchor point), but a
+   floor pin at the track's own 0% start or a ceiling pin at its 100% end
+   (e.g. "Never skied" / "Expert" — common, not just the tight-range case)
+   has nothing beyond that edge for a *centered* label to bleed into: half
+   the flag's fixed width spilled past the edge of the track, the card, and
+   at 200% zoom the viewport itself (confirmed via a per-element viewport
+   -containment check, not just page scrollWidth). These two modifiers
+   counter-shift the flag only (never the marker) so the label instead grows
+   inward from the edge it sits on. */
+.range-pin--edge-start .range-pin__flag { transform: translateX(50%); text-align: left; }
+.range-pin--edge-end .range-pin__flag { transform: translateX(-50%); text-align: right; }
+.range-pin__marker { width: 14px; height: 14px; background: var(--brand-primary); flex: none; }
+.range-pin__marker--circle { border-radius: 50%; }
+.range-pin__marker--diamond { transform: rotate(45deg); border-radius: 2px; }
+.range-track--tight { margin-bottom: 4.5rem; }
+.range-track--tight .range-pin--ceiling {
+  top: auto; bottom: -2.75rem; flex-direction: column-reverse;
+}
+.range-warning { display: flex; align-items: center; gap: 4px; font-size: .6875rem; color: var(--accent-warm-text); font-weight: 700; white-space: nowrap; }
+.range-sentences { display: flex; flex-direction: column; gap: var(--space-2); margin-top: var(--space-6); }
+.range-sentences p { color: var(--text-primary); }
+.range-sentences strong { font-weight: 700; }
+@media (prefers-reduced-motion: reduce) { .range-bridge, .range-pin { transition: none; } }
+
+/* =========================================================================
+   Chase-the-Snow
+   ========================================================================= */
+.chase-controls { display: flex; flex-wrap: wrap; gap: var(--space-3); margin-bottom: var(--space-5); align-items: center; }
+/* Zoom-round fix: a flex item with the default `flex: 0 1 auto` sizes to its
+   own content (shrink-to-fit), not to the row it's wrapping onto — so the
+   native <select> inside this item (app-chase.js) could grow past the
+   viewport at 200% zoom with nothing above it in the ancestor chain ever
+   capping it against real available width, even with max-width:100% on the
+   select itself (that 100% just resolves against this same shrink-to-fit
+   parent, which happily grows to match). Forcing this item to *always* claim
+   the full flex-row width breaks that circular sizing and matches the
+   layout's own visual intent already visible at 100% zoom (the origin
+   picker already reads as a full-width row, not an inline control). */
+#chase-origin-control { flex: 1 1 100%; min-width: 0; }
+.freshness-badge { display: inline-flex; align-items: center; gap: var(--space-2); padding: var(--space-2) var(--space-3); border-radius: var(--radius-pill); background: var(--bg-tint); margin-bottom: var(--space-4); }
+.freshness-badge svg { width: 16px; height: 16px; flex: none; }
+.freshness-badge--fallback { border: 1.5px solid var(--accent-warm-text); }
+.freshness-badge--fallback .freshness-badge__text { color: var(--accent-warm-text-tint); font-weight: 700; }
+.escalation-note { color: var(--text-secondary); margin-top: var(--space-2); }
+
+.chase-list { display: flex; flex-direction: column; }
+/* Zoom-round fix: `align-items: center` vertically centers `.chase-row__rank`
+   and `.chase-row__badge` against the row's own cross-axis size — fine when
+   `.chase-row__main` (the resort name/region/flags) is a single line, but at
+   200% zoom a longer name (e.g. "Whistler Blackcomb", "Revelstoke Mountain
+   Resort") wraps to two lines and grows the row's height, and a centered
+   badge can then land squarely on top of the wrapped second line instead of
+   staying clear of it (confirmed: "Typical season" overlapping "Blackcomb").
+   `flex-start` keeps rank/badge pinned to the top of the row regardless of
+   how tall the name grows — identical at normal zoom (names are one line),
+   and never collides once one side wraps taller than the other. */
+.chase-row {
+  display: flex; align-items: flex-start; gap: var(--space-4); min-height: 72px; padding: var(--space-3) var(--space-1);
+  border-bottom: var(--border-hairline-w) solid var(--border-hairline); cursor: pointer; text-decoration: none; color: inherit;
+  border-radius: var(--radius-sm);
+  transition: background-color var(--dur-fast) var(--ease-standard);
+}
+.chase-row:hover, .chase-row:focus-visible { background: var(--bg-tint); }
+/* Resort badge avatar, list-row scale (badge-system.md §8: 96px = "list
+   row"). Replaces the plain numbered-circle rank indicator as the row's
+   leading visual — the rank number itself moves into a small pill overlaid
+   on the badge's own corner rather than disappearing, so "row 1 vs row 2"
+   is still a glance-able visual distinction, not just a v>0 ordered-list
+   semantic one. `position:relative` container so the rank pill can anchor
+   to it without affecting row flow. */
+/* Zoom-round fix (this round): the narrowest-viewport avatar size started at
+   56px, which — combined with the row's two rem-based flex gaps doubling at
+   200% zoom (root font-size 32px) — squeezed `.chase-row__badge`'s existing
+   6rem max-width column 2px past the 390px viewport (confirmed:
+   `.chase-row__badge` was already the tightest element in this row before
+   the avatar existed at all; the avatar just consumed the last couple of
+   spare px). 44px avoids the squeeze with margin to spare while staying
+   clearly legible as a small badge. */
+.chase-row__avatar { flex: none; width: 44px; height: 44px; position: relative; }
+@media (min-width: 480px) { .chase-row__avatar { width: 72px; height: 72px; } }
+@media (min-width: 700px) { .chase-row__avatar { width: 96px; height: 96px; } }
+.chase-row__avatar svg { width: 100%; height: 100%; display: block; }
+.chase-row__rank {
+  position: absolute; right: -3px; bottom: -3px; flex: none; width: 20px; height: 20px; border-radius: 50%;
+  background: var(--bg-surface); border: var(--border-default-w) solid var(--border-hairline); box-shadow: var(--shadow-sm);
+  display: flex; align-items: center; justify-content: center; font-family: 'IBM Plex Mono', monospace; font-weight: 700; font-size: .625rem;
+}
+@media (min-width: 480px) { .chase-row__rank { right: -4px; bottom: -4px; width: 24px; height: 24px; font-size: .6875rem; } }
+/* Zoom-round fix: `.chase-row__main` correctly shrinks (`min-width: 0`), but
+   `.chase-row__badge` is `flex: none` with nothing capping its own natural
+   width — at 200% zoom, "next 7 days" alone needs ~140px on one line, and an
+   unconstrained flex:none item claims that in full rather than wrapping,
+   squeezing main down to a genuinely unusable ~34px in the worst rows
+   (confirmed). At that width even a single word like "Baker" can't wrap
+   (no break opportunity within a word) and overflows main's own box
+   sideways, straight into the badge column it was just squeezed to make
+   room for. `max-width` here lets the badge's own text wrap onto a second
+   line instead of holding its single-line width hostage; `overflow-wrap` on
+   the name/region/reason is the same defensive backstop used elsewhere in
+   this round for any single word that's still too long for its box. */
+.chase-row__main { flex: 1; min-width: 0; }
+.chase-row__name { color: var(--text-primary); overflow-wrap: break-word; }
+.chase-row__region { color: var(--text-secondary); display: block; overflow-wrap: break-word; }
+.chase-row__reason { color: var(--text-secondary); margin-top: 2px; overflow-wrap: break-word; }
+.chase-row__flags { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-top: var(--space-2); }
+.chase-flag { display: inline-flex; align-items: center; gap: 4px; font-size: .75rem; font-weight: 600; }
+.chase-flag--crowd { color: var(--accent-warm-text); }
+.chase-flag--nicole { color: var(--accent-gold-text); }
+.chase-flag svg { width: 14px; height: 14px; }
+.chase-row__badge { flex: none; text-align: right; max-width: 6rem; }
+.forecast-badge { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
+.forecast-badge__top { display: flex; align-items: center; gap: 4px; }
+.forecast-badge__icon { width: 16px; height: 16px; flex: none; }
+.forecast-badge__inches { font-family: 'IBM Plex Mono', monospace; font-weight: 600; }
+.forecast-badge__desc { font-size: .75rem; color: var(--text-secondary); overflow-wrap: break-word; }
+.chase-row--excluded { opacity: .55; }
+
+.canada-divider {
+  background: var(--bg-tint); border-radius: var(--radius-lg); padding: var(--space-5);
+  margin: var(--space-6) 0 var(--space-4); display: flex; gap: var(--space-3); align-items: flex-start;
+}
+.canada-divider__icon { flex: none; width: 28px; height: 28px; color: var(--text-secondary); }
+.canada-divider__body p { color: var(--text-secondary); margin-top: var(--space-1); }
+.typical-season-tag {
+  font-family: 'Manrope', sans-serif; font-weight: 700; font-size: .625rem; letter-spacing: .08em; text-transform: uppercase;
+  color: var(--text-secondary); display: block;
+}
+
+/* =========================================================================
+   Skeleton loading
+   ========================================================================= */
+.skeleton-row { height: 72px; border-radius: var(--radius-md); margin-bottom: var(--space-3); position: relative; overflow: hidden; background: var(--bg-tint); }
+.skeleton-row::after {
+  content: ''; position: absolute; inset: 0; transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.35), transparent);
+  animation: skeleton-sweep 1400ms linear infinite;
+}
+@keyframes skeleton-sweep { to { transform: translateX(100%); } }
+@media (prefers-reduced-motion: reduce) { .skeleton-row::after { animation: none; display: none; } }
+.loading-state { display: flex; flex-direction: column; align-items: center; gap: var(--space-3); padding: var(--space-8) 0; text-align: center; }
+.loading-state .btn { margin-top: var(--space-2); }
+.loading-spinner { width: 28px; height: 28px; border-radius: 50%; border: 3px solid var(--bg-tint); border-top-color: var(--brand-primary); animation: spin 900ms linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .loading-spinner { animation: spin 1600ms linear infinite; } }
+
+/* =========================================================================
+   Nicole's list
+   ========================================================================= */
+.nicoleslist-filters { display: flex; flex-wrap: wrap; gap: var(--space-3); margin-bottom: var(--space-5); }
+.filter-chip {
+  /* M7 fix: 40px min-height / 8px gutter fell below the app's own stated
+     44px floor (and its 56px-in-practice convention that every other chip
+     in the system ships at) — an isolated miss on the one surface most
+     likely to be tapped one-handed. Gutter bumped from --space-2 (8px) to
+     --space-3 (12px), matching visual-system.md §7's stated minimum. */
+  min-height: 56px; padding: var(--space-2) var(--space-4); border-radius: var(--radius-pill);
+  border: var(--border-default-w) solid var(--border-interactive); background: var(--bg-surface); cursor: pointer;
+  font-family: 'Manrope', sans-serif; font-weight: 600; font-size: .875rem;
+  transition: background-color var(--dur-fast) var(--ease-standard), border-color var(--dur-fast) var(--ease-standard);
+  /* Zoom-round fix: this class is also used on Chase-the-Snow's native
+     <select id="chase-region-select"> (app-chase.js), which — unlike the
+     <button>-based filter chips here — has no CSS width of its own at all,
+     so a browser sizes it to its widest <option> text. At 200% zoom that
+     text is wide enough in real px to push the whole page well past the
+     viewport (measured: 483px wide against a 390px viewport). A <button>
+     already wraps/shrinks fine without this; a <select> needs an explicit
+     cap on its container's width to do the same. */
+  max-width: 100%;
+}
+.filter-chip--selected { border-color: var(--brand-primary); background: color-mix(in srgb, var(--brand-primary) 12%, var(--bg-surface)); color: var(--brand-primary-text); }
+.nicoleslist-intro { color: var(--text-secondary); margin-bottom: var(--space-5); }
+.nicoles-badges { display: flex; gap: var(--space-2); flex-wrap: wrap; }
+.info-badge {
+  display: inline-flex; align-items: center; padding: 2px var(--space-2); border-radius: var(--radius-sm);
+  background: var(--bg-tint); color: var(--text-secondary); font-size: .6875rem; font-weight: 700; text-transform: uppercase; letter-spacing: .04em;
+}
+.tag-row { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.pill-tag { padding: 2px var(--space-3); border-radius: var(--radius-pill); background: var(--bg-tint); color: var(--text-secondary); font-size: .75rem; font-weight: 600; }
+.take-preview { display: flex; align-items: flex-start; gap: var(--space-2); width: 100%; background: none; border: none; padding: 0; cursor: pointer; text-align: left; color: var(--text-primary); font-family: inherit; font-size: 1rem; min-height: 44px; }
+.take-preview__mark { color: var(--accent-gold); font-family: 'Baloo 2', sans-serif; font-size: 1.5rem; line-height: 1; flex: none; }
+/* Finding 6 fix: single-line truncated preview, per visual-system.md §2.8 —
+   the string is already JS-truncated (~58 chars), but with no white-space
+   handling on the containing element it wrapped into a tall, jagged,
+   roughly-one-word-per-line column. min-width: 0 is required for
+   text-overflow: ellipsis to work inside a flex child. */
+.take-preview__text { display: block; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding-top: 2px; }
+.take-empty { color: var(--text-secondary); font-style: normal; }
+.take-full { background: var(--bg-tint); border-radius: var(--radius-md); padding: var(--space-3) var(--space-4); border: var(--border-default-w) solid var(--accent-gold); margin-top: var(--space-1); }
+
+/* Nicole's List table (critical fix #3 / M8, finding 5-6): a real <table>
+   at every width (see app-nicoles.js) that restyles into one card per row
+   below the card breakpoint, instead of forcing a 4-column table into a
+   320px viewport. `overflow-x: auto` is a defense-in-depth safety net at
+   any width — the actual fix is that content no longer NEEDS to overflow. */
+.nicoles-table-scroll { overflow-x: auto; }
+.nicoles-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+.nicoles-table__head th {
+  text-align: left; padding: var(--space-2); border-bottom: 1.5px solid var(--border-hairline);
+}
+.nicoles-table__head th:first-child { padding-left: 0; }
+.nicoles-table__head th:last-child { padding-right: 0; }
+.nicoles-table__row { border-bottom: 1px solid var(--border-hairline); }
+.nicoles-table__cell { padding: var(--space-3) var(--space-2); vertical-align: top; }
+.nicoles-table__cell--place { padding-left: 0; }
+.nicoles-table__cell--take { padding-right: 0; max-width: 220px; }
+
+@media (min-width: 600px) {
+  .nicoles-table { table-layout: auto; }
+}
+
+/* Below 600px: same <table> markup, restyled to one card per row. Explicit
+   `role`s in the markup (table/rowgroup/row/columnheader/cell) keep this a
+   real table for AT even though `display: block` on table elements can
+   otherwise cause some browser/AT combinations to drop implicit table
+   semantics. The column-header row is visually hidden (not display:none,
+   so it stays in the accessibility tree) — sighted mobile users instead see
+   a `data-label` before each field, generated from CSS content. */
+@media (max-width: 599px) {
+  .nicoles-table__head {
+    position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+    overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+  }
+  .nicoles-table, .nicoles-table tbody { display: block; width: 100%; }
+  .nicoles-table__row {
+    display: block; border: var(--border-default-w) solid var(--border-hairline); border-bottom: var(--border-default-w) solid var(--border-hairline);
+    border-radius: var(--radius-lg); padding: var(--space-4); margin-bottom: var(--space-3);
+  }
+  .nicoles-table__cell {
+    display: block; padding: var(--space-1) 0; max-width: none;
+  }
+  .nicoles-table__cell--place { padding-top: 0; }
+  .nicoles-table__cell--take { padding-bottom: 0; }
+  .nicoles-table__cell[data-label]::before {
+    content: attr(data-label); display: block; margin-top: var(--space-2);
+    font-family: 'Manrope', sans-serif; font-weight: 700; font-size: .625rem; letter-spacing: .08em;
+    text-transform: uppercase; color: var(--text-secondary);
+  }
+}
+
+/* =========================================================================
+   Toast
+   ========================================================================= */
+.toast {
+  position: fixed; left: 50%; bottom: calc(4.5rem + var(--space-4)); transform: translate(-50%, 8px) ; z-index: 100;
+  background: var(--text-primary); color: var(--bg-page); padding: var(--space-3) var(--space-5); border-radius: var(--radius-md);
+  opacity: 0; box-shadow: var(--shadow-md); max-width: calc(100vw - 2rem); text-align: center;
+  transition: opacity 220ms var(--ease-entrance), transform 220ms var(--ease-entrance);
+}
+.toast--visible { opacity: 1; transform: translate(-50%, 0); }
+.toast--dismissing { transition: opacity 160ms var(--ease-exit); opacity: 0; transform: translate(-50%, 0); }
+@media (prefers-reduced-motion: reduce) { .toast, .toast--dismissing { transition: opacity 160ms ease; transform: translate(-50%,0) !important; } }
+
+/* =========================================================================
+   Misc / states
+   ========================================================================= */
+.center-state { text-align: center; padding: var(--space-12) var(--space-4); display: flex; flex-direction: column; align-items: center; gap: var(--space-4); }
+.center-state svg { width: 48px; height: 48px; color: var(--text-secondary); }
+.data-gap { color: var(--text-secondary); font-style: normal; }
+[hidden] { display: none !important; }
+
+.reveal-hidden { opacity: 0; }
+@media (min-width: 1024px) {
+  .page-column--wide { max-width: 64rem; }
+}
