@@ -3,6 +3,27 @@
 // "not a ranked list, just her record" (copy-deck §7). Real <table> markup
 // per the copy deck's own screen-reader dry-run (caption + scope="col"
 // headers), styled to the calmer "browse and trust" register.
+//
+// v2 (design review 2026-08-05) — Verdict + Take:
+//   * The click is gone. Takes render in full at every row; nothing is
+//     truncated at runtime. The old 58-char preview was systematically
+//     biased — six of the nine takes are structured praise-then-caveat, so
+//     clipping deleted the caveat every time, and Breckenridge's pan read
+//     as a compliment.
+//   * Two tiers. A short verdict line (the decision) is the scan stripe;
+//     the take (the texture) sits under it. Authoring limits: verdict
+//     18-40, take 45-95, combined <= 130. Enforced when writing, never by
+//     the renderer.
+//   * The per-row "Nicole's take" label is gone at the Director's call —
+//     it was repetitive and ate the space the verdict needs. R5 is now
+//     carried at page level instead: a first-person standing line, an
+//     honest coverage count, and a visually-hidden per-row attribution so
+//     a screen-reader user landing mid-list still knows whose voice this
+//     is. THIS PAGE ONLY — the recommendation and quiver screens keep the
+//     labelled, quarantined hot-take block.
+//   * Column order is Place / Nicole's take / Best for / Region so DOM
+//     order matches visual order at both breakpoints (1.3.2), rather than
+//     reordering cards with flex `order`.
 // ---------------------------------------------------------------------------
 
 function buildNicolesRows() {
@@ -12,6 +33,7 @@ function buildNicolesRows() {
       place: resort ? resort.name : row.resort_place,
       region: row.region_state,
       rating: row.overall_rating,
+      verdict: row.nicoles_verdict,
       take: row.nicoles_take,
       tags: resort ? (resort.best_for_tags || []) : [],
       scale: resort ? resort.scale : null,
@@ -28,7 +50,8 @@ function renderNicolesList(main) {
   main.innerHTML = `
     <div class="page-column">
       <h1 class="display-h1">Nicole's list</h1>
-      <p class="nicoleslist-intro body-md">Everywhere Nicole has actually skied — not a ranked list, just her record.</p>
+      <p class="nicoleslist-voice body-md">Everywhere I've skied, and what I <strong>actually</strong> think. Not a ranked list, just my record — and some of these aren't flattering.</p>
+      <p class="nicoleslist-status data-label">${rows.filter((r) => r.take).length} of ${rows.length} written so far</p>
       <div class="nicoleslist-filters" role="group" aria-label="Filter Nicole's list">
         ${regions.map((r) => `<button class="filter-chip ${state.nicolesFilters.region === r ? "filter-chip--selected" : ""}" data-region="${escapeHtml(r)}" type="button" aria-pressed="${state.nicolesFilters.region === r}">${r === "all" ? "All regions" : escapeHtml(r)}</button>`).join("")}
       </div>
@@ -42,7 +65,7 @@ function renderNicolesList(main) {
 
   renderNicolesTable(rows);
   document.title = "Nicole's list — find your next ski trip";
-  setOgMeta({ title: "Find your next ski trip", description: "Everywhere Nicole's actually skied, with her real hot takes where she has one." });
+  setOgMeta({ title: "Find your next ski trip", description: "Everywhere Nicole's actually skied, with her real takes where she has one." });
   focusHeading(main);
 }
 
@@ -76,9 +99,9 @@ function renderNicolesTable(rows) {
         <thead class="nicoles-table__head">
           <tr role="row">
             <th scope="col" role="columnheader" class="data-label">Place</th>
-            <th scope="col" role="columnheader" class="data-label">Region</th>
+            <th scope="col" role="columnheader" class="data-label">Nicole's take</th>
             <th scope="col" role="columnheader" class="data-label">Best for</th>
-            <th scope="col" role="columnheader" class="data-label">Nicole's Hot Take</th>
+            <th scope="col" role="columnheader" class="data-label">Region</th>
           </tr>
         </thead>
         <tbody role="rowgroup">
@@ -86,14 +109,6 @@ function renderNicolesTable(rows) {
         </tbody>
       </table>
     </div>`;
-
-  wrap.querySelectorAll(".take-preview[data-expand]").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const full = btn.parentElement.querySelector(".take-full");
-      if (full) full.hidden = !full.hidden;
-      btn.setAttribute("aria-expanded", String(full && !full.hidden));
-    });
-  });
 }
 
 function nicolesRowHtml(row) {
@@ -112,22 +127,23 @@ function nicolesRowHtml(row) {
     ? `<ul class="tag-row" role="list">${row.tags.slice(0, 4).map((t) => `<li class="pill-tag" role="listitem">${escapeHtml(t.replace(/-/g, " "))}</li>`).join("")}</ul>`
     : `<span class="body-sm data-gap">—</span>`;
 
-  // Finding 6 fix: JS-level truncation was already correct, but the
-  // containing cell had no `white-space: nowrap`/`text-overflow` handling,
-  // so the already-truncated string wrapped into a tall, jagged, roughly
-  // one-word-per-line column instead of the spec'd single-line preview. The
-  // truncation itself is unchanged here — styles.css now enforces the
-  // single line.
+  // No truncation and no disclosure control. The visually-hidden prefix is
+  // what keeps R5 intact now that the visible per-row label is gone: a
+  // screen-reader user who jumps straight to a resort by heading, or who
+  // never heard the page intro, still gets "Nicole's take:" before the
+  // opinion — otherwise a pan like "My least favorite in CO" is announced
+  // in the app's own neutral voice.
+  //
+  // A negative take renders identically to a positive one. No sentiment
+  // colour, no icon, no rating glyph: takes carry zero ranking weight
+  // (engine.js), sentiment styling would fail 1.4.1, and it would make an
+  // honest pan look like a validation error.
   const takeHtml = row.take
-    ? (() => {
-        const preview = row.take.length > 60 ? row.take.slice(0, 58).trimEnd() + "…" : row.take;
-        return `<button class="take-preview" data-expand aria-expanded="false" type="button" aria-label="Nicole's hot take on ${escapeHtml(row.place)} — expand to read.">
-          <span class="take-preview__mark" aria-hidden="true">&ldquo;</span>
-          <span class="take-preview__text body-sm">${escapeHtml(preview)}</span>
-        </button>
-        <div class="take-full" hidden>${escapeHtml(row.take)}${row.rating ? `<div class="data-inline" style="margin-top:var(--space-2)">${escapeHtml(String(row.rating))}/10</div>` : ""}</div>`;
-      })()
-    : `<span class="take-empty body-sm">No hot take yet</span>`;
+    ? `<span class="visually-hidden">Nicole's take on ${escapeHtml(row.place)}: </span>
+       ${row.verdict ? `<p class="take-verdict">${escapeHtml(row.verdict)}</p>` : ""}
+       <p class="take-body body-sm">${escapeHtml(row.take)}</p>
+       ${row.rating ? `<p class="data-inline take-rating">${escapeHtml(String(row.rating))}/10</p>` : ""}`
+    : `<span class="take-empty body-sm">No take yet</span>`;
 
   return `
     <tr role="row" class="nicoles-table__row">
@@ -135,8 +151,8 @@ function nicolesRowHtml(row) {
         <span class="display-h3" style="display:block">${escapeHtml(row.place)}</span>
         ${badges.length ? `<div class="nicoles-badges" style="margin-top:var(--space-1)">${badges.join("")}</div>` : ""}
       </td>
-      <td role="cell" class="nicoles-table__cell" data-label="Region"><span class="body-sm" style="color:var(--text-secondary)">${escapeHtml(row.region)}</span></td>
+      <td role="cell" class="nicoles-table__cell nicoles-table__cell--take" data-label="Nicole's take">${takeHtml}</td>
       <td role="cell" class="nicoles-table__cell" data-label="Best for">${tagsHtml}</td>
-      <td role="cell" class="nicoles-table__cell nicoles-table__cell--take" data-label="Nicole's Hot Take">${takeHtml}</td>
+      <td role="cell" class="nicoles-table__cell nicoles-table__cell--region" data-label="Region"><span class="body-sm" style="color:var(--text-secondary)">${escapeHtml(row.region)}</span></td>
     </tr>`;
 }

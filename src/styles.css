@@ -836,6 +836,19 @@ ul { margin: 0; padding: 0; list-style: none; }
 }
 .filter-chip--selected { border-color: var(--brand-primary); background: color-mix(in srgb, var(--brand-primary) 12%, var(--bg-surface)); color: var(--brand-primary-text); }
 .nicoleslist-intro { color: var(--text-secondary); margin-bottom: var(--space-5); }
+/* v2: the per-row "Nicole's take" label is gone, so attribution has to be
+   carried once, at the top, and carried hard. The gold spine + first person
+   is the mechanism — a neutral third-person line says whose opinions these
+   are, first person says the whole page is her talking. --accent-gold is
+   1.61:1 and decorative only, so it is never the sole carrier: the words do
+   the work and the rule is emphasis on top of them. */
+.nicoleslist-voice {
+  color: var(--text-primary); margin-bottom: var(--space-3);
+  padding-left: var(--space-4); border-left: var(--border-selected-w) solid var(--accent-gold-text);
+  max-width: 52ch;
+}
+.nicoleslist-voice strong { font-weight: 700; }
+.nicoleslist-status { color: var(--text-secondary); margin-bottom: var(--space-5); }
 .nicoles-badges { display: flex; gap: var(--space-2); flex-wrap: wrap; }
 .info-badge {
   display: inline-flex; align-items: center; padding: 2px var(--space-2); border-radius: var(--radius-sm);
@@ -843,16 +856,35 @@ ul { margin: 0; padding: 0; list-style: none; }
 }
 .tag-row { display: flex; flex-wrap: wrap; gap: var(--space-2); }
 .pill-tag { padding: 2px var(--space-3); border-radius: var(--radius-pill); background: var(--bg-tint); color: var(--text-secondary); font-size: .75rem; font-weight: 600; }
-.take-preview { display: flex; align-items: flex-start; gap: var(--space-2); width: 100%; background: none; border: none; padding: 0; cursor: pointer; text-align: left; color: var(--text-primary); font-family: inherit; font-size: 1rem; min-height: 44px; }
-.take-preview__mark { color: var(--accent-gold); font-family: 'Baloo 2', sans-serif; font-size: 1.5rem; line-height: 1; flex: none; }
-/* Finding 6 fix: single-line truncated preview, per visual-system.md §2.8 —
-   the string is already JS-truncated (~58 chars), but with no white-space
-   handling on the containing element it wrapped into a tall, jagged,
-   roughly-one-word-per-line column. min-width: 0 is required for
-   text-overflow: ellipsis to work inside a flex child. */
-.take-preview__text { display: block; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding-top: 2px; }
+/* On Nicole's list only, tags drop the pill and become a dot-separated
+   metadata line. As chips they were taking roughly seven times the vertical
+   space of the opinion they sat next to, and — because a chip stack sets the
+   row height — they were doing it hardest on the 35 rows that have no take
+   at all. Still a real <ul role="list"> with real <li>s: the separator is
+   generated content, so a screen reader gets list boundaries, not run-on
+   text. Scoped here so the chip treatment elsewhere is untouched. */
+.nicoles-table .tag-row { gap: 0 var(--space-2); }
+.nicoles-table .pill-tag {
+  padding: 0; background: none; border-radius: 0; white-space: nowrap;
+  font-size: .8125rem; font-weight: 400; line-height: 1.7;
+}
+.nicoles-table .pill-tag + .pill-tag::before { content: "· "; color: var(--border-hairline); }
+/* v2 — Verdict + Take. The single-line truncated preview and its expand
+   button are gone: the take renders in full at every row. There is
+   deliberately NO max-height, -webkit-line-clamp or text-overflow anywhere
+   in this block. Length is an authoring constraint (verdict 18-40, take
+   45-95, combined <= 130), never a rendering one — a clipped quote with
+   Nicole's name on it misrepresents her, and the clip was biased toward
+   the flattering half of every praise-then-caveat take. */
+.take-verdict {
+  font-family: 'Baloo 2', sans-serif; font-weight: 700;
+  font-size: 1.3125rem; line-height: 1.2; letter-spacing: -0.02em;
+  color: var(--text-primary); margin: 0 0 var(--space-2);
+  text-wrap: balance;
+}
+.take-body { color: var(--text-primary); margin: 0; max-width: 58ch; }
+.take-rating { color: var(--text-secondary); margin-top: var(--space-2); }
 .take-empty { color: var(--text-secondary); font-style: normal; }
-.take-full { background: var(--bg-tint); border-radius: var(--radius-md); padding: var(--space-3) var(--space-4); border: var(--border-default-w) solid var(--accent-gold); margin-top: var(--space-1); }
 
 /* Nicole's List table (critical fix #3 / M8, finding 5-6): a real <table>
    at every width (see app-nicoles.js) that restyles into one card per row
@@ -869,10 +901,24 @@ ul { margin: 0; padding: 0; list-style: none; }
 .nicoles-table__row { border-bottom: 1px solid var(--border-hairline); }
 .nicoles-table__cell { padding: var(--space-3) var(--space-2); vertical-align: top; }
 .nicoles-table__cell--place { padding-left: 0; }
-.nicoles-table__cell--take { padding-right: 0; max-width: 220px; }
+.nicoles-table__cell--region { padding-right: 0; }
 
+/* Column weighting inverted from v1. The take used to be capped at 220px
+   while the chips ran full width — roughly seven times the vertical space
+   for the metadata as for the opinion. The take column is now the widest
+   and the cap is gone; region, which is already the filter above the
+   table, is the one that shrinks. */
 @media (min-width: 600px) {
-  .nicoles-table { table-layout: auto; }
+  .nicoles-table { table-layout: fixed; }
+  .nicoles-table th:nth-child(1) { width: 20%; }
+  .nicoles-table th:nth-child(2) { width: 44%; }
+  .nicoles-table th:nth-child(3) { width: 24%; }
+  .nicoles-table th:nth-child(4) { width: 12%; }
+  .nicoles-table__cell--take { padding-left: var(--space-4); }
+  .nicoles-table__cell--region { padding-left: var(--space-3); }
+}
+@media (min-width: 900px) {
+  .take-verdict { font-size: 1.5rem; }
 }
 
 /* Below 600px: same <table> markup, restyled to one card per row. Explicit
@@ -896,7 +942,12 @@ ul { margin: 0; padding: 0; list-style: none; }
     display: block; padding: var(--space-1) 0; max-width: none;
   }
   .nicoles-table__cell--place { padding-top: 0; }
-  .nicoles-table__cell--take { padding-bottom: 0; }
+  .nicoles-table__cell--region { padding-bottom: 0; }
+  /* The take is the reason the card exists — it does not get a field
+     label above it the way Best for and Region do. The verdict's own
+     weight is the label. */
+  .nicoles-table .nicoles-table__cell--take[data-label]::before { content: none; }
+  .nicoles-table__cell--take { padding-top: var(--space-2); }
   .nicoles-table__cell[data-label]::before {
     content: attr(data-label); display: block; margin-top: var(--space-2);
     font-family: 'Manrope', sans-serif; font-weight: 700; font-size: .625rem; letter-spacing: .08em;

@@ -4,9 +4,11 @@
     "resort_place": "Alyeska Resort",
     "overall_rating": null,
     "best_for": null,
+    "nicoles_verdict": null,
     "nicoles_take": null,
     "property_hotel_notes": null,
     "resort_id": "alyeska-ak",
+    "take_combined": null,
     "take_original": null
   },
   {
@@ -14,9 +16,11 @@
     "resort_place": "Crystal Mountain",
     "overall_rating": null,
     "best_for": null,
+    "nicoles_verdict": null,
     "nicoles_take": null,
     "property_hotel_notes": null,
     "resort_id": "crystal-mountain-wa",
+    "take_combined": null,
     "take_original": null
   },
   {
@@ -24,9 +28,11 @@
     "resort_place": "Stevens Pass",
     "overall_rating": null,
     "best_for": null,
+    "nicoles_verdict": null,
     "nicoles_take": null,
     "property_hotel_notes": null,
     "resort_id": "stevens-pass-wa",
+    "take_combined": null,
     "take_original": null
   },
   {
@@ -34,9 +40,11 @@
     "resort_place": "Mt. Baker Resort",
     "overall_rating": null,
     "best_for": null,
+    "nicoles_verdict": null,
     "nicoles_take": null,
     "property_hotel_notes": null,
     "resort_id": "mt-baker-wa",
+    "take_combined": null,
     "take_original": null
   },
   {
@@ -44,9 +52,11 @@
     "resort_place": "Mount Hood",
     "overall_rating": null,
     "best_for": null,
+    "nicoles_verdict": null,
     "nicoles_take": null,
     "property_hotel_notes": null,
     "resort_id": "timberline-or",
+    "take_combined": null,
     "take_original": null
   },
   {
@@ -54,9 +64,11 @@
     "resort_place": "Whistler Blackcomb",
     "overall_rating": null,
     "best_for": null,
+    "nicoles_verdict": null,
     "nicoles_take": null,
     "property_hotel_notes": null,
     "resort_id": "whistler-blackcomb-bc",
+    "take_combined": null,
     "take_original": null
   },
   {
@@ -64,9 +76,11 @@
     "resort_place": "Big Sky Resort",
     "overall_rating": null,
     "best_for": null,
-    "nicoles_take": "Great variety of terrain, cowboy Montana local vibes, can be windy and cold. No major airport access.",
+    "nicoles_verdict": "Huge terrain, hard to get to.",
+    "nicoles_take": "Great variety, cowboy Montana local vibes. Windy and cold, and no major airport.",
     "property_hotel_notes": null,
     "resort_id": "big-sky-mt",
+    "take_combined": "Great variety of terrain, cowboy Montana local vibes, can be windy and cold. No major airport access.",
     "take_original": "Great variety of terrian, cowboy Montana local vibes, can be windy and cold. No major airport access."
   },
   {
@@ -74,9 +88,11 @@
     "resort_place": "Bridger Bowl Ski Area",
     "overall_rating": null,
     "best_for": null,
+    "nicoles_verdict": null,
     "nicoles_take": null,
     "property_hotel_notes": null,
     "resort_id": "bridger-bowl-mt",
+    "take_combined": null,
     "take_original": null
   },
   {
@@ -84,9 +100,11 @@
     "resort_place": "Red Lodge Mountain",
     "overall_rating": null,
     "best_for": null,
+    "nicoles_verdict": null,
     "nicoles_take": null,
     "property_hotel_notes": null,
     "resort_id": "red-lodge-mt",
+    "take_combined": null,
     "take_original": null
   },
   {
@@ -94,9 +112,11 @@
     "resort_place": "Jackson Hole Mountain Resort",
     "overall_rating": null,
     "best_for": null,
+    "nicoles_verdict": null,
     "nicoles_take": null,
     "property_hotel_notes": null,
     "resort_id": "jackson-hole-wy",
+    "take_combined": null,
     "take_original": null
   },
   {
@@ -104,9 +124,11 @@
     "resort_place": "Park City Mountain",
     "overall_rating": null,
     "best_for": null,
+    "nicoles_verdict": null,
     "nicoles_take": null,
     "property_hotel_notes": null,
     "resort_id": "park-city-ut",
+    "take_combined": null,
     "take_original": null
   },
   {
@@ -114,9 +136,11 @@
     "resort_place": "Canyons Village at Park City",
     "overall_rating": null,
     "best_for": null,
+    "nicoles_verdict": null,
     "nicoles_take": null,
     "property_hotel_notes": null,
     "resort_id": "park-city-ut",
+    "take_combined": null,
     "take_original": null
   },
   {
@@ -124,9 +148,11 @@
     "resort_place": "Snowbird Ski Area",
     "overall_rating": null,
     "best_for": null,
+    "nicoles_verdict": null,
     "nicoles_take": null,
     "property_hotel_notes": null,
     "resort_id": "snowbird-ut",
+    "take_combined": null,
     "take_original": null
   },
   {
@@ -134,9 +160,11 @@
     "resort_place": "Solitude Mountain Resort",
     "overall_rating": null,
     "best_for": null,
+    "nicoles_verdict": null,
     "nicoles_take": null,
     "property_hotel_notes": null,
     "resort_id": "solitude-ut",
+    "take_combined": null,
     "take_original": null
   },
   {
@@ -144,9 +172,11 @@
     "resort_place": "Alta Ski Area",
     "overall_rating": null,
     "best_for": null,
+    "nicoles_verdict": null,
     "nicoles_take": null,
     "property_hotel_notes": null,
     "resort_id": "alta-ut",
+    "take_combined": null,
     "take_original": null
   },
   {
@@ -154,9 +184,11 @@
     "resort_place": "Vail Ski Resort",
     "overall_rating": null,
     "best_for": null,
+    "nicoles_verdict": null,
     "nicoles_take": null,
     "property_hotel_notes": null,
     "resort_id": "vail-co",
+    "take_combined": null,
     "take_original": null
   },
   {
@@ -164,9 +196,11 @@
     "resort_place": "Beaver Creek Ski Area",
     "overall_rating": null,
     "best_for": null,
-    "nicoles_take": "Bougie (hello escalators), less crowded, good for families, but no real advanced terrain. Great ski school.",
+    "nicoles_verdict": "Bougie, and great with kids.",
+    "nicoles_take": "Hello, escalators. Less crowded, world class ski school, but no real advanced terrain.",
     "property_hotel_notes": null,
     "resort_id": "beaver-creek-co",
+    "take_combined": "Bougie (hello escalators), less crowded, good for families, but no real advanced terrain. Great ski school.",
     "take_original": "Bougie (hello escalators), less crowded, good for families, but no real advenced terrian. Great ski school."
   },
   {
@@ -174,9 +208,11 @@
     "resort_place": "Keystone Ski Resort",
     "overall_rating": null,
     "best_for": null,
-    "nicoles_take": "Great for families, tons of reasonable lodging, no advanced terrain.",
+    "nicoles_verdict": "The easy family default.",
+    "nicoles_take": "Tons of reasonable lodging, all of it reasonably priced. No advanced terrain.",
     "property_hotel_notes": null,
     "resort_id": "keystone-co",
+    "take_combined": "Great for families, tons of reasonable lodging, no advanced terrain.",
     "take_original": "Great for familes, tons of reasonable lodging, no advanced terrain."
   },
   {
@@ -184,9 +220,11 @@
     "resort_place": "Breckenridge Ski Resort",
     "overall_rating": null,
     "best_for": null,
-    "nicoles_take": "For the bros. BUSY. Cute downtown strip. One of my least favorite places in CO - just too obvious.",
+    "nicoles_verdict": "My least favorite in CO.",
+    "nicoles_take": "For the bros. BUSY. Cute downtown strip — but just too obvious.",
     "property_hotel_notes": null,
     "resort_id": "breckenridge-co",
+    "take_combined": "For the bros. BUSY. Cute downtown strip. One of my least favorite places in CO - just too obvious.",
     "take_original": "For the bros. BUSY. Cute downtown strip. One of my least favorite places in CO - just too obvious."
   },
   {
@@ -194,9 +232,11 @@
     "resort_place": "Arapahoe Basin Ski Area",
     "overall_rating": null,
     "best_for": null,
-    "nicoles_take": "One of my CO favorites. Extreme terrain, a skiers-ski area (parking lot apr\u00e8s still has vibes).",
+    "nicoles_verdict": "One of my CO favorites.",
+    "nicoles_take": "Extreme terrain, a skiers-ski area. Parking lot après still has vibes.",
     "property_hotel_notes": null,
     "resort_id": "arapahoe-basin-co",
+    "take_combined": "One of my CO favorites. Extreme terrain, a skiers-ski area (parking lot après still has vibes).",
     "take_original": "One of my CO favorites. Extreme terrain, a skiers-ski area (parking lot apre still has vibes)."
   },
   {
@@ -204,9 +244,11 @@
     "resort_place": "Steamboat Springs",
     "overall_rating": null,
     "best_for": null,
-    "nicoles_take": "Some great tree skiing. Classic cowboy downtown. A little vanilla and the mountain layout is pretty inefficient. World class ski school.",
+    "nicoles_verdict": "Great trees, vanilla mountain.",
+    "nicoles_take": "Classic cowboy downtown and a world class ski school. Layout is pretty inefficient.",
     "property_hotel_notes": null,
     "resort_id": "steamboat-co",
+    "take_combined": "Some great tree skiing. Classic cowboy downtown. A little vanilla and the mountain layout is pretty inefficient. World class ski school.",
     "take_original": "Some great tree skiiing. Classic cowboy downtown. A little vanilla and the mountain layout is pretty inefficient. World class ski school."
   },
   {
@@ -214,9 +256,11 @@
     "resort_place": "Aspen Snowmass",
     "overall_rating": null,
     "best_for": null,
-    "nicoles_take": "Look beyond the bougie downtown it's a great ski area with variety. Great for a family. Less crowded than Summit County.",
+    "nicoles_verdict": "Better than its reputation.",
+    "nicoles_take": "Look past the bougie downtown — real variety, great for a family, less crowded than Summit.",
     "property_hotel_notes": null,
     "resort_id": "aspen-snowmass-co",
+    "take_combined": "Look beyond the bougie downtown it's a great ski area with variety. Great for a family. Less crowded than Summit County.",
     "take_original": "Look beyond the bougie downtown it's a great ski area with variety. Great for a family. Less crowded than Summit County."
   },
   {
@@ -224,9 +268,11 @@
     "resort_place": "Crested Butte Mountain Resort",
     "overall_rating": null,
     "best_for": null,
+    "nicoles_verdict": "Worth the drive if you can ski.",
     "nicoles_take": "Out of the way. Advanced terrain.",
     "property_hotel_notes": null,
     "resort_id": "crested-butte-co",
+    "take_combined": "Out of the way. Advanced terrain.",
     "take_original": "Out of the way. Advanced terrain."
   },
   {
@@ -234,9 +280,11 @@
     "resort_place": "Copper Mountain Resort",
     "overall_rating": null,
     "best_for": null,
-    "nicoles_take": "Good swiss army knife of Summit County. Less busy, more affordable, easy access.",
+    "nicoles_verdict": "Summit County's best value.",
+    "nicoles_take": "A good swiss army knife — less busy, more affordable, easy access.",
     "property_hotel_notes": null,
     "resort_id": "copper-mountain-co",
+    "take_combined": "Good swiss army knife of Summit County. Less busy, more affordable, easy access.",
     "take_original": "Good swiss army knife of Summit County. Less busy, more affordable, easy access."
   },
   {
@@ -244,9 +292,11 @@
     "resort_place": "Loveland Ski Area",
     "overall_rating": null,
     "best_for": null,
+    "nicoles_verdict": null,
     "nicoles_take": null,
     "property_hotel_notes": null,
     "resort_id": "loveland-co",
+    "take_combined": null,
     "take_original": null
   },
   {
@@ -254,9 +304,11 @@
     "resort_place": "Winter Park Resort",
     "overall_rating": null,
     "best_for": null,
+    "nicoles_verdict": null,
     "nicoles_take": null,
     "property_hotel_notes": null,
     "resort_id": "winter-park-co",
+    "take_combined": null,
     "take_original": null
   },
   {
@@ -264,9 +316,11 @@
     "resort_place": "Squaw Valley Resort [now Palisades Tahoe]",
     "overall_rating": null,
     "best_for": null,
+    "nicoles_verdict": null,
     "nicoles_take": null,
     "property_hotel_notes": null,
     "resort_id": "palisades-tahoe-ca",
+    "take_combined": null,
     "take_original": null
   },
   {
@@ -274,9 +328,11 @@
     "resort_place": "Mammoth Mountain",
     "overall_rating": null,
     "best_for": null,
+    "nicoles_verdict": null,
     "nicoles_take": null,
     "property_hotel_notes": null,
     "resort_id": "mammoth-mountain-ca",
+    "take_combined": null,
     "take_original": null
   },
   {
@@ -284,9 +340,11 @@
     "resort_place": "Afton Alps",
     "overall_rating": null,
     "best_for": null,
+    "nicoles_verdict": null,
     "nicoles_take": null,
     "property_hotel_notes": null,
     "resort_id": "afton-alps-mn",
+    "take_combined": null,
     "take_original": null
   },
   {
@@ -294,9 +352,11 @@
     "resort_place": "Buck Hill",
     "overall_rating": null,
     "best_for": null,
+    "nicoles_verdict": null,
     "nicoles_take": null,
     "property_hotel_notes": null,
     "resort_id": "buck-hill-mn",
+    "take_combined": null,
     "take_original": null
   },
   {
@@ -304,9 +364,11 @@
     "resort_place": "Wild Mountain/Taylors Falls",
     "overall_rating": null,
     "best_for": null,
+    "nicoles_verdict": null,
     "nicoles_take": null,
     "property_hotel_notes": null,
     "resort_id": "wild-mountain-mn",
+    "take_combined": null,
     "take_original": null
   },
   {
@@ -314,9 +376,11 @@
     "resort_place": "Welch Village",
     "overall_rating": null,
     "best_for": null,
+    "nicoles_verdict": null,
     "nicoles_take": null,
     "property_hotel_notes": null,
     "resort_id": "welch-village-mn",
+    "take_combined": null,
     "take_original": null
   },
   {
@@ -324,9 +388,11 @@
     "resort_place": "Giants Ridge",
     "overall_rating": null,
     "best_for": null,
+    "nicoles_verdict": null,
     "nicoles_take": null,
     "property_hotel_notes": null,
     "resort_id": "giants-ridge-mn",
+    "take_combined": null,
     "take_original": null
   },
   {
@@ -334,9 +400,11 @@
     "resort_place": "Lutsen Mountains",
     "overall_rating": null,
     "best_for": null,
+    "nicoles_verdict": null,
     "nicoles_take": null,
     "property_hotel_notes": null,
     "resort_id": "lutsen-mn",
+    "take_combined": null,
     "take_original": null
   },
   {
@@ -344,9 +412,11 @@
     "resort_place": "Andes Tower Hills",
     "overall_rating": null,
     "best_for": null,
+    "nicoles_verdict": null,
     "nicoles_take": null,
     "property_hotel_notes": null,
     "resort_id": "andes-tower-hills-mn",
+    "take_combined": null,
     "take_original": null
   },
   {
@@ -354,9 +424,11 @@
     "resort_place": "Big Powderhorn Mountain Resort",
     "overall_rating": null,
     "best_for": null,
+    "nicoles_verdict": null,
     "nicoles_take": null,
     "property_hotel_notes": null,
     "resort_id": "big-powderhorn-mi",
+    "take_combined": null,
     "take_original": null
   },
   {
@@ -364,9 +436,11 @@
     "resort_place": "Big Snow Resort (Indianhead)",
     "overall_rating": null,
     "best_for": null,
+    "nicoles_verdict": null,
     "nicoles_take": null,
     "property_hotel_notes": null,
     "resort_id": "indianhead-mi",
+    "take_combined": null,
     "take_original": null
   },
   {
@@ -374,9 +448,11 @@
     "resort_place": "Big Snow Resort (Blackjack)",
     "overall_rating": null,
     "best_for": null,
+    "nicoles_verdict": null,
     "nicoles_take": null,
     "property_hotel_notes": null,
     "resort_id": "blackjack-mi",
+    "take_combined": null,
     "take_original": null
   },
   {
@@ -384,9 +460,11 @@
     "resort_place": "Mount Bohemia",
     "overall_rating": null,
     "best_for": null,
+    "nicoles_verdict": null,
     "nicoles_take": null,
     "property_hotel_notes": null,
     "resort_id": "mount-bohemia-mi",
+    "take_combined": null,
     "take_original": null
   },
   {
@@ -394,9 +472,11 @@
     "resort_place": "Whitecap Mountains",
     "overall_rating": null,
     "best_for": null,
+    "nicoles_verdict": null,
     "nicoles_take": null,
     "property_hotel_notes": null,
     "resort_id": "whitecap-mountains-wi",
+    "take_combined": null,
     "take_original": null
   },
   {
@@ -404,9 +484,11 @@
     "resort_place": "Powder Ridge Ski Area",
     "overall_rating": null,
     "best_for": null,
+    "nicoles_verdict": null,
     "nicoles_take": null,
     "property_hotel_notes": null,
     "resort_id": "powder-ridge-ct",
+    "take_combined": null,
     "take_original": null
   },
   {
@@ -414,9 +496,11 @@
     "resort_place": "Sunday River Resort",
     "overall_rating": null,
     "best_for": null,
+    "nicoles_verdict": null,
     "nicoles_take": null,
     "property_hotel_notes": null,
     "resort_id": "sunday-river-me",
+    "take_combined": null,
     "take_original": null
   },
   {
@@ -424,9 +508,11 @@
     "resort_place": "Sugarloaf Mountain Resort",
     "overall_rating": null,
     "best_for": null,
+    "nicoles_verdict": null,
     "nicoles_take": null,
     "property_hotel_notes": null,
     "resort_id": "sugarloaf-me",
+    "take_combined": null,
     "take_original": null
   },
   {
@@ -434,9 +520,11 @@
     "resort_place": "Stowe",
     "overall_rating": null,
     "best_for": null,
+    "nicoles_verdict": null,
     "nicoles_take": null,
     "property_hotel_notes": null,
     "resort_id": "stowe-vt",
+    "take_combined": null,
     "take_original": null
   },
   {
@@ -444,9 +532,11 @@
     "resort_place": "Killington Ski Area",
     "overall_rating": null,
     "best_for": null,
+    "nicoles_verdict": null,
     "nicoles_take": null,
     "property_hotel_notes": null,
     "resort_id": "killington-vt",
+    "take_combined": null,
     "take_original": null
   }
 ]

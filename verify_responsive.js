@@ -33,12 +33,12 @@ async function run() {
     // (not just "not overflowing the page" — the original bug pushed the
     // take column off past the viewport edge specifically).
     const takeVisible = await page.evaluate(() => {
-      const take = document.querySelector('.nicoles-table__row .take-preview, .nicoles-table__row .take-empty');
+      const take = document.querySelector('.nicoles-table__row .take-verdict, .nicoles-table__row .take-body, .nicoles-table__row .take-empty');
       if (!take) return null;
       const r = take.getBoundingClientRect();
       return { left: r.left, right: r.right, withinViewport: r.left >= 0 && r.right <= window.innerWidth };
     });
-    assert(`Nicole's List at ${width}px: "Nicole's Hot Take" column content is on-screen`, takeVisible && takeVisible.withinViewport, takeVisible);
+    assert(`Nicole's List at ${width}px: "Nicole's take" column content is on-screen`, takeVisible && takeVisible.withinViewport, takeVisible);
 
     // Real <table> semantics preserved even in the card layout (role attrs).
     const semantics = await page.evaluate(() => {
@@ -56,17 +56,48 @@ async function run() {
     assert(`Nicole's List at ${width}px: real columnheader role preserved`, semantics.headerRole === 'columnheader', semantics);
     assert(`Nicole's List at ${width}px: real cell role preserved`, semantics.cellRole === 'cell', semantics);
 
-    // Hot-take preview is single-line (finding 6): confirmed by measuring
-    // the rendered text node's height against one line-height, not by
-    // reading CSS properties alone.
-    const previewLineCount = await page.evaluate(() => {
-      const el = document.querySelector('.take-preview__text');
-      if (!el) return null;
-      const lineHeight = parseFloat(getComputedStyle(el).lineHeight);
-      const height = el.getBoundingClientRect().height;
-      return Math.round(height / lineHeight);
+    // v2 replaces finding 6's single-line-preview contract with the
+    // opposite one. There is no preview and no expand control: every take
+    // renders in full at every width. This asserts nothing clips it — the
+    // old truncation was biased, because six of the nine takes are
+    // praise-then-caveat and a left-edge clip deleted the caveat every
+    // time. Length is enforced when the take is written, never here.
+    const takeIntegrity = await page.evaluate(() => {
+      const nodes = Array.from(document.querySelectorAll('.take-verdict, .take-body'));
+      if (!nodes.length) return null;
+      const clipped = nodes.filter((el) => {
+        const c = getComputedStyle(el);
+        return c.webkitLineClamp !== 'none' || c.textOverflow === 'ellipsis' ||
+               c.maxHeight !== 'none' || c.whiteSpace === 'nowrap' ||
+               el.scrollHeight > el.clientHeight + 1;
+      });
+      return {
+        count: nodes.length,
+        clipped: clipped.length,
+        ellipsis: nodes.filter((el) => el.textContent.includes('\u2026')).length,
+        expandControls: document.querySelectorAll('.take-preview, .take-full, [data-expand]').length,
+      };
     });
-    assert(`Nicole's List at ${width}px: hot-take preview renders on one line, not jagged/wrapped`, previewLineCount === 1, previewLineCount);
+    assert(`Nicole's List at ${width}px: takes render in full — nothing clamped, clipped or ellipsised`,
+      takeIntegrity && takeIntegrity.clipped === 0 && takeIntegrity.ellipsis === 0, takeIntegrity);
+    assert(`Nicole's List at ${width}px: no expand control — the take is never behind a click`,
+      takeIntegrity && takeIntegrity.expandControls === 0, takeIntegrity);
+
+    // R5 after the visible per-row label was removed: the attribution must
+    // still reach a screen reader on every row that carries a take.
+    const attribution = await page.evaluate(() => {
+      const takes = Array.from(document.querySelectorAll('.nicoles-table__cell--take')).filter((c) => c.querySelector('.take-body'));
+      return {
+        takes: takes.length,
+        attributed: takes.filter((c) => /nicole/i.test((c.querySelector('.visually-hidden') || {}).textContent || '')).length,
+        pageVoice: !!document.querySelector('.nicoleslist-voice'),
+        coverage: !!document.querySelector('.nicoleslist-status'),
+      };
+    });
+    assert(`Nicole's List at ${width}px: every take carries screen-reader attribution (R5)`,
+      attribution && attribution.takes > 0 && attribution.attributed === attribution.takes, attribution);
+    assert(`Nicole's List at ${width}px: page-level attribution and coverage count present (R5)`,
+      attribution && attribution.pageVoice && attribution.coverage, attribution);
 
     // Touch targets (M7): filter chips >= 44px with >= 12px gutter.
     const targets = await page.evaluate(() => {
