@@ -1,0 +1,14 @@
+# macOS
+.DS_Store
+
+# Throwaway preview builds — a copy of the app with the clock frozen and the
+# weather API stubbed, generated so seasonal features can be reviewed out of
+# season. Never deploy one of these.
+*-DEMO.html
+
+# Local test output
+screenshots/
+screenshots-quiver/
+
+# Files moved aside for manual deletion (this session cannot delete on disk)
+_to_delete/

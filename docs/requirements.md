@@ -1,6 +1,6 @@
 # Rather Be Knee Deep — Requirements
 
-_Living document. Director: Nicole. Last updated 2026-08-04._
+_Living document. Director: Nicole. Last updated 2026-08-05._
 
 This is the single record of what this app should do — shipped, agreed, and still wanted.
 
@@ -12,7 +12,7 @@ Entries are tagged: **SHIPPED** (built and live), **AGREED** (decided, not built
 
 ## The product, in one paragraph
 
-A no-auth, link-shareable web app that recommends a North American ski destination. Three surfaces: a five-question trip planner, a forecast-driven snow chaser, and a browsable list of everywhere Nicole has skied. One self-contained HTML file, works offline, no accounts and no paywall. Live at https://rather-be-knee-deep.web.app.
+A no-auth, link-shareable web app that recommends a North American ski destination. Four surfaces: a five-question trip planner, a forecast-driven snow chaser, a ski-type recommender for a known resort and day, and a browsable list of everywhere Nicole has skied. One self-contained HTML file, works offline, no accounts and no paywall. Live at https://rather-be-knee-deep.web.app.
 
 ---
 
@@ -41,6 +41,8 @@ These came from the original brief and are non-negotiable unless Nicole changes 
 **R10 · Mixed-ability groups are a first-class input. SHIPPED.** Scored as a min-max bottleneck, never an average — which correctly excludes Jackson, Alta, Kicking Horse and Revelstoke from mixed groups despite their prestige. No competitor asks this.
 
 **R11 · Serves both newcomers and powder hounds. SHIPPED.** Beginner terrain, ski school and non-ski activities matter alongside steeps and snow quality. Neither audience is subordinate.
+
+**R12a · The toast was intercepting taps. FIXED 2026-08-05.** The toast element sits in the DOM permanently at opacity 0, fixed just above the nav bar, and was a live pointer target the whole time. Nothing sat underneath it until Quiver Check made the splash screen taller and pushed "See everywhere Nicole's actually skied" into exactly that band, at which point that link became untappable on a 390×844 phone. `pointer-events: none` — a status message should never be a pointer target. Caught by `verify_contrast.js` failing to click the link.
 
 **R12 · Accessible by construction. SHIPPED.** WCAG 2.1 AA. No sliders or drag anywhere. Shape and text on every status indicator, never colour alone. Reduced-motion is a first-class path, not a disable switch.
 
@@ -97,6 +99,40 @@ These came from the original brief and are non-negotiable unless Nicole changes 
 **I1 · Custom domain. PROPOSED.** Currently `rather-be-knee-deep.web.app`. Firebase provisions and renews SSL free for a custom domain; it needs buying one and a DNS change.
 
 **I2 · Snowriver split. PROPOSED.** Michigan's Indianhead and Blackjack merged into one resort in 2022 and are stored as one record carrying both names. Nicole chose to keep them separate; per-base-area stats are already sourced and the change is unimplemented.
+
+---
+
+## Quiver Check
+
+Added 2026-08-05. The 2.0 draft's third item, and the first of that list to be built. Its question is different from the other two modes': Plan a Trip asks *where should I go*, Chase the Snow asks *where is it dumping*, Quiver Check asks *I already know where and when — what do I put on my feet?*
+
+**Q1 · Pick a resort and a day, get a ski type. SHIPPED.** Two steps, one question each, matching the trip planner's idiom. Searchable resort list grouped by state; seven-day picker; then the call.
+
+**Q2 · Not personalised. SHIPPED, Director's call.** It does not ask what's in your quiver and does not store one. Most skiers own a general range, so the app names the ideal ski and — on every card — what to do if you don't own it. Revisit only if the un-personalised version proves too generic in use.
+
+**Q3 · Single day, not a week-at-a-glance. SHIPPED, Director's call.** One day in, one answer out. A day-by-day strip was considered and scoped out: it would answer the question before it's asked and turn a shareable call into a dashboard. The known cost is that the mode won't tell you Thursday is the day unless you ask about Thursday.
+
+**Q4 · Off-season behaviour matches Chase the Snow exactly. SHIPPED, Director's call.** When nothing in the pool is realistically open, the mode does not render a picker, does not fetch, and does not recommend a ski for a mountain that isn't spinning lifts. The same per-resort shoulder-season filter applies in October and May. Consequence: the feature is invisible from roughly May to November, including right now — `verify_quiver_visual.js` exists to make it reviewable anyway.
+
+**Q5 · No new illustration. SHIPPED, Director's call.** No sticker per ski type; the call is typographic. Deferred deliberately, not skipped — see D9 below.
+
+**Q6 · Eight ski types, labelled in real slang. SHIPPED.** Rock Skis, Skinny Skis, Bump Sticks, The Daily Driver, Mid-Fats, The Fatties, Pow Boats, Slush Puppies — each with the industry waist-width band, a plain-English explanation of what the ski does, and a fallback line for people who don't own it. Park twin-tips appear as an aside rather than a primary call, because the park is a choice made on top of the conditions rather than instead of them.
+
+**Q7 · The call is derived, not looked up. SHIPPED.** Forecast snowfall over the 72 hours ending on the chosen day, scaled by snow density and by how much the resort's terrain rewards float. Density comes from the real snow-to-liquid ratio — NOAA returns both snowfall and liquid-equivalent precipitation in the same response — which is what separates 12 inches of Utah blower from 12 inches of Cascade cement. Light snow demands *more* float, not less: it holds less water, so it stays unconsolidated and unsupportive. Terrain modulates the answer by at most ±25% and never drives it.
+
+**Q8 · Shared links re-read the forecast rather than freezing an answer. SHIPPED.** `#quiver=` carries only the resort and the date. A ski call is true only as long as the forecast behind it is, so a recipient opening it tomorrow may correctly see a different answer, and a day that has passed says so plainly instead of confidently reporting last week's weather. This is deliberately different from `#result=`, which does freeze its payload — a trip-planner match doesn't decay.
+
+**Q9 · The honesty boundary is stated on every card. SHIPPED.** It reads a weather forecast, not a snow report. It cannot see settled base depth, last night's grooming, or what's already been tracked out. When the live forecast is unreachable — or for the 10 Canadian resorts NOAA doesn't cover — the card carries the same "typical season, not a forecast" treatment used elsewhere, the reasoning switches to typical-season phrasing rather than saying "forecast", and it withholds the snow-to-liquid ratio entirely, because on that path the ratio is an assumption the app made rather than a measurement.
+
+### Known limits, logged
+
+**Q10 · It cannot see backwards. ACCEPTED.** The forecast horizon starts today, so a day chosen for today or tomorrow has no observable lead-in. The card says so and tells you to size up if there's already fresh snow down. Closing this would mean adding the observations API — a second network surface, for a question the user can answer by looking out of the window.
+
+**Q11 · Moguls are inferred, not observed. ACCEPTED.** No weather model can see a mogul field. The bump call fires on a visible dry stretch of two or more days, mid-season, at a mountain with the pitch to bump up, and the card explicitly labels itself an inference. 40 of 71 resorts qualify on the terrain test; the other 31 fall back to a groomer call.
+
+**Q12 · 17 resorts have no `terrain_pct`. ACCEPTED (see T5).** Those resorts get the call from tags and scale alone, and are excluded from the bump inference. Killington is the notable casualty — it has one of the most famous mogul runs in the east and no published terrain breakdown in this dataset, so it reads as a groomer day.
+
+**D9 · A sticker per ski type. DEFERRED by Director.** *"No new visuals for now, just an answer, we can get to visuals later."* Eight badges in the SummitSticker style would make the call as shareable as a resort match is. Sits behind the open badge debt (D1–D3).
 
 ---
 

@@ -20,6 +20,14 @@ const ICONS = {
   doubleDiamondGlyph: `<svg viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="5" width="11" height="11" rx="1" transform="rotate(45 8.5 10.5)"/><rect x="10" y="8" width="11" height="11" rx="1" transform="rotate(45 15.5 13.5)"/></svg>`,
   arrowRight: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>`,
   chevronDown: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>`,
+  // A pair of skis stood tips-up in the snow: two straight shafts, each with
+  // a pronounced hooked tip. An earlier version added a binding crossbar
+  // between them and read unmistakably as an italic letter H at nav size —
+  // the crossbar is what did it. Paired with a visible "Quiver" label
+  // everywhere it's used, per this file's own icon-never-carries-meaning-
+  // alone rule.
+  skis: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 21V8.6c0-2.2 1.1-3.6 2.7-3.6"/><path d="M14.8 21V8.6c0-2.2 1.1-3.6 2.7-3.6"/></svg>`,
+  search: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20.5 20.5L16.7 16.7"/></svg>`,
 };
 
 const LEVEL_GLYPH = {

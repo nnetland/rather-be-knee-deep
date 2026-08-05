@@ -820,6 +820,15 @@ ul { margin: 0; padding: 0; list-style: none; }
   color: var(--text-secondary); display: block;
 }
 
+/* Chase-the-Snow off-season state (fix round, 2026-08-04) — the collapsed-
+   by-default "typical mid-winter" preview shown below the plain "nothing's
+   open" message. Reuses the notes-row__expand-btn disclosure pattern and the
+   canada-divider/typical-season-tag honesty-labeling pattern rather than
+   inventing new visual language for what's structurally the same idea
+   (labelled historical data, clearly not live). */
+.offseason-preview { margin: var(--space-6) auto 0; }
+.offseason-preview .chase-list { margin-top: var(--space-3); }
+
 /* =========================================================================
    Skeleton loading
    ========================================================================= */
@@ -940,6 +949,16 @@ ul { margin: 0; padding: 0; list-style: none; }
   opacity: 0; box-shadow: var(--shadow-md); max-width: calc(100vw - 2rem); text-align: center;
   transition: opacity 220ms var(--ease-entrance), transform 220ms var(--ease-entrance);
 }
+/* The toast is always in the DOM at opacity 0, fixed just above the nav bar
+   — so it silently intercepted taps on whatever sat underneath it, even
+   while invisible. That was latent until Quiver Check made the splash screen
+   taller and pushed "See everywhere Nicole's actually skied" down into
+   exactly that band, at which point the link became untappable on a 390x844
+   phone (caught by verify_contrast.js, which could no longer click it).
+   A toast is a status message: it should never be a pointer target at all,
+   visible or not. `role="status"` already means AT reads it without needing
+   to reach it. */
+.toast { pointer-events: none; }
 .toast--visible { opacity: 1; transform: translate(-50%, 0); }
 .toast--dismissing { transition: opacity 160ms var(--ease-exit); opacity: 0; transform: translate(-50%, 0); }
 @media (prefers-reduced-motion: reduce) { .toast, .toast--dismissing { transition: opacity 160ms ease; transform: translate(-50%,0) !important; } }
@@ -955,6 +974,108 @@ ul { margin: 0; padding: 0; list-style: none; }
 .reveal-hidden { opacity: 0; }
 @media (min-width: 1024px) {
   .page-column--wide { max-width: 64rem; }
+}
+
+/* =========================================================================
+   Quiver Check
+   Added with the fourth mode. Every value here resolves through the existing
+   semantic tokens, so dark mode, the 200%-zoom rem scaling and the reduced-
+   motion path all come for free rather than needing their own overrides.
+   ========================================================================= */
+
+/* --- Four-up nav ---------------------------------------------------------
+   The bar carried three items until Quiver Check. Four at 320px gives each
+   80px, which "Nicole's List" could not survive — hence the shortened
+   visible label (the full name rides on aria-label in shell.html). These
+   rules make the remaining labels behave under the same pressure at 200%
+   zoom, where the rem-based font-size grows but the viewport doesn't:
+   min-width:0 lets a flex item shrink below its content width at all, and
+   `overflow-wrap: anywhere` gives a long word somewhere to break rather
+   than forcing the bar wider than the screen. */
+.nav-item { min-width: 0; }
+.nav-item > span:last-child { min-width: 0; text-align: center; line-height: 1.15; overflow-wrap: anywhere; }
+
+.quiver-step { color: var(--text-secondary); display: block; margin-bottom: var(--space-2); }
+
+/* --- Step 1: resort picker ---------------------------------------------- */
+.quiver-search { margin: var(--space-5) 0 var(--space-4); }
+.quiver-search label { display: block; color: var(--text-secondary); margin-bottom: var(--space-2); }
+.quiver-search__field { position: relative; display: flex; align-items: center; }
+.quiver-search__icon {
+  position: absolute; left: var(--space-3); display: flex; pointer-events: none; color: var(--text-secondary);
+}
+.quiver-search__icon svg { width: 18px; height: 18px; }
+.quiver-search__input {
+  width: 100%; min-height: 56px; padding: var(--space-3) var(--space-4) var(--space-3) var(--space-10);
+  border-radius: var(--radius-md); border: var(--border-default-w) solid var(--border-interactive);
+  background: var(--bg-surface); color: var(--text-primary);
+  font-family: 'Manrope', sans-serif; font-weight: 500; font-size: 1rem;
+}
+.quiver-search__input::placeholder { color: var(--text-secondary); opacity: 1; }
+
+.quiver-group { margin-bottom: var(--space-5); }
+.quiver-group__heading {
+  display: block; padding-bottom: var(--space-2); margin-bottom: var(--space-1);
+  border-bottom: var(--border-hairline-w) solid var(--border-hairline);
+}
+.quiver-group__items { display: flex; flex-direction: column; }
+.quiver-resort {
+  display: grid; grid-template-columns: 1fr auto; align-items: center; gap: var(--space-1) var(--space-3);
+  width: 100%; min-height: 56px; padding: var(--space-3) var(--space-2);
+  background: none; border: none; border-bottom: var(--border-hairline-w) solid var(--border-hairline);
+  cursor: pointer; text-align: left; color: var(--text-primary);
+  transition: background-color var(--dur-fast) var(--ease-standard);
+}
+.quiver-resort:hover { background: var(--bg-tint); }
+.quiver-resort__name { font-family: 'Manrope', sans-serif; font-weight: 600; font-size: 1rem; min-width: 0; overflow-wrap: anywhere; }
+.quiver-resort__meta { grid-column: 1; color: var(--text-secondary); min-width: 0; }
+.quiver-resort__chev { grid-column: 2; grid-row: 1 / span 2; display: flex; color: var(--text-secondary); }
+.quiver-resort__chev svg { width: 18px; height: 18px; }
+
+/* --- Step 2: day picker -------------------------------------------------- */
+.quiver-day-list { display: flex; flex-direction: column; gap: var(--space-3); margin-top: var(--space-5); }
+
+/* --- Step 3: the call ---------------------------------------------------- */
+.quiver-card { display: flex; flex-direction: column; }
+.quiver-card .result-eyebrow { color: var(--text-secondary); margin-bottom: var(--space-2); }
+/* The ski name is the single thing this whole mode exists to say, so it gets
+   the hero treatment the trip planner reserves for a resort name. */
+.quiver-call { margin: 0 0 var(--space-2); color: var(--text-primary); }
+.quiver-call__tagline { color: var(--text-secondary); margin: 0 0 var(--space-2); }
+/* Waist width is a measurement, so it renders in the monospace "instrument"
+   face the rest of the app reserves for data — visual-system.md's rule that
+   numbers read as instrument rather than decoration. */
+.quiver-call__waist {
+  display: inline-block; padding: 2px var(--space-2); border-radius: var(--radius-sm);
+  background: var(--bg-tint); color: var(--text-primary);
+}
+.quiver-context { color: var(--text-primary); margin: 0 0 var(--space-4); }
+
+.quiver-whatis, .quiver-fallback, .quiver-aside {
+  border-top: var(--border-hairline-w) solid var(--border-hairline);
+  padding-top: var(--space-4); margin-bottom: var(--space-4);
+}
+.quiver-whatis .data-label, .quiver-fallback .data-label, .quiver-aside .data-label,
+.quiver-caveats .data-label { display: block; margin-bottom: var(--space-2); }
+/* The "if you don't own a pair" answer is the one most people actually need,
+   so it's tinted rather than left as another anonymous section. */
+.quiver-fallback {
+  background: var(--bg-tint); border: var(--border-default-w) solid var(--border-hairline);
+  border-radius: var(--radius-md); padding: var(--space-4); margin-top: var(--space-1);
+}
+.quiver-aside { border-top-style: dashed; }
+
+.quiver-caveats { margin-top: var(--space-5); }
+.quiver-caveat-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: var(--space-3); }
+.quiver-caveat-list li { display: flex; gap: var(--space-3); align-items: flex-start; }
+/* Shape plus text, never colour alone (R12) — the warning triangle is the
+   status indicator here and it carries its own outline. */
+.quiver-caveat__icon { flex: none; display: flex; color: var(--accent-warm-text); }
+.quiver-caveat__icon svg { width: 18px; height: 18px; }
+
+.quiver-limits {
+  color: var(--text-secondary); margin: var(--space-5) 0;
+  padding: var(--space-3) var(--space-4); border-left: 3px solid var(--border-hairline);
 }
 
 </style>
@@ -973,8 +1094,11 @@ ul { margin: 0; padding: 0; list-style: none; }
     <button class="nav-item" type="button" data-route="chase">
       <span aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2v20M4.9 5l14.2 14M4.9 19L19.1 5"/></svg></span><span>Chase</span>
     </button>
-    <button class="nav-item" type="button" data-route="nicoles">
-      <span aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></span><span>Nicole's List</span>
+    <button class="nav-item" type="button" data-route="quiver">
+      <span aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 21V8.6c0-2.2 1.1-3.6 2.7-3.6"/><path d="M14.8 21V8.6c0-2.2 1.1-3.6 2.7-3.6"/></svg></span><span>Quiver</span>
+    </button>
+    <button class="nav-item" type="button" data-route="nicoles" aria-label="Nicole's List">
+      <span aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></span><span>Nicole's</span>
     </button>
   </nav>
 
@@ -987,8 +1111,11 @@ ul { margin: 0; padding: 0; list-style: none; }
     <button class="nav-item" type="button" data-route="chase">
       <span aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2v20M4.9 5l14.2 14M4.9 19L19.1 5"/></svg></span><span>Chase</span>
     </button>
-    <button class="nav-item" type="button" data-route="nicoles">
-      <span aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></span><span>Nicole's List</span>
+    <button class="nav-item" type="button" data-route="quiver">
+      <span aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 21V8.6c0-2.2 1.1-3.6 2.7-3.6"/><path d="M14.8 21V8.6c0-2.2 1.1-3.6 2.7-3.6"/></svg></span><span>Quiver</span>
+    </button>
+    <button class="nav-item" type="button" data-route="nicoles" aria-label="Nicole's List">
+      <span aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></span><span>Nicole's</span>
     </button>
   </nav>
 </div>
@@ -1023,6 +1150,14 @@ const ICONS = {
   doubleDiamondGlyph: `<svg viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="5" width="11" height="11" rx="1" transform="rotate(45 8.5 10.5)"/><rect x="10" y="8" width="11" height="11" rx="1" transform="rotate(45 15.5 13.5)"/></svg>`,
   arrowRight: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>`,
   chevronDown: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>`,
+  // A pair of skis stood tips-up in the snow: two straight shafts, each with
+  // a pronounced hooked tip. An earlier version added a binding crossbar
+  // between them and read unmistakably as an italic letter H at nav size —
+  // the crossbar is what did it. Paired with a visible "Quiver" label
+  // everywhere it's used, per this file's own icon-never-carries-meaning-
+  // alone rule.
+  skis: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 21V8.6c0-2.2 1.1-3.6 2.7-3.6"/><path d="M14.8 21V8.6c0-2.2 1.1-3.6 2.7-3.6"/></svg>`,
+  search: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20.5 20.5L16.7 16.7"/></svg>`,
 };
 
 const LEVEL_GLYPH = {
@@ -2820,13 +2955,24 @@ function rankCanadaTypicalSeason(pool) {
 // /gridpoints/{office}/{x},{y}/forecastGridData returns time-stamped periods
 // including snowfallAmount (millimetres) and temperature. 7-day horizon.
 //
-// ⚠️ Unverified from this build environment — sandbox egress to
-// api.weather.gov is blocked, so the live response shape and CORS headers
-// could not be empirically confirmed here. That is exactly why the fallback
-// is the thing this module is built and tested against first.
+// Fix round, 2026-08-04 — root-caused why the live path never worked in
+// production (Director-reported, confirmed by NWS maintainers:
+// https://github.com/weather-gov/api/discussions/312): setting a custom
+// `User-Agent` in a browser `fetch()` triggers a CORS preflight, and
+// api.weather.gov's preflight response doesn't allow-list `User-Agent`, so
+// every request failed before it ever reached the API. NWS's own guidance is
+// that the descriptive-User-Agent recommendation is for server-side callers
+// only — browser code should omit it and let the browser set its own
+// default, which is exactly what this module now does. `Accept:
+// application/geo+json` is dropped too: it's CORS-safelisted so it wasn't
+// the cause, but the API returns GeoJSON by default and a bare, header-free
+// fetch removes all preflight risk rather than just the confirmed one. This
+// is now believed-correct against NWS's documented behavior, not just
+// theoretically fixed — see build-notes.md for what this environment could
+// and couldn't verify directly (sandbox egress to api.weather.gov is still
+// blocked here, so the live response shape itself remains unconfirmed).
 // ---------------------------------------------------------------------------
 
-const NOAA_USER_AGENT = "RatherBeKneeDeep/1.0 (ski recommendation app; contact: nicolenetland@gmail.com)";
 const NOAA_BASE = "https://api.weather.gov";
 const NOAA_TIMEOUT_MS = 9000; // leaves headroom under the 10s hard fallback in the UI layer
 
@@ -2843,6 +2989,94 @@ async function fetchWithTimeout(url, opts, timeoutMs) {
   }
 }
 
+// ---------------------------------------------------------------------------
+// Season-window awareness (fix round, 2026-08-04). historicalEstimate() used
+// to compute `annual / 18` regardless of the calendar, which meant an August
+// lookup reported a mid-winter weekly average (e.g. "35.6 inches" for Mt.
+// Baker) as if it were typical for right now — actively wrong, and exactly
+// the kind of thing Principle 3 (never misrepresent data) exists to catch.
+// This section makes the estimate season-aware using each resort's own
+// `season_open`/`season_close` fields (see research/resorts-schema.md), so
+// the weekly figure ramps toward zero outside the resort's own published
+// season instead of reporting a flat annual/18 all year round.
+// ---------------------------------------------------------------------------
+
+const SEASON_MONTH_INDEX = { jan: 0, feb: 1, mar: 2, apr: 3, may: 4, jun: 5, jul: 6, aug: 7, sep: 8, oct: 9, nov: 10, dec: 11 };
+const SEASON_PART_DAY = { early: 5, mid: 15, late: 25 };
+const MONTH_LENGTHS = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+
+function dayOfYear(month, day) {
+  let d = day - 1;
+  for (let m = 0; m < month; m++) d += MONTH_LENGTHS[m];
+  return d;
+}
+// Ski seasons run roughly Oct/Nov -> Apr/Jun, which straddles the Jan 1 year
+// boundary. Anchoring "day zero" at July 1 (deep off-season for every
+// Northern-hemisphere resort in this dataset) keeps every real resort's
+// open->close window as one ordinary, non-wrapping range of numbers, which
+// is what keeps the comparisons below plain arithmetic instead of modular
+// edge-case handling.
+const SEASON_ANCHOR_DOY = dayOfYear(6, 1); // July 1
+function shiftedSeasonDay(month, day) {
+  return (dayOfYear(month, day) - SEASON_ANCHOR_DOY + 365) % 365;
+}
+
+/**
+ * Parses a resort's `season_open`/`season_close` free-text field (e.g.
+ * "Mid-Nov", "Late Apr/early May", "Early Dec (snow-dependent; no
+ * snowmaking)", "Year-round on the Palmer snowfield (seasonal closures
+ * vary)") by matching the first "{Early|Mid|Late} {Month}" it contains.
+ * Returns null when the text doesn't contain one — deliberately: rather than
+ * guess at a date from prose the schema doesn't structure that way, callers
+ * fall back to *not* applying the seasonal discount for that one resort
+ * instead of inventing a boundary. (Only 6 of 71 resorts have this kind of
+ * free-text suffix/prefix; all 6 still parse cleanly because the
+ * "{part} {month}" pattern is always the leading, well-formed part of the
+ * string — see build-notes.md for the audited list.)
+ */
+function parseSeasonBoundary(text) {
+  if (!text) return null;
+  const m = /(early|mid|late)[\s-]+([a-z]{3,})/i.exec(text);
+  if (!m) return null;
+  const monthKey = m[2].slice(0, 3).toLowerCase();
+  if (!(monthKey in SEASON_MONTH_INDEX)) return null;
+  return { month: SEASON_MONTH_INDEX[monthKey], day: SEASON_PART_DAY[m[1].toLowerCase()] };
+}
+
+// ~3 weeks either side of the published open/close date — keeps the
+// shoulder months (October, May) a gradient between "typical mid-winter
+// figure" and "zero" rather than a hard flip on a single calendar day, per
+// the fix brief's explicit boundary requirement.
+const SEASON_RAMP_DAYS = 21;
+
+/**
+ * Returns 0..1: how "in typical season" `now` is for this resort. 1 = inside
+ * the resort's own published open/close window. 0 = well outside it (the
+ * case this fix exists for — e.g. August, months after the prior season
+ * closed and months before the next one opens). Ramps linearly through
+ * SEASON_RAMP_DAYS on either side of open/close. Falls back to 1 (no
+ * discount, i.e. the old always-on behavior) when either boundary can't be
+ * confidently parsed, or when the parsed window is nonsensical (close <=
+ * open) — never guesses at a date it doesn't have.
+ */
+function seasonFraction(resort, now) {
+  now = now || new Date();
+  const open = parseSeasonBoundary(resort.season_open);
+  const close = parseSeasonBoundary(resort.season_close);
+  if (!open || !close) return 1;
+  const openDay = shiftedSeasonDay(open.month, open.day);
+  const closeDay = shiftedSeasonDay(close.month, close.day);
+  if (closeDay <= openDay) return 1;
+  const nowDay = shiftedSeasonDay(now.getMonth(), now.getDate());
+  if (nowDay >= openDay && nowDay <= closeDay) return 1;
+  if (nowDay < openDay) {
+    const distance = openDay - nowDay;
+    return distance <= SEASON_RAMP_DAYS ? 1 - distance / SEASON_RAMP_DAYS : 0;
+  }
+  const distance = nowDay - closeDay;
+  return distance <= SEASON_RAMP_DAYS ? 1 - distance / SEASON_RAMP_DAYS : 0;
+}
+
 /**
  * Historical / typical-season estimate for a resort — always available,
  * works fully offline, and is what the UI falls back to whenever the live
@@ -2850,27 +3084,78 @@ async function fetchWithTimeout(url, opts, timeoutMs) {
  * label it via the `isLive: false` flag, per the brief's integrity rule.
  *
  * Distributes the resort's published average annual snowfall across a
- * "typical" 7-day window during the core season, and estimates a plausible
- * average temperature from elevation/region — clearly an estimate, never
- * presented to the user as more precise than "typical for this time of year."
+ * "typical" 7-day window during the core season, scaled by `seasonFraction`
+ * so the figure is honest about *when* "typical" is — outside the resort's
+ * own season this returns at or near zero instead of a mid-winter average,
+ * and estimates a plausible average temperature from elevation/region —
+ * clearly an estimate, never presented to the user as more precise than
+ * "typical for this time of year."
  */
-function historicalEstimate(resort) {
+function historicalEstimate(resort, now) {
   const annual = resort.avg_annual_snowfall_in;
-  // A typical season runs ~18-20 storm-active weeks; distribute unevenly so
-  // it isn't a flat, suspiciously round weekly figure.
-  const weeklyShare = annual != null ? annual / 18 : 8;
+  const factor = seasonFraction(resort, now);
+  // A typical in-season week runs ~18-20 storm-active weeks; distribute
+  // unevenly so it isn't a flat, suspiciously round weekly figure. `factor`
+  // is what keeps this honest outside the season window (see above).
+  const weeklyShare = (annual != null ? annual / 18 : 8) * factor;
   const baseElev = resort.base_elevation_ft || 6000;
   // Rough elevation-based temperature estimate (higher = colder), clamped to
-  // a plausible mid-winter range — an estimate, not a measurement.
+  // a plausible mid-winter range — an estimate, not a measurement. Not
+  // season-scaled: nothing in the UI displays this raw value to a reader
+  // (see build-notes.md), it only feeds the internal cold/wet snow-quality
+  // descriptor for resorts that already cleared the season-window check.
   const avgTempF = clamp(32 - (baseElev / 1000) * 1.1, 5, 30);
   return {
     totalInches: Math.round(weeklyShare * 10) / 10,
     avgTempF: Math.round(avgTempF),
     isLive: false,
+    seasonFraction: factor,
   };
 }
 
 function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+
+// Per-resort fraction at/above which a resort counts as "meaningfully open"
+// for season-state purposes — either fully in-season (1) or more than
+// halfway through its pre-season ramp (i.e. within ~10 days of its
+// published open date, likely already open in practice).
+const SEASON_OPEN_FRACTION = 0.5;
+// Aggregate thresholds (share of the US pool that's "meaningfully open")
+// used to classify the whole Chase-the-Snow screen's state. Tuned against
+// the real 71-resort dataset's actual open/close spread — see
+// build-notes.md for the day-by-day sweep that produced these numbers.
+const SEASON_STATE_OFF_MAX = 0.10;
+const SEASON_STATE_IN_MIN = 0.70;
+
+/**
+ * Classifies "right now" against the full US resort pool's typical season
+ * windows, independent of whether the live NOAA fetch is reachable — this is
+ * a calendar judgment, not a network one, so it runs before any forecast
+ * fetch is attempted:
+ *   - "off-season": ~everything is closed for the calendar year (e.g.
+ *     August) — Chase-the-Snow shouldn't render a ranked list at all.
+ *   - "shoulder": some resorts are open, most aren't (October, May) —
+ *     render a filtered, honestly-labeled list of just the plausibly-open
+ *     resorts.
+ *   - "in-season": the normal case — render the full ranked list as before.
+ */
+function classifySeasonState(pool, now) {
+  now = now || new Date();
+  const resorts = (pool || []).filter((r) => r.country === "USA" && r.lat != null);
+  if (!resorts.length) return { state: "in-season", openShare: 1, avgFraction: 1 };
+  let sum = 0, openCount = 0;
+  for (const r of resorts) {
+    const f = seasonFraction(r, now);
+    sum += f;
+    if (f >= SEASON_OPEN_FRACTION) openCount += 1;
+  }
+  const avgFraction = sum / resorts.length;
+  const openShare = openCount / resorts.length;
+  let state = "shoulder";
+  if (openShare <= SEASON_STATE_OFF_MAX) state = "off-season";
+  else if (openShare >= SEASON_STATE_IN_MIN) state = "in-season";
+  return { state, openShare, avgFraction };
+}
 
 /**
  * Attempts the live NOAA chain for one resort. Throws on any failure —
@@ -2881,11 +3166,14 @@ async function fetchLiveForecast(resort) {
   if (resort.lat == null || resort.lon == null) {
     throw new Error("no coordinates — forecast unavailable for this resort");
   }
-  const headers = { "User-Agent": NOAA_USER_AGENT, "Accept": "application/geo+json" };
+  // No custom headers on the browser fetch path, deliberately — see the
+  // module header comment. A bare fetch (browser sets its own User-Agent,
+  // no Accept override) avoids the CORS preflight that was silently failing
+  // every live request in production.
 
   const pointsRes = await fetchWithTimeout(
     `${NOAA_BASE}/points/${resort.lat.toFixed(4)},${resort.lon.toFixed(4)}`,
-    { headers }, NOAA_TIMEOUT_MS
+    {}, NOAA_TIMEOUT_MS
   );
   if (!pointsRes.ok) throw new Error(`NOAA /points failed: ${pointsRes.status}`);
   const points = await pointsRes.json();
@@ -2894,7 +3182,7 @@ async function fetchLiveForecast(resort) {
 
   const gridRes = await fetchWithTimeout(
     `${NOAA_BASE}/gridpoints/${gridId}/${gridX},${gridY}/forecastGridData`,
-    { headers }, NOAA_TIMEOUT_MS
+    {}, NOAA_TIMEOUT_MS
   );
   if (!gridRes.ok) throw new Error(`NOAA /gridpoints failed: ${gridRes.status}`);
   const grid = await gridRes.json();
@@ -2935,15 +3223,43 @@ async function fetchLiveForecast(resort) {
 function celsiusToF(c) { return (c * 9) / 5 + 32; }
 
 /**
+ * Best-effort classification of a fetch failure into something a human can
+ * act on, since the browser deliberately hides the real reason a cross-
+ * origin request failed (a CORS rejection and a plain network outage both
+ * surface to JS as the same opaque `TypeError: Failed to fetch` — that
+ * ambiguity is exactly what left the Director unable to tell "CORS is
+ * blocking us" from "no snow" in production). This can't recover the
+ * specific reason the browser withheld, but it does distinguish the cases
+ * we *can* tell apart (timeout vs. an HTTP error status vs. everything
+ * else) and names the CORS possibility explicitly so it's the first thing
+ * a developer checks, not a guess they have to arrive at independently.
+ */
+function classifyFetchError(err) {
+  if (err && err.name === "AbortError") return "timeout";
+  if (err && /^NOAA \/(points|gridpoints) failed: \d+/.test(err.message || "")) return "http-error";
+  if (err instanceof TypeError) return "network-or-cors";
+  return "unknown";
+}
+
+/**
  * Resolves a forecast for one resort: tries the live path, falls back to the
  * historical estimate on any failure. Always resolves (never rejects) so
  * callers can build a full ranked list even when every live call fails.
+ *
+ * Every failure is logged via console.warn with the resort id, the best
+ * guess at *why* (timeout / HTTP error / likely network-or-CORS), and the
+ * raw error message — retrievable from devtools even though the UI itself
+ * only ever shows the honest, generic "couldn't reach the live forecast"
+ * copy (per fallback.forecast.body, which deliberately doesn't name a
+ * specific technical cause to the end user).
  */
 async function resolveForecast(resort) {
   try {
     const live = await fetchLiveForecast(resort);
     return live;
   } catch (err) {
+    const reason = classifyFetchError(err);
+    console.warn(`[NOAA live forecast failed] resort=${resort.id} reason=${reason} message=${(err && err.message) || err}`);
     return { ...historicalEstimate(resort), fallbackReason: err.message };
   }
 }
@@ -3019,6 +3335,736 @@ function loadChaseForecasts(resorts, onState) {
   return { skip: fallBackNow };
 }
 
+// ---------------------------------------------------------------------------
+// Per-day forecast — added for Quiver Check.
+//
+// Everything above this line answers "how much snow over the next 7 days, in
+// total" — which is the right shape for ranking a list of resorts, and the
+// wrong shape for "what should I ride at Alta on Thursday." That question
+// needs the week broken into days, and it needs two fields the ranking path
+// never asked for: liquid-equivalent precipitation (so quiver.js can compute
+// a real snow-to-liquid ratio rather than inferring density from temperature
+// alone) and a per-day high/low.
+//
+// This is additive on purpose. The Chase-the-Snow path above is verified and
+// shipped; nothing here changes it, and the two share the same fetch chain,
+// the same timeout discipline and the same never-present-history-as-forecast
+// rule.
+// ---------------------------------------------------------------------------
+
+const QUIVER_HORIZON_DAYS = 7;
+
+// NWS gridpoint values are UTC-stamped, but "Thursday" means Thursday at the
+// mountain. `/points` hands back the grid's IANA timezone in the same
+// response we already read gridId/gridX/gridY from, so bucketing by local
+// calendar day costs one extra field and no extra request. 'en-CA' is used
+// purely because it formats as YYYY-MM-DD.
+function localDayKey(date, timeZone) {
+  try {
+    return new Intl.DateTimeFormat("en-CA", {
+      timeZone: timeZone || undefined,
+      year: "numeric", month: "2-digit", day: "2-digit",
+    }).format(date);
+  } catch (e) {
+    // An unrecognised timezone must not take the whole forecast down with
+    // it — fall back to the viewer's own local day.
+    return new Intl.DateTimeFormat("en-CA", { year: "numeric", month: "2-digit", day: "2-digit" }).format(date);
+  }
+}
+
+// ISO-8601 durations, as they actually appear in gridpoint validTime strings
+// ("PT1H", "PT6H", "P1D", "P1DT6H"). Returns hours.
+function parseIsoDurationHours(dur) {
+  const m = /^P(?:(\d+)D)?(?:T(?:(\d+)H)?(?:(\d+)M)?)?$/.exec(dur || "");
+  if (!m) return 1;
+  const days = Number(m[1] || 0), hours = Number(m[2] || 0), mins = Number(m[3] || 0);
+  const total = days * 24 + hours + mins / 60;
+  return total > 0 ? total : 1;
+}
+
+/**
+ * Walks a gridpoint value series and hands each hour of every interval to
+ * `visit(date, value, hours)`.
+ *
+ * Intervals in a gridpoint response are commonly 1h or 6h but run longer at
+ * the far end of the horizon, and they do not align to local midnight — a
+ * 6-hour block straddling midnight belongs partly to each day. Stepping
+ * hour-by-hour and letting the caller apportion is what keeps a storm from
+ * being credited entirely to whichever day its interval happened to start
+ * in, which for a chosen-day feature is the difference between "18 inches on
+ * your day" and "18 inches the day before you arrive."
+ */
+function eachForecastHour(values, visit) {
+  for (const period of values || []) {
+    const [startStr, durStr] = String(period.validTime || "").split("/");
+    const start = Date.parse(startStr);
+    if (Number.isNaN(start) || period.value == null) continue;
+    const hours = parseIsoDurationHours(durStr);
+    const steps = Math.max(1, Math.round(hours));
+    for (let h = 0; h < steps; h++) {
+      visit(new Date(start + h * 3600000), period.value, steps);
+    }
+  }
+}
+
+function emptyDay(dateKey, isLive) {
+  return { dateKey, snowIn: 0, precipIn: 0, highF: null, lowF: null, isLive, hasData: false };
+}
+
+/**
+ * Live per-day forecast for one resort. Same two-request chain as
+ * fetchLiveForecast() above, same bare header-free fetch (see this module's
+ * header for why any custom header breaks the browser path), and it throws
+ * on any failure so callers must fall back rather than receive a guess.
+ */
+async function fetchLiveDailyForecast(resort) {
+  if (resort.lat == null || resort.lon == null) {
+    throw new Error("no coordinates — forecast unavailable for this resort");
+  }
+  const pointsRes = await fetchWithTimeout(
+    `${NOAA_BASE}/points/${resort.lat.toFixed(4)},${resort.lon.toFixed(4)}`,
+    {}, NOAA_TIMEOUT_MS
+  );
+  if (!pointsRes.ok) throw new Error(`NOAA /points failed: ${pointsRes.status}`);
+  const points = await pointsRes.json();
+  const { gridId, gridX, gridY, timeZone } = points.properties || {};
+  if (!gridId || gridX == null || gridY == null) throw new Error("NOAA /points missing grid info");
+
+  const gridRes = await fetchWithTimeout(
+    `${NOAA_BASE}/gridpoints/${gridId}/${gridX},${gridY}/forecastGridData`,
+    {}, NOAA_TIMEOUT_MS
+  );
+  if (!gridRes.ok) throw new Error(`NOAA /gridpoints failed: ${gridRes.status}`);
+  const grid = await gridRes.json();
+  const props = grid.properties || {};
+
+  const days = buildDayFrame(new Date(), timeZone, true);
+  const byKey = Object.fromEntries(days.map((d) => [d.dateKey, d]));
+
+  eachForecastHour((props.snowfallAmount || {}).values, (at, value, steps) => {
+    const d = byKey[localDayKey(at, timeZone)];
+    if (d) { d.snowIn += mmToInches(value) / steps; d.hasData = true; }
+  });
+  eachForecastHour((props.quantitativePrecipitation || {}).values, (at, value, steps) => {
+    const d = byKey[localDayKey(at, timeZone)];
+    if (d) { d.precipIn += mmToInches(value) / steps; }
+  });
+  eachForecastHour((props.temperature || {}).values, (at, value) => {
+    const d = byKey[localDayKey(at, timeZone)];
+    if (!d) return;
+    const f = celsiusToF(value);
+    d.highF = d.highF == null ? f : Math.max(d.highF, f);
+    d.lowF = d.lowF == null ? f : Math.min(d.lowF, f);
+    d.hasData = true;
+  });
+
+  for (const d of days) {
+    d.snowIn = Math.round(d.snowIn * 10) / 10;
+    d.precipIn = Math.round(d.precipIn * 100) / 100;
+    if (d.highF != null) d.highF = Math.round(d.highF);
+    if (d.lowF != null) d.lowF = Math.round(d.lowF);
+  }
+
+  // A response that resolved but carried no usable values for any day is a
+  // failure, not an empty forecast — throwing sends it down the honest
+  // fallback path instead of rendering a week of confident zeroes.
+  if (!days.some((d) => d.hasData)) throw new Error("NOAA gridpoints returned no usable values");
+
+  return { days, timeZone: timeZone || null, isLive: true };
+}
+
+// The frame of days the UI offers, independent of whether any data lands in
+// them — so the day picker is the same shape on the live and fallback paths.
+function buildDayFrame(now, timeZone, isLive) {
+  const out = [];
+  for (let i = 0; i < QUIVER_HORIZON_DAYS; i++) {
+    const at = new Date(now.getTime() + i * 86400000);
+    out.push(emptyDay(localDayKey(at, timeZone), isLive));
+  }
+  return out;
+}
+
+/**
+ * Typical-season per-day fallback. Deliberately FLAT: every day in the frame
+ * gets the same figure.
+ *
+ * The aggregate path above can honestly say "a typical week here is about 20
+ * inches" because a week is the unit the annual average divides into. Split
+ * that across named days and any variation would be invented — there is no
+ * basis whatsoever for claiming Thursday is the snowy one in a normal
+ * February. A flat distribution is the only shape that doesn't fabricate a
+ * storm, and `isLive: false` carries the label the UI is required to render.
+ */
+function historicalDailyForecast(resort, now) {
+  now = now || new Date();
+  const est = historicalEstimate(resort, now);
+  const perDay = Math.round((est.totalInches / 7) * 10) / 10;
+  const days = buildDayFrame(now, null, false);
+  for (const d of days) {
+    d.snowIn = perDay;
+    // 10:1 is the textbook average and the only defensible ratio to assume
+    // when there's no measurement to divide — quiver.js's density read will
+    // land on "average-density" and its copy never claims a measured ratio
+    // on this path.
+    d.precipIn = Math.round((perDay / 10) * 100) / 100;
+    d.highF = est.avgTempF;
+    d.lowF = est.avgTempF != null ? est.avgTempF - 12 : null;
+    d.hasData = true;
+  }
+  return { days, timeZone: null, isLive: false, seasonFraction: est.seasonFraction };
+}
+
+/**
+ * Always resolves. Tries live, falls back to typical-season on any failure,
+ * and — as with resolveForecast() above — logs the classified reason so a
+ * developer can tell a CORS rejection from a genuine outage, while the UI
+ * shows only the honest generic copy.
+ *
+ * Canada resolves straight to the fallback without a request: NOAA has no
+ * non-US coverage, so attempting one would spend a 9-second timeout to learn
+ * something already known.
+ */
+async function resolveDailyForecast(resort, now) {
+  if (resort.country !== "USA" || resort.lat == null) {
+    return { ...historicalDailyForecast(resort, now), fallbackReason: "outside NOAA coverage" };
+  }
+  try {
+    return await fetchLiveDailyForecast(resort);
+  } catch (err) {
+    const reason = classifyFetchError(err);
+    console.warn(`[NOAA daily forecast failed] resort=${resort.id} reason=${reason} message=${(err && err.message) || err}`);
+    return { ...historicalDailyForecast(resort, now), fallbackReason: (err && err.message) || String(err) };
+  }
+}
+
+</script>
+<script>
+// ---------------------------------------------------------------------------
+// Quiver Check — which skis to bring, for one resort on one day.
+//
+// The third primary mode's question is different from the other two. Plan a
+// Trip asks "where should I go?"; Chase the Snow asks "where is it dumping?";
+// Quiver Check asks "I already know where and when — what do I put on my
+// feet?" So it takes a resort and a date as *given* and spends all of its
+// reasoning on the one output: a ski type.
+//
+// This module is pure — no DOM, no fetch, no clock of its own. Everything it
+// needs arrives as arguments, which is what makes verify_quiver.js able to
+// sweep the whole decision surface (every resort × a grid of synthetic
+// conditions) without a browser or a network. app-quiver.js owns all the
+// rendering; noaa.js owns all the data acquisition.
+//
+// --- The honesty boundary, stated up front --------------------------------
+// This reads a *forecast*. It cannot see the snow report. It does not know
+// the settled base depth, whether the groomers ran last night, whether the
+// wind stripped the ridge, or what got tracked out yesterday. NOAA publishes
+// none of that. Per R8, the UI says so plainly rather than implying a
+// precision the inputs don't support, and every threshold below is expressed
+// as a band with a stated "if you don't own that" fallback — because the
+// honest answer to "should I ride my 108s or my 118s?" is usually "either,
+// here's the difference."
+// ---------------------------------------------------------------------------
+
+// --- The taxonomy ----------------------------------------------------------
+// Eight calls. Waist widths are the real industry bands, not invented ones:
+// a "powder ski" has meant 110mm+ underfoot for about fifteen years and a
+// frontside carver has meant sub-85 for longer than that. `rank` orders them
+// by width so the copy layer can say "one step wider than" without a lookup
+// table of its own. `rock-skis` and `bumps` sit outside the width ladder
+// (rank null) because they're chosen for construction, not float.
+const SKI_CALLS = {
+  "rock-skis": {
+    id: "rock-skis",
+    label: "Rock Skis",
+    tagline: "The beaters.",
+    waistLabel: "Whatever you won't cry over",
+    plain: "Your oldest pair — the ones already scarred underfoot. Thin cover, exposed rock and spring debris all do real base damage, and this is the day to spend a ski you've already written off.",
+    rank: null,
+    ifYouDont: "No beaters? Ride your narrowest pair and stay on the groomed runs — and get the bases checked afterwards either way.",
+  },
+  "skinny": {
+    id: "skinny",
+    label: "Skinny Skis",
+    tagline: "Frontside carvers.",
+    waistLabel: "Under 85mm underfoot",
+    plain: "A narrow ski with a real edge angle. On firm snow it gets from edge to edge fast and holds a turn instead of skidding — which is the whole game on a groomer day.",
+    rank: 1,
+    ifYouDont: "If your narrowest is a 90-something, that's fine — just take the first hour to let the edges warm up before you open it up.",
+  },
+  "bumps": {
+    id: "bumps",
+    label: "Bump Sticks",
+    tagline: "Narrow, soft, quick.",
+    waistLabel: "65–80mm underfoot, soft flex",
+    plain: "A skinny, forgiving ski that turns in the length of a mogul trough. Width is the enemy here — a wide ski gets hung up on the tops of the bumps instead of dropping into the line.",
+    rank: 0,
+    ifYouDont: "Dedicated bump skis are a luxury. Anything under about 90mm underfoot will do the job — the flex matters more than the number.",
+  },
+  "daily": {
+    id: "daily",
+    label: "The Daily Driver",
+    tagline: "One ski, most days.",
+    waistLabel: "85–100mm underfoot",
+    plain: "The all-mountain middle. Wide enough to handle a few inches of soft snow, narrow enough to still carve when you find yourself back on the corduroy.",
+    rank: 2,
+    ifYouDont: "This is the one ski almost everybody owns. If you're choosing between a narrower and a wider pair today, take the wider one.",
+  },
+  "midfat": {
+    id: "midfat",
+    label: "Mid-Fats",
+    tagline: "Float without the boat.",
+    waistLabel: "100–112mm underfoot",
+    plain: "Enough surface area to stay up in fresh snow, still light enough on edge to be worth riding once the run gets tracked. The most useful ski in most people's quiver on a storm day.",
+    rank: 3,
+    ifYouDont: "Your daily driver will get down it — you'll just work harder and sit further back. Pick lines with a bit more pitch to keep your speed up.",
+  },
+  "fatties": {
+    id: "fatties",
+    label: "The Fatties",
+    tagline: "Actual powder skis.",
+    waistLabel: "112–120mm underfoot",
+    plain: "Genuine float. On a real storm day these keep your tips up and your legs fresh — the width does the work your quads would otherwise be doing.",
+    rank: 4,
+    ifYouDont: "A 100-something still works — stay on steeper pitches where gravity does the floating for you, and don't be the first one into the flats.",
+  },
+  "pow-boats": {
+    id: "pow-boats",
+    label: "Pow Boats",
+    tagline: "The silly ones.",
+    waistLabel: "120mm+ underfoot",
+    plain: "The pair that looks absurd on the rack and gets ridden four days a year. This is one of those four days.",
+    rank: 5,
+    ifYouDont: "Almost nobody owns these. Take your widest pair, mount up, and pick the steepest thing you're comfortable on.",
+  },
+  "slush": {
+    id: "slush",
+    label: "Slush Puppies",
+    tagline: "Spring beaters, but fun.",
+    waistLabel: "95–110mm, detuned",
+    plain: "Soft spring snow is heavy and grabby, and a wider ski planes over it instead of ploughing through. Detuning the tip and tail edges keeps them from catching in the wet stuff.",
+    rank: 3,
+    ifYouDont: "Anything mid-width is fine. The real spring advice is timing, not equipment — corn skis best from mid-morning until it turns to mashed potatoes.",
+  },
+};
+
+// Not a primary call — an aside, because the park is a choice you make on top
+// of the conditions rather than instead of them.
+const PARK_ASIDE = {
+  label: "Park Twinnies",
+  text: "If you're spending the day in the park, take the twin-tips instead — soft snow means the landings are forgiving today.",
+};
+
+// --- Snow density ----------------------------------------------------------
+// Snow-to-liquid ratio is the real, measurable thing behind every "is it
+// blower or is it cement" argument in a lift line, and both halves of it come
+// back in the same NOAA gridpoint response (`snowfallAmount` and
+// `quantitativePrecipitation`). 10:1 is the textbook average; interior
+// continental snowpacks routinely run 15–20:1, and maritime Cascade and
+// Sierra storms run 6–9:1. Using the ratio rather than temperature alone
+// matters because it captures the thing temperature only proxies for.
+//
+// Counter-intuitively for anyone who hasn't skied both, LIGHT snow demands
+// MORE float, not less: at 20:1 a foot of new snow holds a fraction of the
+// water a foot at 8:1 does, so it stays unconsolidated and unsupportive and
+// you sink straight through it. Dense maritime snow packs down and holds you
+// up. That's why `factor` runs above 1 for light snow and below 1 for heavy.
+const DENSITY = {
+  blower: { key: "blower", factor: 1.35, word: "cold and dry", long: "Very light, dry snow — it won't support you, so you need surface area." },
+  light: { key: "light", factor: 1.15, word: "light", long: "Light snow that'll stay soft rather than setting up." },
+  medium: { key: "medium", factor: 1.0, word: "average-density", long: "Ordinary snow — about ten inches of it to an inch of water." },
+  heavy: { key: "heavy", factor: 0.85, word: "dense", long: "Dense snow. It packs down, so it skis shallower than it measures." },
+  wet: { key: "wet", factor: 0.7, word: "wet and heavy", long: "Wet, heavy snow. It sets up fast and takes real effort to turn in." },
+};
+
+function densityFromRatio(slr) {
+  if (slr >= 15) return DENSITY.blower;
+  if (slr >= 12) return DENSITY.light;
+  if (slr >= 9) return DENSITY.medium;
+  if (slr >= 6) return DENSITY.heavy;
+  return DENSITY.wet;
+}
+
+// Temperature fallback, used only when there's no usable liquid-equivalent
+// figure to divide by (a dry day, or a gridpoint response missing QPF).
+// Deliberately coarser than the ratio path, and the UI never claims the
+// ratio when it came from here.
+function densityFromTemp(tempF) {
+  if (tempF == null) return DENSITY.medium;
+  if (tempF < 10) return DENSITY.blower;
+  if (tempF < 20) return DENSITY.light;
+  if (tempF < 28) return DENSITY.medium;
+  if (tempF < 34) return DENSITY.heavy;
+  return DENSITY.wet;
+}
+
+// --- Terrain character -----------------------------------------------------
+// The same eight inches is a different ski at different mountains. Somewhere
+// with steeps, trees and a deep-powder reputation holds soft snow in places
+// you can actually use it, and rewards float. A low-angle groomer hill
+// pushes new snow around into piles by 10am and never asks anything of a
+// wide ski — and a 300-foot Midwest day-trip hill (which this dataset
+// deliberately includes, per the `scale` field) never does, at any depth.
+//
+// Bounded to ±25% on purpose: terrain modulates the call, it never drives
+// it. Twenty inches is a powder day at Buck Hill too.
+function quiverTerrainFactor(resort) {
+  const tags = resort.best_for_tags || [];
+  const softSnowTags = ["deep-powder", "steeps", "tree-skiing", "big-vert", "backcountry-access"];
+  const hits = softSnowTags.filter((t) => tags.includes(t)).length;
+  const advPct = resort.terrain_pct ? resort.terrain_pct.advanced_expert : null;
+
+  let f = 1;
+  if (hits >= 3) f += 0.12;
+  else if (hits >= 1) f += 0.06;
+
+  // terrain_pct is null for 17 of 71 resorts (requirements T5 — documented
+  // permanent partial coverage, not a gap to close). Absent, this term
+  // simply doesn't contribute, rather than defaulting to a guess.
+  if (advPct != null) {
+    if (advPct >= 45) f += 0.06;
+    else if (advPct <= 15) f -= 0.1;
+  }
+  if (tags.includes("long-groomers") && hits === 0) f -= 0.08;
+  if (resort.scale === "day-trip") f -= 0.12;
+  return clamp(f, 0.75, 1.25);
+}
+
+// --- Season phase ----------------------------------------------------------
+// Reuses noaa.js's already-audited free-text season parser rather than a
+// second, differently-wrong one. Returns null when the resort's published
+// window can't be confidently parsed — callers then skip the early-season
+// and spring branches for that resort instead of guessing at a date.
+function quiverSeasonPhase(resort, now) {
+  const open = parseSeasonBoundary(resort.season_open);
+  const close = parseSeasonBoundary(resort.season_close);
+  if (!open || !close) return null;
+  const openDay = shiftedSeasonDay(open.month, open.day);
+  const closeDay = shiftedSeasonDay(close.month, close.day);
+  if (closeDay <= openDay) return null;
+  const nowDay = shiftedSeasonDay(now.getMonth(), now.getDate());
+  if (nowDay < openDay || nowDay > closeDay) return "closed";
+  const through = (nowDay - openDay) / (closeDay - openDay);
+  if (through <= 0.14) return "early";
+  if (through >= 0.72) return "spring";
+  return "mid";
+}
+
+// ---------------------------------------------------------------------------
+// Conditions assessment
+//
+// `day` and `priorDays` are the per-day shape noaa.js produces:
+//   { dateKey, snowIn, precipIn, highF, lowF, isLive }
+// `priorDays` is in chronological order and may be SHORTER than three — the
+// forecast horizon starts today, so for today or tomorrow there simply is no
+// lead-in data. `leadDaysObserved` reports that honestly rather than letting
+// a missing lead-in read as a dry one, and the UI surfaces it.
+// ---------------------------------------------------------------------------
+function assessQuiverConditions(resort, day, priorDays, now) {
+  priorDays = priorDays || [];
+  const lead = priorDays.slice(-2); // the 48h ahead of the chosen day
+  const leadSnow = lead.reduce((s, d) => s + (d.snowIn || 0), 0);
+  const newSnow = day.snowIn || 0;
+  const stormTotal = Math.round((newSnow + leadSnow) * 10) / 10;
+
+  const precipTotal = (day.precipIn || 0) + lead.reduce((s, d) => s + (d.precipIn || 0), 0);
+  // Only trust the ratio when there's enough of both sides of it to divide
+  // meaningfully — a trace of each produces a wild, meaningless number — and
+  // only on the live path.
+  //
+  // That second condition is load-bearing and was added after
+  // verify_quiver_visual.js caught the alternative in the act: the
+  // typical-season fallback derives its liquid figure by ASSUMING a textbook
+  // 10:1, so dividing snow by liquid there returns exactly 10:1 every time
+  // and the copy layer would then present that assumption back to the reader
+  // as "the forecast works out to about 10:1 snow-to-water" — a measurement
+  // the app never made, on a path that has no forecast at all. Withholding
+  // it drops the fallback onto the coarser temperature read, which is what
+  // it actually knows. R8: never present derived history as measurement.
+  const slr = (day.isLive && stormTotal >= 1 && precipTotal >= 0.1) ? stormTotal / precipTotal : null;
+  const density = slr != null ? densityFromRatio(slr) : densityFromTemp(day.highF);
+
+  const terrain = quiverTerrainFactor(resort);
+  const floatScore = Math.round(stormTotal * density.factor * terrain * 10) / 10;
+
+  // A dry streak we can actually see: consecutive forecast days before the
+  // chosen one with essentially nothing falling. Capped by what the horizon
+  // covers, which is exactly why `leadDaysObserved` travels alongside it.
+  let dryStreak = 0;
+  for (let i = priorDays.length - 1; i >= 0; i--) {
+    if ((priorDays[i].snowIn || 0) < 0.5) dryStreak += 1;
+    else break;
+  }
+  if (newSnow < 0.5) dryStreak += 0; // the chosen day's own dryness is `newSnow`, kept separate
+
+  // A storm visible earlier in the window that has since stopped — the
+  // precondition for moguls forming, which need snow plus a few days of
+  // traffic to build up.
+  const priorStorm = priorDays.reduce((max, d) => Math.max(max, d.snowIn || 0), 0);
+
+  const phase = quiverSeasonPhase(resort, now);
+  const baseElev = resort.base_elevation_ft;
+  // Rain, not snow, at the base. Two independent signals have to agree: it's
+  // warm, and precipitation is actually falling as something other than snow
+  // (measurable liquid, negligible accumulation).
+  const rainRisk = day.highF != null && day.highF >= 36 && (day.precipIn || 0) >= 0.1 && newSnow < 1;
+
+  return {
+    resort,
+    dateKey: day.dateKey,
+    isLive: !!day.isLive,
+    newSnow: Math.round(newSnow * 10) / 10,
+    stormTotal,
+    leadDaysObserved: lead.length,
+    slr: slr != null ? Math.round(slr * 10) / 10 : null,
+    density,
+    terrainFactor: terrain,
+    floatScore,
+    dryStreak,
+    priorStorm: Math.round(priorStorm * 10) / 10,
+    highF: day.highF,
+    lowF: day.lowF,
+    phase,
+    baseElev,
+    rainRisk,
+  };
+}
+
+// --- Float thresholds ------------------------------------------------------
+// floatScore is inches of new snow, scaled by density and by how much the
+// mountain rewards float. The bands are the widths people actually reach
+// for at those depths; they're deliberately generous at the bottom (two
+// inches is not a powder day, whatever the marketing says) and conservative
+// at the top (a 120mm ski is a genuinely bad choice on anything less than a
+// proper storm).
+// Calibrated against the multiplier, not against raw inches — an early
+// version used raw-inch thresholds (18/12/6/2) and then multiplied the input
+// by up to 1.6, which pushed a 12-inch Alta day onto a 120mm ski. Twelve
+// inches of Utah blower is a 115 day; boats come out at eighteen and up.
+// These bands are set so that, at a deep-snow destination in light snow (the
+// combination that produces the largest multiplier), the call lands where
+// the raw depth says it should:
+//     ~6-8"  -> mid-fats      ~8-14" -> fatties      ~18"+ -> boats
+const FLOAT_BANDS = [
+  { min: 24, call: "pow-boats" },
+  { min: 15, call: "fatties" },
+  { min: 7, call: "midfat" },
+  { min: 2, call: "daily" },
+];
+// The float score at which a day stops being about the surface and starts
+// being about depth. Kept as one named constant because the override
+// branches (rock skis, spring slush) and the caveats both need to agree with
+// the ladder about where that line is.
+const POWDER_DAY_FLOAT = 7;
+
+function floatBandCall(floatScore) {
+  for (const band of FLOAT_BANDS) if (floatScore >= band.min) return band.call;
+  return null;
+}
+
+// ---------------------------------------------------------------------------
+// The call itself.
+//
+// Returns { call, conditions, reasons[], aside, caveats[], headline }.
+// `reasons` are full sentences built from the specific numbers that drove
+// the decision — never a bare score, per R9, and deliberately varied by the
+// actual inputs rather than bucketed into a handful of shared strings
+// (the D5 debt already logged against Chase the Snow's reason copy).
+// ---------------------------------------------------------------------------
+function quiverCheck(resort, day, priorDays, now) {
+  now = now || new Date();
+  const c = assessQuiverConditions(resort, day, priorDays, now);
+  const reasons = [];
+  const caveats = [];
+  let callId = null;
+
+  const floatCall = floatBandCall(c.floatScore);
+  const isPowderDay = c.floatScore >= POWDER_DAY_FLOAT;
+
+  // --- Hard overrides, in priority order -----------------------------------
+  // Each of these describes a day where the surface, not the depth, decides
+  // what you ride. They're checked before the float ladder because on these
+  // days float is the wrong question.
+  if (c.rainRisk && !isPowderDay) {
+    callId = "rock-skis";
+    reasons.push(`It's forecast to hit ${Math.round(c.highF)}°F with ${c.newSnow < 0.5 ? "precipitation" : "mixed precipitation"} in it — at the ${fmtElev(c.baseElev)} base that's rain, not snow.`);
+    reasons.push("Wet snow over a firm surface strips down to whatever's underneath, and that's where bases get hurt.");
+  } else if (c.phase === "early" && !isPowderDay) {
+    callId = "rock-skis";
+    reasons.push(`${resort.name} typically opens ${lowerFirst(resort.season_open)}, so this is early-season cover — thin, with more underneath it than under it.`);
+    reasons.push(c.newSnow >= 1
+      ? `${fmtInches(c.newSnow)} of new snow isn't enough to bury early-season hazards, it just hides them.`
+      : "Nothing new in the forecast to build on what's there.");
+  } else if (c.phase === "spring" && c.highF != null && c.highF >= 38 && !isPowderDay) {
+    callId = "slush";
+    reasons.push(`${Math.round(c.highF)}°F and late in ${resort.name}'s season — that's a corn cycle, not a powder day.`);
+    reasons.push("The snow refreezes overnight and softens through the morning, so it skis firm early and heavy by mid-afternoon.");
+  } else if (floatCall) {
+    // --- The float ladder --------------------------------------------------
+    callId = floatCall;
+    reasons.push(stormSentence(c));
+    reasons.push(densitySentence(c));
+    const t = terrainSentence(c);
+    if (t) reasons.push(t);
+  } else {
+    // --- Firm day ----------------------------------------------------------
+    // Nothing meaningful falling. The question becomes what the surface has
+    // had time to turn into.
+    const advPct = resort.terrain_pct ? resort.terrain_pct.advanced_expert : null;
+    const hasBumpTerrain = (resort.best_for_tags || []).includes("steeps") || (advPct != null && advPct >= 35);
+    // Moguls are built by traffic, not by weather, so no forecast can observe
+    // them — which is exactly why an earlier, stricter version of this rule
+    // (a visible storm PLUS three visible dry days) was effectively dead
+    // code: it could only ever fire on days five through seven of the
+    // window. What a forecast CAN establish is the precondition, and the
+    // precondition is most of the answer: a mountain with enough steep
+    // ungroomed terrain, in the middle of its season, that hasn't been reset
+    // by new snow for a couple of days. Groomers get reset every night;
+    // ungroomed runs don't, and they bump up.
+    //
+    // The dry stretch has to be one we can actually see (`dryStreak` is
+    // counted from real forecast days, never assumed), the inference is
+    // stated as an inference in the caveats, and early season is excluded
+    // because there isn't enough base to build a mogul out of yet.
+    const bumpsLikely = hasBumpTerrain && (c.phase === "mid" || c.phase === "spring") && c.dryStreak >= 2;
+
+    if (bumpsLikely) {
+      callId = "bumps";
+      reasons.push(c.priorStorm >= 2
+        ? `${fmtInches(c.priorStorm)} fell earlier in the week and nothing since — ${pluralize(c.dryStreak, "day")} of traffic on that is how moguls get built.`
+        : `${pluralize(c.dryStreak, "day")} without new snow before yours. The groomed runs get reset every night; the ungroomed ones don't, and they bump up.`);
+      reasons.push(`${resort.name} has the pitch for it${advPct != null ? ` — ${advPct}% of the terrain is rated advanced or expert` : ""}, and steep ungroomed terrain is where moguls form.`);
+      caveats.push("Nobody can see moguls in a weather forecast — this is an inference from a dry stretch plus the terrain, not a snow report. If you'd rather stay on the groomed runs, take something narrower with a sharp edge instead.");
+    } else {
+      callId = "skinny";
+      reasons.push(c.stormTotal < 0.5
+        ? (c.isLive ? "Nothing in the forecast — this is a groomer day." : "No meaningful snow typical for this time of year — plan on a groomer day.")
+        : `Only ${fmtInches(c.stormTotal)} ${c.isLive ? "in the forecast" : "typical for this stretch of the season"}, which is a dusting on a firm surface rather than something to float in.`);
+      reasons.push(c.highF != null && c.highF < 20
+        ? `At ${Math.round(c.highF)}°F that surface will stay firm and fast all day, and a sharp edge is what holds on it.`
+        : "On firm snow, edge grip beats surface area — a narrower ski gets from edge to edge faster.");
+      if (hasBumpTerrain && c.leadDaysObserved < 2) {
+        caveats.push("If it snowed here a few days ago, the ungroomed runs may have bumped up — the forecast can't see backwards, so throw the bump skis in the car if you have them.");
+      }
+    }
+  }
+
+  // --- Caveats — things that don't change the call but change the day ------
+  if (!c.isLive) {
+    caveats.push("This is typical snowfall for this time of year, not a live forecast — treat it as a starting point and check the resort's own snow report before you pack.");
+  }
+  if (c.leadDaysObserved < 2 && c.isLive) {
+    caveats.push(`The forecast only runs forward, so this counts ${c.leadDaysObserved === 0 ? "no" : pluralize(c.leadDaysObserved, "day")} of snow before your day. If there's already fresh snow on the ground, size up.`);
+  }
+  if (isPowderDay && (resort.crowd_level === "brutal" || resort.crowd_level === "high")) {
+    caveats.push(`${resort.name} gets crowded on a powder day — plan on it being tracked out by mid-morning, and pick your first lap accordingly.`);
+  }
+  if (c.phase === "early" && isPowderDay) {
+    caveats.push(`It's early in ${resort.name}'s season, so the base underneath all that is still thin. Great day, wrong day to straight-line something unfamiliar.`);
+  }
+  if ((c.density.key === "wet" || c.density.key === "heavy") && isPowderDay) {
+    caveats.push("Heavy snow is hard work. A stiffer ski will hold a line through it better than a soft one of the same width.");
+  }
+
+  const aside = shouldSuggestPark(resort, c) ? PARK_ASIDE : null;
+
+  return {
+    call: SKI_CALLS[callId],
+    conditions: c,
+    reasons,
+    caveats,
+    aside,
+  };
+}
+
+function shouldSuggestPark(resort, c) {
+  if (!(resort.best_for_tags || []).includes("terrain-park")) return false;
+  return c.floatScore >= 2 || (c.phase === "spring" && c.highF != null && c.highF >= 38);
+}
+
+// --- Reason sentence builders ---------------------------------------------
+// Kept as separate functions so each one can vary on its own inputs. The
+// alternative — a lookup table of pre-written strings keyed by band — is
+// exactly what produced Chase the Snow's coarse, repetitive reason copy
+// (requirements D5), where several differently-scoring resorts render
+// identical text and the ranking's gradation stops being legible.
+// The word "forecast" is not available on the typical-season path — there is
+// no forecast there, only an annual average divided down. An earlier version
+// used the live phrasing on both paths and produced sentences like "4"
+// forecast on your day" underneath a badge reading "Not a live forecast",
+// which is precisely the contradiction R8 exists to prevent. The two paths
+// therefore get genuinely different sentences, not the same sentence with a
+// disclaimer bolted on.
+function stormSentence(c) {
+  if (!c.isLive) {
+    return c.stormTotal >= 1
+      ? `A typical week at ${c.resort.name} at this point in the season brings around ${fmtInches(c.stormTotal * (7 / Math.max(1, c.leadDaysObserved + 1)))} of snow — roughly ${fmtInches(c.newSnow)} on any given day.`
+      : `${c.resort.name} doesn't typically get meaningful snow at this point in the season.`;
+  }
+  if (c.newSnow >= 0.5 && c.stormTotal > c.newSnow + 0.4) {
+    return `${fmtInches(c.newSnow)} forecast on your day, on top of ${fmtInches(Math.round((c.stormTotal - c.newSnow) * 10) / 10)} in the ${pluralize(c.leadDaysObserved, "day")} before it — ${fmtInches(c.stormTotal)} of new snow in total.`;
+  }
+  if (c.newSnow >= 0.5) {
+    return `${fmtInches(c.newSnow)} of new snow forecast for your day.`;
+  }
+  return `${fmtInches(c.stormTotal)} fell in the ${pluralize(c.leadDaysObserved, "day")} before your day, and it's forecast to be clear once you're there.`;
+}
+
+function densitySentence(c) {
+  if (c.slr != null) {
+    return `The forecast works out to about ${c.slr}:1 snow-to-water — ${c.density.word}. ${c.density.long}`;
+  }
+  if (c.highF != null && !c.isLive) {
+    return `Temperatures here typically sit around ${Math.round(c.highF)}°F at this time of year, which usually means ${c.density.word} snow. ${c.density.long}`;
+  }
+  if (c.highF != null) {
+    return `Around ${Math.round(c.highF)}°F, which usually means ${c.density.word} snow. ${c.density.long}`;
+  }
+  return c.density.long;
+}
+
+function terrainSentence(c) {
+  const r = c.resort;
+  const tags = r.best_for_tags || [];
+  const advPct = r.terrain_pct ? r.terrain_pct.advanced_expert : null;
+  if (c.terrainFactor >= 1.1) {
+    const named = ["deep-powder", "steeps", "tree-skiing"].filter((t) => tags.includes(t));
+    const phrase = named.length
+      ? named.map((t) => ({ "deep-powder": "deep snow", "steeps": "steep terrain", "tree-skiing": "tree skiing" }[t])).join(" and ")
+      : "terrain that holds soft snow";
+    return `${r.name} is known for ${phrase}, which is terrain that rewards float rather than punishing it.`;
+  }
+  if (r.scale === "day-trip") {
+    return `${r.name} is a day-trip hill${r.vertical_drop_ft != null ? ` with ${qNum(r.vertical_drop_ft)} feet of vertical` : ""} — fun in fresh snow, but not somewhere you need a powder ski to get down.`;
+  }
+  if (c.terrainFactor <= 0.92) {
+    return advPct != null
+      ? `${r.name} skis mostly groomed — ${advPct}% of the terrain is rated advanced or expert — so the new snow gets pushed around rather than staying deep.`
+      : `${r.name} skis mostly groomed, so the new snow gets pushed around rather than staying deep.`;
+  }
+  return null;
+}
+
+// --- Small formatters ------------------------------------------------------
+// fmtInches keeps a half-inch of precision below an inch and rounds to whole
+// numbers above it, because "7.4 inches" implies a forecast accuracy that
+// doesn't exist.
+function fmtInches(n) {
+  if (n == null) return "—";
+  if (n < 1) return `${Math.round(n * 10) / 10}"`;
+  return `${Math.round(n)}"`;
+}
+function fmtElev(ft) {
+  return ft != null ? `${qNum(ft)}-foot` : "base";
+}
+// A local thousands-separator rather than app.js's fmtNum: this module is
+// deliberately free of any dependency on the UI layer so verify_quiver.js can
+// load it with only data.js, engine.js and noaa.js and still exercise every
+// sentence the model can produce.
+function qNum(n) { return n == null ? null : n.toLocaleString("en-US"); }
+function lowerFirst(s) {
+  return s ? s.charAt(0).toLowerCase() + s.slice(1) : s;
+}
+
 </script>
 <script>
 // ---------------------------------------------------------------------------
@@ -3043,6 +4089,12 @@ const state = {
   chaseCache: null,         // { forecasts, anyFallback } once resolved
   chaseLoadHandle: null,    // { skip() } while a forecast fetch is in flight
   nicolesFilters: { region: "all", sort: "region" },
+  // Quiver Check: a two-step picker (resort -> day) plus its own forecast
+  // cache, kept separate from chaseCache because the two modes want
+  // different shapes of the same data — Chase needs one 7-day total for
+  // every US resort, Quiver needs seven per-day rows for exactly one.
+  quiver: { step: "resort", resortId: null, dateKey: null, search: "" },
+  quiverForecast: null,     // { resortId, status, days, timeZone, isLive }
 };
 
 const COST_LABEL = { "$": "budget-conscious", "$$": "mid-range", "$$$": "splurge-friendly", "$$$$": "money's no object" };
@@ -3114,6 +4166,18 @@ function navigate(route, params) {
   const previousRoute = state.route;
   state.route = route;
   state.routeParams = params || {};
+  if (route === "quiver") {
+    // Same resume rule the quiz uses below: bouncing out to Chase or
+    // Nicole's List and back must not silently throw away a mountain the
+    // user already picked, but arriving from the splash should start clean.
+    const cameFromModeSwitch = previousRoute === "chase" || previousRoute === "nicoles" || previousRoute === "plan";
+    if (!cameFromModeSwitch) {
+      state.quiver = { step: "resort", resortId: null, dateKey: null, search: "" };
+      state.quiverForecast = null;
+    } else if (state.quiver.step === "result" && !state.quiver.dateKey) {
+      state.quiver.step = state.quiver.resortId ? "day" : "resort";
+    }
+  }
   if (route === "plan") {
     // Only reset to the first step on a genuinely fresh entry (from the
     // splash screen, a completed result, etc). Jumping Chase/Nicole's List
@@ -3160,6 +4224,13 @@ function syncHash() {
     history.replaceState(null, "", "#result=" + state.routeParams.shareToken);
   } else if (state.route === "plan") {
     syncQuizHash();
+  } else if (state.route === "quiver") {
+    // renderQuiverResult() writes #quiver= itself once it knows the resort
+    // and day; the two picker steps have nothing shareable yet, so the URL
+    // is cleared rather than left pointing at a stale call.
+    if (state.quiver.step !== "result" && location.hash) {
+      history.replaceState(null, "", location.pathname + location.search);
+    }
   } else {
     // Keep the URL tidy for other routes; result links and in-progress quiz
     // state are the only shareable, resumable states.
@@ -3168,6 +4239,10 @@ function syncHash() {
 }
 
 let resumedQuizFromLink = false;
+// Set by parseInitialRoute() when the page loads on a #quiver= share link, so
+// the boot sequence in shell.html can kick off the forecast fetch the shared
+// call needs before anything renders.
+let quiverPendingPrefetch = null;
 
 function parseInitialRoute() {
   const hash = location.hash || "";
@@ -3181,6 +4256,22 @@ function parseInitialRoute() {
         return;
       }
     } catch (e) { /* fall through to splash on any malformed share link */ }
+  }
+  if (hash.startsWith("#quiver=")) {
+    const token = hash.slice("#quiver=".length);
+    try {
+      const payload = JSON.parse(b64urlDecode(token));
+      if (payload && payload.rid && RESORTS_BY_ID[payload.rid] && typeof payload.d === "string") {
+        state.route = "quiver";
+        state.quiver = { step: "result", resortId: payload.rid, dateKey: payload.d, search: "" };
+        // Deliberately NOT restoring a frozen recommendation from the token
+        // (unlike #result=, which does exactly that). A ski call is only
+        // true while the forecast behind it is, so a shared link re-reads
+        // the forecast on arrival — see app-quiver.js's sharing section.
+        quiverPendingPrefetch = payload.rid;
+        return;
+      }
+    } catch (e) { /* fall through to splash on any malformed quiver link */ }
   }
   if (hash.startsWith("#quiz=")) {
     const token = hash.slice("#quiz=".length);
@@ -3209,7 +4300,7 @@ const mainEl = () => document.getElementById("app-main");
 
 function render() {
   const main = mainEl();
-  const chromeRoutes = ["plan", "chase", "nicoles"];
+  const chromeRoutes = ["plan", "chase", "quiver", "nicoles"];
   const showNav = chromeRoutes.includes(state.route);
   document.getElementById("bottom-nav").hidden = !showNav;
   document.getElementById("top-nav").hidden = !showNav;
@@ -3219,6 +4310,7 @@ function render() {
   if (state.route === "splash") return renderSplash(main);
   if (state.route === "plan") return renderPlan(main);
   if (state.route === "chase") return renderChase(main);
+  if (state.route === "quiver") return renderQuiver(main);
   if (state.route === "nicoles") return renderNicolesList(main);
   if (state.route === "result") return renderResult(main);
   renderSplash(main);
@@ -3255,6 +4347,11 @@ function renderSplash(main) {
             <span class="mode-card__label">Chase the snow</span>
             <span class="mode-card__support body-md">See where it's dumping this week.</span>
           </button>
+          <button class="mode-card" id="mode-quiver" type="button">
+            <span class="mode-card__icon">${ICONS.skis}</span>
+            <span class="mode-card__label">Quiver Check</span>
+            <span class="mode-card__support body-md">Already know where you're going? Find out which skis to bring.</span>
+          </button>
         </div>
         <p class="splash-footer">
           <button class="btn-text" id="mode-nicoles" type="button">See everywhere Nicole's actually skied</button>
@@ -3263,6 +4360,7 @@ function renderSplash(main) {
     </div>`;
   document.getElementById("mode-plan").addEventListener("click", () => navigate("plan"));
   document.getElementById("mode-chase").addEventListener("click", () => navigate("chase"));
+  document.getElementById("mode-quiver").addEventListener("click", () => navigate("quiver"));
   document.getElementById("mode-nicoles").addEventListener("click", () => navigate("nicoles"));
   document.title = "Find your next ski trip";
   setOgMeta({
@@ -4166,25 +5264,39 @@ function showToast(text) {
 // ---------------------------------------------------------------------------
 
 function renderChase(main) {
+  // Season classification runs before anything else is decided (build-notes.md
+  // "off-season" fix, 2026-08-04) — it's a calendar judgment, not a network
+  // one, so it doesn't wait on (or depend on) the NOAA fetch. When nothing in
+  // the pool is plausibly open, the region/beginner controls have nothing to
+  // act on — showing them anyway would invite tweaking filters on a ranking
+  // that isn't going to appear, so they're omitted rather than disabled.
+  const now = new Date();
+  const seasonInfo = classifySeasonState(RESORTS, now);
+  state.chaseSeasonInfo = seasonInfo;
+  const showControls = seasonInfo.state !== "off-season";
+
   main.innerHTML = `
     <div class="page-column">
       <h1 class="display-h1">Where's it dumping?</h1>
-      <div class="chase-controls" style="margin-top:var(--space-4)">
-        <div id="chase-origin-control"></div>
-        <label class="tap-chip" style="width:auto;min-width:220px" id="chase-beginner-toggle-wrap">
-          <span class="tap-chip__indicator tap-chip__indicator--check" id="chase-beginner-indicator">${ICONS.check}</span>
-          <span class="tap-chip__body">
-            <span class="tap-chip__label">Include beginner-friendly options</span>
-            <span class="tap-chip__sublabel">Off by default — this list leans toward serious terrain.</span>
-          </span>
-        </label>
-      </div>
+      ${showControls ? `
+        <div class="chase-controls" style="margin-top:var(--space-4)">
+          <div id="chase-origin-control"></div>
+          <label class="tap-chip" style="width:auto;min-width:220px" id="chase-beginner-toggle-wrap">
+            <span class="tap-chip__indicator tap-chip__indicator--check" id="chase-beginner-indicator">${ICONS.check}</span>
+            <span class="tap-chip__body">
+              <span class="tap-chip__label">Include beginner-friendly options</span>
+              <span class="tap-chip__sublabel">Off by default — this list leans toward serious terrain.</span>
+            </span>
+          </label>
+        </div>` : ""}
       <div id="chase-freshness"></div>
       <div id="chase-body"></div>
     </div>`;
 
-  renderChaseOriginControl();
-  wireBeginnerToggle();
+  if (showControls) {
+    renderChaseOriginControl();
+    wireBeginnerToggle();
+  }
   document.title = "Where it's dumping this week";
   setOgMeta({
     title: "Where it's dumping this week",
@@ -4231,10 +5343,35 @@ function wireBeginnerToggle() {
 
 function loadAndRenderChase() {
   const body = document.getElementById("chase-body");
-  const usResorts = RESORTS.filter((r) => r.country === "USA" && r.lat != null);
+  const now = new Date();
+  const seasonInfo = classifySeasonState(RESORTS, now);
+  state.chaseSeasonInfo = seasonInfo;
+
+  if (seasonInfo.state === "off-season") {
+    // Nothing in the pool is realistically open — don't fetch, don't rank,
+    // don't render a solemn list of near-zero forecasts. Say so plainly.
+    renderChaseOffSeason(body);
+    return;
+  }
 
   if (state.chaseCache) {
     renderChaseList();
+    return;
+  }
+
+  // Shoulder season (October, May): only fetch/rank resorts that are
+  // themselves plausibly open by SEASON_OPEN_FRACTION's definition — a
+  // resort that's still weeks from its published open date isn't made
+  // "open" by a live forecast existing for its coordinates.
+  const usResorts = RESORTS.filter((r) => r.country === "USA" && r.lat != null &&
+    (seasonInfo.state !== "shoulder" || seasonFraction(r, now) >= SEASON_OPEN_FRACTION));
+
+  if (!usResorts.length) {
+    // Safety net for the very start of the shoulder ramp, where the
+    // aggregate classification says "shoulder" but no single resort
+    // individually clears the per-resort bar yet — fall back to the same
+    // honest off-season screen rather than an empty ranked list.
+    renderChaseOffSeason(body);
     return;
   }
 
@@ -4293,13 +5430,26 @@ function renderChaseList(isRefresh) {
   const ranked = rankChaseTheSnow(forecasts, state.chaseAnswers, RESORTS);
   const canada = rankCanadaTypicalSeason(RESORTS);
 
+  // Shoulder-season notice (October, May): the list below only includes
+  // resorts that are individually plausibly open (see loadAndRenderChase's
+  // season-window filter) — this says so plainly rather than letting a
+  // shorter-than-usual list read as a data problem.
+  const seasonNoticeHtml = (state.chaseSeasonInfo && state.chaseSeasonInfo.state === "shoulder")
+    ? `<div class="canada-divider" id="season-shoulder-notice">
+        <span class="canada-divider__icon" aria-hidden="true">${ICONS.snow}</span>
+        <div class="canada-divider__body">
+          <p class="body-sm">Not every resort is open yet this time of year. This list only includes places that are typically running by now.</p>
+        </div>
+      </div>`
+    : "";
+
   if (!ranked.length) {
-    body.innerHTML = `<div class="center-state">${ICONS.warning}<p class="body-md">No resorts matched right now — try including beginner-friendly options.</p></div>` + canadaSectionHtml(canada);
+    body.innerHTML = seasonNoticeHtml + `<div class="center-state">${ICONS.warning}<p class="body-md">No resorts matched right now — try including beginner-friendly options.</p></div>` + canadaSectionHtml(canada);
     wireCanadaHandled();
     return;
   }
 
-  body.innerHTML = `<ol class="chase-list" id="chase-us-list">` +
+  body.innerHTML = seasonNoticeHtml + `<ol class="chase-list" id="chase-us-list">` +
     ranked.map((row, i) => chaseRowHtml(row, i + 1)).join("") +
     `</ol>` + canadaSectionHtml(canada);
 
@@ -4367,12 +5517,16 @@ function canadaSectionHtml(canada) {
       </div>
     </div>
     <ol class="chase-list" id="chase-canada-list">
-      ${canada.map((resort, i) => canadaRowHtml(resort, i + 1)).join("")}
+      ${canada.map((resort, i) => typicalSeasonRowHtml(resort, i + 1)).join("")}
     </ol>`;
 }
 
-function canadaRowHtml(resort, rank) {
-  const region = `${resort.state_province}, Canada`;
+// Shared by the Canada section (always "typical season, not live" — NOAA
+// has no non-US coverage) and the off-season preview below (deliberately
+// the same visual/semantic treatment: both are honestly-labeled annual
+// averages, never presented as this week's conditions).
+function typicalSeasonRowHtml(resort, rank) {
+  const region = resort.state_province + (resort.country === "Canada" ? ", Canada" : "");
   const nicoleFlag = resort.hot_take ? `<span class="chase-flag chase-flag--nicole">● Nicole's take →</span>` : "";
   return `
     <li>
@@ -4405,6 +5559,78 @@ function wireCanadaHandled() {
   });
 }
 
+// ---------------------------------------------------------------------------
+// Off-season state (fix round, 2026-08-04). Design intent: this is not a
+// banner bolted onto the normal ranked list — it fully replaces it. The
+// screen states its situation plainly (nothing's realistically open), gives
+// the one genuinely useful next action for August (plan ahead), and — since
+// hiding all snow data outright would leave a visitor with nothing —
+// optionally surfaces a clearly-labeled, collapsed-by-default preview of
+// where it typically dumps in a normal mid-winter, built from the same
+// honestly-labeled "typical season, not a forecast" pattern already used for
+// Canada. It never claims that preview is current.
+// ---------------------------------------------------------------------------
+
+function topTypicalSeasonPreview(pool, n) {
+  return pool
+    .filter((r) => r.avg_annual_snowfall_in != null)
+    .slice()
+    .sort((a, b) => b.avg_annual_snowfall_in - a.avg_annual_snowfall_in)
+    .slice(0, n);
+}
+
+function offSeasonPreviewHtml(preview) {
+  const panelId = "offseason-preview-panel";
+  return `
+    <div class="offseason-preview">
+      <button type="button" class="notes-row__expand-btn" aria-expanded="false" aria-controls="${panelId}" id="offseason-preview-toggle">
+        <span>See where it typically dumps in mid-winter</span>
+        <span class="stat-tile__expand-icon" aria-hidden="true">${ICONS.chevronDown}</span>
+      </button>
+      <div id="${panelId}" hidden>
+        <div class="canada-divider" style="margin-top:var(--space-3)">
+          <span class="canada-divider__icon" aria-hidden="true">${ICONS.signalSlash}</span>
+          <div class="canada-divider__body">
+            <span class="typical-season-tag">Typical season, not a forecast</span>
+            <p class="body-sm">Based on typical snowfall for this time of year in a normal season, not what's happening right now.</p>
+          </div>
+        </div>
+        <ol class="chase-list">
+          ${preview.map((resort, i) => typicalSeasonRowHtml(resort, i + 1)).join("")}
+        </ol>
+      </div>
+    </div>`;
+}
+
+function renderChaseOffSeason(body) {
+  const preview = topTypicalSeasonPreview(RESORTS, 5);
+  body.innerHTML = `
+    <div class="center-state">
+      ${ICONS.snow}
+      <h2 class="display-h3">Nothing's open right now</h2>
+      <p class="body-md" style="max-width:32rem">Most resorts open in November. Plan a trip now, then come back to chase the snow once the season starts.</p>
+      <button class="btn btn-primary" id="offseason-plan-cta" type="button">Plan a trip</button>
+    </div>
+    ${preview.length ? offSeasonPreviewHtml(preview) : ""}`;
+
+  document.getElementById("offseason-plan-cta").addEventListener("click", () => navigate("plan"));
+
+  const toggleBtn = document.getElementById("offseason-preview-toggle");
+  if (toggleBtn) {
+    toggleBtn.addEventListener("click", () => {
+      const panel = document.getElementById(toggleBtn.getAttribute("aria-controls"));
+      if (!panel) return;
+      panel.hidden = !panel.hidden;
+      toggleBtn.setAttribute("aria-expanded", String(!panel.hidden));
+    });
+  }
+
+  body.querySelectorAll(".chase-row[data-rid]").forEach((rowEl) => {
+    rowEl.addEventListener("click", () => showChaseRowDetail(rowEl.dataset.rid));
+    rowEl.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); showChaseRowDetail(rowEl.dataset.rid); } });
+  });
+}
+
 function showChaseRowDetail(rid) {
   const resort = RESORTS_BY_ID[rid];
   if (!resort) return;
@@ -4413,7 +5639,14 @@ function showChaseRowDetail(rid) {
   // draw from in this mode).
   const bullets = [];
   const fc = state.chaseCache && state.chaseCache.forecasts[rid];
-  if (fc) bullets.push(fc.isLive ? `${fc.totalInches}" forecast over the next 7 days.` : `Typical for this time of year: about ${fc.totalInches}" a week during the core season.`);
+  if (fc) {
+    bullets.push(fc.isLive ? `${fc.totalInches}" forecast over the next 7 days.` : `Typical for this time of year: about ${fc.totalInches}" a week during the core season.`);
+  } else if (resort.avg_annual_snowfall_in != null) {
+    // Off-season preview row — there's no forecast fetch in this state at
+    // all (see renderChaseOffSeason), so the only honest snow fact
+    // available is the published annual average, clearly framed as such.
+    bullets.push(`Averages about ${resort.avg_annual_snowfall_in}" a year in a typical season.`);
+  }
   // sanitizeDatasetProse strips research-register framing before this raw
   // dataset field reaches a reader (Fix 3, synthetic-user-testing.md) — same
   // helper as the result card's ski-school disclosure and Range Readout.
@@ -4436,6 +5669,509 @@ function revealListRows(rows) {
 }
 function refreshListRows(rows) {
   rows.forEach((row) => row.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 160, easing: "ease", fill: "both" }));
+}
+
+</script>
+<script>
+// ---------------------------------------------------------------------------
+// Quiver Check — the UI layer. All the reasoning lives in quiver.js; this
+// file picks a resort, picks a day, and renders the call.
+//
+// Three steps, one question each, matching the trip planner's established
+// idiom rather than inventing a fourth interaction pattern for a fourth mode:
+//   resort  ->  day  ->  the call
+//
+// Season handling is deliberately identical to Chase the Snow's, at the
+// Director's explicit direction: when nothing in the pool is realistically
+// open, this mode does not render a picker, does not fetch, and does not
+// produce a ski recommendation for a mountain that isn't spinning lifts. The
+// same shoulder-season filter applies in October and May.
+// ---------------------------------------------------------------------------
+
+function renderQuiver(main) {
+  const now = new Date();
+  const seasonInfo = classifySeasonState(RESORTS, now);
+  state.chaseSeasonInfo = seasonInfo;
+
+  main.innerHTML = `<div class="page-column"><div id="quiver-body"></div></div>`;
+  document.title = "Quiver Check — which skis to bring";
+  setOgMeta({
+    title: "Quiver Check — which skis to bring",
+    description: "Tell it where you're going and when. It reads the forecast and tells you what to put on your feet.",
+  });
+
+  const body = document.getElementById("quiver-body");
+  if (seasonInfo.state === "off-season") {
+    renderQuiverOffSeason(body);
+    focusHeading(main);
+    return;
+  }
+  renderQuiverStep();
+  focusHeading(main);
+}
+
+// Mirrors renderChaseOffSeason's stance exactly — this is not a banner on top
+// of a working picker, it replaces the mode. The one difference is the copy,
+// because the useful next action from here is different: Chase's off-season
+// screen sends you to plan a trip, and so does this one, but the sentence
+// explaining why has to be about skis rather than about rankings.
+function renderQuiverOffSeason(body) {
+  body.innerHTML = `
+    <h1 class="display-h1">Quiver Check</h1>
+    <div class="center-state">
+      ${ICONS.snow}
+      <h2 class="display-h3">Nothing's open right now</h2>
+      <p class="body-md" style="max-width:32rem">This reads the 7-day forecast to work out what you should be riding — which only means anything once the lifts are turning. Most resorts open in November.</p>
+      <p class="body-sm" style="max-width:32rem;color:var(--text-secondary)">Come back once the season starts and it'll tell you whether Thursday is a rock-ski day or a fat-ski day.</p>
+      <button class="btn btn-primary" id="quiver-offseason-plan" type="button">Plan a trip instead</button>
+    </div>`;
+  document.getElementById("quiver-offseason-plan").addEventListener("click", () => navigate("plan"));
+}
+
+// ---------------------------------------------------------------------------
+// Step router
+// ---------------------------------------------------------------------------
+function renderQuiverStep() {
+  const body = document.getElementById("quiver-body");
+  if (!body) return;
+  const step = state.quiver.step;
+  if (step === "day") return renderQuiverDayStep(body);
+  if (step === "result") return renderQuiverResult(body);
+  return renderQuiverResortStep(body);
+}
+
+function quiverPool() {
+  // Same per-resort season-window filter Chase the Snow applies in shoulder
+  // season: a resort still weeks from its published open date isn't made open
+  // by a forecast existing for its coordinates. Canada stays in — it has no
+  // NOAA coverage, so it resolves to the typical-season path with the label
+  // that comes with it, exactly as it does in Chase.
+  const now = new Date();
+  const shoulder = state.chaseSeasonInfo && state.chaseSeasonInfo.state === "shoulder";
+  return RESORTS.filter((r) => {
+    if (r.lat == null) return false;
+    if (shoulder && seasonFraction(r, now) < SEASON_OPEN_FRACTION) return false;
+    return true;
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Step 1 — which mountain
+// ---------------------------------------------------------------------------
+function renderQuiverResortStep(body) {
+  const shoulder = state.chaseSeasonInfo && state.chaseSeasonInfo.state === "shoulder";
+  body.innerHTML = `
+    <p class="quiver-step label">Step 1 of 2</p>
+    <h1 class="display-h1 quiz-title">Where are you skiing?</h1>
+    <p class="quiz-helper body-md">Pick the mountain and we'll read its forecast.</p>
+    ${shoulder ? `
+      <div class="canada-divider" style="margin-top:var(--space-4)">
+        <span class="canada-divider__icon" aria-hidden="true">${ICONS.snow}</span>
+        <div class="canada-divider__body">
+          <p class="body-sm">Not every resort is open yet this time of year. This list only includes places that are typically running by now.</p>
+        </div>
+      </div>` : ""}
+    <div class="quiver-search">
+      <label class="body-sm" for="quiver-search-input">Search by name or state</label>
+      <div class="quiver-search__field">
+        <span class="quiver-search__icon" aria-hidden="true">${ICONS.search}</span>
+        <input type="search" id="quiver-search-input" class="quiver-search__input" autocomplete="off"
+               placeholder="Alta, Vermont, Jackson…" value="${escapeHtml(state.quiver.search || "")}">
+      </div>
+    </div>
+    <p class="visually-hidden" aria-live="polite" id="quiver-search-count"></p>
+    <div id="quiver-resort-list"></div>`;
+
+  renderQuiverResortList();
+  const input = document.getElementById("quiver-search-input");
+  input.addEventListener("input", () => {
+    state.quiver.search = input.value;
+    renderQuiverResortList();
+  });
+}
+
+function renderQuiverResortList() {
+  const wrap = document.getElementById("quiver-resort-list");
+  const q = (state.quiver.search || "").trim().toLowerCase();
+  const pool = quiverPool().filter((r) => {
+    if (!q) return true;
+    return `${r.name} ${r.state_province} ${r.country}`.toLowerCase().includes(q);
+  });
+
+  const countEl = document.getElementById("quiver-search-count");
+  if (countEl) countEl.textContent = `${pluralize(pool.length, "resort")} listed.`;
+
+  if (!pool.length) {
+    wrap.innerHTML = `<div class="center-state">${ICONS.warning}<p class="body-md">Nothing matches “${escapeHtml(state.quiver.search)}”. Try a state, or part of the mountain's name.</p></div>`;
+    return;
+  }
+
+  // Grouped by state/province, which is how people actually narrow a ski
+  // list — "somewhere in Utah" is a far more common starting point than a
+  // specific mountain, and it keeps 71 buttons navigable by heading rather
+  // than by scrolling past all of them.
+  const groups = {};
+  for (const r of pool) {
+    const key = r.country === "Canada" ? `${r.state_province}, Canada` : r.state_province;
+    (groups[key] = groups[key] || []).push(r);
+  }
+  const orderedKeys = Object.keys(groups).sort();
+
+  wrap.innerHTML = orderedKeys.map((key) => `
+    <section class="quiver-group">
+      <h2 class="data-label quiver-group__heading">${escapeHtml(key)}</h2>
+      <div class="quiver-group__items">
+        ${groups[key].map((r) => `
+          <button class="quiver-resort" type="button" data-rid="${r.id}">
+            <span class="quiver-resort__name">${escapeHtml(r.name)}</span>
+            <span class="quiver-resort__meta body-sm">${r.country === "USA" ? "Live forecast" : "Typical season only"}${r.scale === "day-trip" ? " · Day-trip hill" : ""}</span>
+            <span class="quiver-resort__chev" aria-hidden="true">${ICONS.arrowRight}</span>
+          </button>`).join("")}
+      </div>
+    </section>`).join("");
+
+  wrap.querySelectorAll(".quiver-resort").forEach((btn) => {
+    btn.addEventListener("click", () => selectQuiverResort(btn.dataset.rid));
+  });
+}
+
+function selectQuiverResort(rid) {
+  state.quiver.resortId = rid;
+  state.quiver.dateKey = null;
+  state.quiverForecast = null;
+  state.quiver.step = "day";
+  // Warm the forecast now rather than at the moment it's needed. The user
+  // spends a few seconds on the day picker either way, and spending them
+  // fetching means the answer is usually already sitting there when they
+  // tap — which is the difference between this mode feeling instant and
+  // feeling like Chase the Snow's cold start.
+  prefetchQuiverForecast(rid);
+  renderQuiverStep();
+  focusHeading(mainEl());
+}
+
+let quiverFetchSeq = 0;
+function prefetchQuiverForecast(rid) {
+  const resort = RESORTS_BY_ID[rid];
+  if (!resort) return;
+  const seq = ++quiverFetchSeq;
+  state.quiverForecast = { resortId: rid, status: "loading", days: null };
+  resolveDailyForecast(resort, new Date()).then((res) => {
+    // A stale response for a resort the user has since navigated away from
+    // must not overwrite the current one.
+    if (seq !== quiverFetchSeq) return;
+    state.quiverForecast = { resortId: rid, status: "ready", ...res };
+    if (state.route === "quiver" && state.quiver.step === "result") renderQuiverStep();
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Step 2 — which day
+//
+// Deliberately shows dates only, no snow totals. Surfacing "14 inches on
+// Thursday" here would turn the picker into the week-at-a-glance strip the
+// Director explicitly scoped out — and it would answer the question before
+// it's been asked.
+// ---------------------------------------------------------------------------
+function renderQuiverDayStep(body) {
+  const resort = RESORTS_BY_ID[state.quiver.resortId];
+  if (!resort) { state.quiver.step = "resort"; return renderQuiverStep(); }
+
+  const now = new Date();
+  const tz = (state.quiverForecast && state.quiverForecast.timeZone) || null;
+  const frame = buildDayFrame(now, tz, true);
+
+  body.innerHTML = `
+    <p class="quiver-step label">Step 2 of 2</p>
+    <h1 class="display-h1 quiz-title">Which day?</h1>
+    <p class="quiz-helper body-md">${escapeHtml(resort.name)}, ${escapeHtml(resort.country === "Canada" ? `${resort.state_province}, Canada` : resort.state_province)}. The forecast runs seven days out.</p>
+    <div class="quiver-day-list" role="radiogroup" aria-label="Which day are you skiing?">
+      ${frame.map((d, i) => {
+        const label = quiverDayLabel(d.dateKey, i);
+        // "Try a different day" returns here with a day already chosen, so
+        // the previous answer has to render as chosen — both visually and to
+        // AT — rather than resetting to a blank group. Same defect class as
+        // the quiz's Back-doesn't-restore-the-answer bug
+        // (heuristic-evaluation.md H3/H6), avoided here by construction.
+        const selected = state.quiver.dateKey === d.dateKey;
+        const tabbable = state.quiver.dateKey ? selected : i === 0;
+        return `<button class="tap-chip ${selected ? "tap-chip--selected" : ""}" type="button" role="radio" aria-checked="${selected}" data-daykey="${d.dateKey}" tabindex="${tabbable ? "0" : "-1"}">
+          <span class="tap-chip__indicator tap-chip__indicator--radio">${ICONS.check}</span>
+          <span class="tap-chip__body">
+            <span class="tap-chip__label">${escapeHtml(label.primary)}</span>
+            <span class="tap-chip__sublabel">${escapeHtml(label.secondary)}</span>
+          </span>
+        </button>`;
+      }).join("")}
+    </div>
+    <div class="quiz-nav">
+      <button class="btn btn-secondary" id="quiver-back" type="button">Back</button>
+    </div>`;
+
+  const chips = Array.from(body.querySelectorAll(".tap-chip[data-daykey]"));
+  chips.forEach((chip, i) => {
+    chip.addEventListener("click", () => {
+      state.quiver.dateKey = chip.dataset.daykey;
+      state.quiver.step = "result";
+      renderQuiverStep();
+    });
+    // Roving tabindex, matching the quiz's radiogroup keyboard model.
+    chip.addEventListener("keydown", (e) => {
+      const keys = { ArrowDown: 1, ArrowRight: 1, ArrowUp: -1, ArrowLeft: -1 };
+      if (!(e.key in keys)) return;
+      e.preventDefault();
+      const next = chips[(i + keys[e.key] + chips.length) % chips.length];
+      chips.forEach((c) => { c.tabIndex = -1; });
+      next.tabIndex = 0;
+      next.focus();
+    });
+  });
+
+  document.getElementById("quiver-back").addEventListener("click", () => {
+    state.quiver.step = "resort";
+    renderQuiverStep();
+    focusHeading(mainEl());
+  });
+}
+
+// `dateKey` is YYYY-MM-DD in the resort's own timezone. Parsed at noon local
+// so that constructing a Date from it can't slip a day across the viewer's
+// own UTC offset — the label has to say the same day the forecast bucketed.
+function parseDayKey(dateKey) {
+  const [y, m, d] = String(dateKey).split("-").map(Number);
+  return new Date(y, (m || 1) - 1, d || 1, 12, 0, 0);
+}
+
+function quiverDayLabel(dateKey, index) {
+  const date = parseDayKey(dateKey);
+  const weekday = date.toLocaleDateString("en-US", { weekday: "long" });
+  const dayMonth = date.toLocaleDateString("en-US", { month: "long", day: "numeric" });
+  if (index === 0) return { primary: "Today", secondary: `${weekday}, ${dayMonth}` };
+  if (index === 1) return { primary: "Tomorrow", secondary: `${weekday}, ${dayMonth}` };
+  return { primary: weekday, secondary: dayMonth };
+}
+
+// ---------------------------------------------------------------------------
+// Step 3 — the call
+// ---------------------------------------------------------------------------
+function renderQuiverResult(body) {
+  const resort = RESORTS_BY_ID[state.quiver.resortId];
+  if (!resort) { state.quiver.step = "resort"; return renderQuiverStep(); }
+
+  const fc = state.quiverForecast;
+  if (!fc || fc.resortId !== state.quiver.resortId || fc.status === "loading") {
+    body.innerHTML = `<div class="loading-state"><div class="loading-spinner" aria-hidden="true"></div><p class="body-md">Reading the forecast for ${escapeHtml(resort.name)}…</p></div>`;
+    return;
+  }
+
+  const idx = fc.days.findIndex((d) => d.dateKey === state.quiver.dateKey);
+  if (idx === -1) {
+    // Reached by a shared link whose day has since passed or fallen off the
+    // horizon. Saying so plainly beats silently answering a different
+    // question than the one the link promised.
+    renderQuiverExpired(body, resort);
+    return;
+  }
+
+  const day = fc.days[idx];
+  const priorDays = fc.days.slice(0, idx);
+  const result = quiverCheck(resort, day, priorDays, new Date());
+  const c = result.conditions;
+  const label = quiverDayLabel(day.dateKey, idx);
+  const dayPhrase = idx === 0 ? "today" : idx === 1 ? "tomorrow" : `on ${label.primary}`;
+  const location = resort.country === "Canada" ? `${resort.state_province}, Canada` : resort.state_province;
+
+  body.innerHTML = `
+    <article class="quiver-card" id="quiver-card">
+      <p class="result-eyebrow label">The call</p>
+      <h1 class="display-hero quiver-call" tabindex="-1">${escapeHtml(result.call.label)}</h1>
+      <p class="quiver-call__tagline body-md">${escapeHtml(result.call.tagline)} <span class="data-inline quiver-call__waist">${escapeHtml(result.call.waistLabel)}</span></p>
+      <p class="quiver-context body-md">${escapeHtml(resort.name)}, ${escapeHtml(location)} — ${escapeHtml(dayPhrase)}, ${escapeHtml(label.secondary)}.</p>
+
+      ${quiverFreshnessHtml(fc)}
+
+      <h2 class="display-h3 reason-heading">Why</h2>
+      <ul class="reason-list">
+        ${result.reasons.map((r) => `<li class="reason-bullet"><span class="reason-bullet__icon">${ICONS.checkCircle}</span><span class="reason-bullet__text body-md">${escapeHtml(r)}</span></li>`).join("")}
+      </ul>
+
+      <div class="quiver-whatis">
+        <h2 class="data-label">What that ski is</h2>
+        <p class="body-md">${escapeHtml(result.call.plain)}</p>
+      </div>
+
+      <div class="quiver-fallback">
+        <h2 class="data-label">If you don't own a pair</h2>
+        <p class="body-md">${escapeHtml(result.call.ifYouDont)}</p>
+      </div>
+
+      ${result.aside ? `
+        <div class="quiver-aside">
+          <h2 class="data-label">${escapeHtml(result.aside.label)}</h2>
+          <p class="body-md">${escapeHtml(result.aside.text)}</p>
+        </div>` : ""}
+
+      <h2 class="display-h3" style="margin-bottom:var(--space-3)">The numbers</h2>
+      <div class="stat-strip stat-strip--quad">${quiverStatsHtml(c)}</div>
+
+      ${result.caveats.length ? `
+        <div class="quiver-caveats">
+          <h2 class="data-label">Worth knowing</h2>
+          <ul class="quiver-caveat-list">
+            ${result.caveats.map((t) => `<li class="body-md"><span class="quiver-caveat__icon" aria-hidden="true">${ICONS.warning}</span><span>${escapeHtml(t)}</span></li>`).join("")}
+          </ul>
+        </div>` : ""}
+
+      <p class="quiver-limits body-sm">This reads the weather forecast, not the mountain's snow report. It doesn't know the settled base depth, what got groomed last night, or what's already been tracked out. Check the resort's own report before you pack.</p>
+
+      ${resort.hot_take ? `
+        <div class="hot-take" id="quiver-hot-take">
+          <span class="hot-take__quote-mark" aria-hidden="true">&ldquo;</span>
+          <div class="hot-take__header">
+            <span class="hot-take__avatar" aria-hidden="true">N</span>
+            <span class="hot-take__label label">Nicole's Hot Take</span>
+          </div>
+          <p class="hot-take__body">${escapeHtml(resort.hot_take.text)}</p>
+          <span class="hot-take__attribution">— Nicole, on ${escapeHtml(resort.name)}</span>
+        </div>` : ""}
+
+      <div class="footer-cta">
+        <button class="btn btn-primary btn-block" id="quiver-share" type="button">${ICONS.share} Share this call</button>
+        <button class="btn btn-secondary btn-block" id="quiver-another-day" type="button">Try a different day</button>
+        <button class="btn-text" id="quiver-another-resort" type="button" style="text-align:center">Check a different mountain →</button>
+      </div>
+    </article>`;
+
+  document.getElementById("quiver-share").addEventListener("click", () => shareQuiverCall(resort, result, day, idx));
+  document.getElementById("quiver-another-day").addEventListener("click", () => {
+    state.quiver.step = "day";
+    renderQuiverStep();
+    focusHeading(mainEl());
+  });
+  document.getElementById("quiver-another-resort").addEventListener("click", () => {
+    state.quiver.step = "resort";
+    state.quiver.resortId = null;
+    renderQuiverStep();
+    focusHeading(mainEl());
+  });
+
+  const retry = document.getElementById("quiver-retry-forecast");
+  if (retry) retry.addEventListener("click", () => {
+    prefetchQuiverForecast(state.quiver.resortId);
+    renderQuiverStep();
+  });
+
+  document.title = `${result.call.label} — ${resort.name}`;
+  setOgMeta({
+    title: `${result.call.label} at ${resort.name}`,
+    description: `${result.reasons[0] || ""} ${result.call.waistLabel}.`.trim(),
+  });
+
+  syncQuiverHash(resort, day);
+  announce("reveal-announcer", `The call for ${resort.name} ${dayPhrase}: ${result.call.label}. ${result.call.waistLabel}.`);
+  revealQuiverCard(document.getElementById("quiver-card"));
+  const heading = body.querySelector(".quiver-call");
+  if (heading) heading.focus({ preventScroll: true });
+}
+
+function quiverFreshnessHtml(fc) {
+  if (fc.isLive) {
+    return `<div class="freshness-badge"><span>${ICONS.live}</span><span class="freshness-badge__text body-sm">Live forecast · updated moments ago</span></div>`;
+  }
+  return `<div class="freshness-badge freshness-badge--fallback">
+      <span>${ICONS.signalSlash}</span>
+      <span class="freshness-badge__text body-sm">Not a live forecast</span>
+    </div>
+    <p class="body-sm" style="color:var(--text-secondary);margin:0 0 var(--space-4)">${
+      fc.fallbackReason === "outside NOAA coverage"
+        ? "The live forecast service only covers the US, so this is built from typical snowfall for this time of year rather than this week's weather."
+        : `We couldn't reach the live forecast right now, so this is typical snowfall for this time of year rather than this week's. <button class="btn-text" id="quiver-retry-forecast" type="button" style="padding:0">Try again</button>`
+    }</p>`;
+}
+
+// Snow depths render through the same rounding rule the reason sentences use
+// (whole inches above one, a single decimal below), so a figure quoted in the
+// prose and the same figure in the tile beside it never disagree — "22\" of
+// new snow in total" above a tile reading 21.9 reads as a defect, not as
+// precision.
+function quiverDepth(n) {
+  if (n == null) return "—";
+  return n < 1 ? String(Math.round(n * 10) / 10) : String(Math.round(n));
+}
+
+function quiverStatsHtml(c) {
+  let html = "";
+  html += statTile("New snow, your day", quiverDepth(c.newSnow), '"', c.newSnow < 0.5 ? "Nothing forecast" : null, false);
+  html += statTile("Storm total", quiverDepth(c.stormTotal), '"', c.leadDaysObserved > 0 ? `Including the ${pluralize(c.leadDaysObserved, "day")} before` : "Your day only — no lead-in visible", false);
+  html += statTile("High", c.highF, "°F", c.lowF != null ? `Low ${c.lowF}°F` : null, c.highF == null);
+  html += c.slr != null
+    ? statTile("Snow to water", `${c.slr}:1`, "", capitalize(c.density.word), false)
+    : textStatTile("Snow type", capitalize(c.density.word));
+  return html;
+}
+
+function renderQuiverExpired(body, resort) {
+  body.innerHTML = `
+    <div class="center-state">
+      ${ICONS.warning}
+      <h1 class="display-h3">That day's out of range</h1>
+      <p class="body-md" style="max-width:32rem">This link was for a specific day at ${escapeHtml(resort.name)}, and the forecast only runs seven days ahead — so that day has either passed or hasn't come into range yet.</p>
+      <button class="btn btn-primary" id="quiver-expired-again" type="button">Check ${escapeHtml(resort.name)} for this week</button>
+    </div>`;
+  document.getElementById("quiver-expired-again").addEventListener("click", () => {
+    state.quiver.step = "day";
+    state.quiver.dateKey = null;
+    renderQuiverStep();
+    focusHeading(mainEl());
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Sharing
+//
+// The share token carries the resort and the date — never the conditions or
+// the call itself. A ski recommendation is only true for as long as the
+// forecast behind it is, so a recipient opening this tomorrow re-reads the
+// forecast and may correctly see a different answer. Freezing the call into
+// the URL the way the trip planner freezes its result would produce a link
+// that confidently states yesterday's weather, which R8 forbids.
+// ---------------------------------------------------------------------------
+function buildQuiverToken(resort, day) {
+  return b64urlEncode(JSON.stringify({ v: 1, rid: resort.id, d: day.dateKey }));
+}
+
+function syncQuiverHash(resort, day) {
+  history.replaceState(null, "", "#quiver=" + buildQuiverToken(resort, day));
+}
+
+async function shareQuiverCall(resort, result, day, idx) {
+  const url = `${location.origin}${location.pathname}#quiver=${buildQuiverToken(resort, day)}`;
+  const dayPhrase = idx === 0 ? "today" : idx === 1 ? "tomorrow" : quiverDayLabel(day.dateKey, idx).primary;
+  const text = `${resort.name}, ${dayPhrase}: ${result.call.label}. ${result.call.waistLabel}.`;
+  try {
+    if (navigator.share) {
+      await navigator.share({ title: `${result.call.label} at ${resort.name}`, text, url });
+      return;
+    }
+    await navigator.clipboard.writeText(`${text}\n${url}`);
+    showToast("Link copied — it'll re-read the forecast when they open it.");
+  } catch (e) {
+    if (e && e.name === "AbortError") return; // user dismissed the share sheet
+    showToast("Couldn't copy the link. You can copy it from the address bar.");
+  }
+}
+
+function revealQuiverCard(card) {
+  if (!card) return;
+  const reduce = reduceMotion();
+  const targets = card.querySelectorAll(".result-eyebrow, .quiver-call, .quiver-call__tagline, .quiver-context, .reason-bullet");
+  targets.forEach((el, i) => {
+    if (reduce) { el.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 160, easing: "ease", fill: "both" }); return; }
+    el.animate(
+      [{ opacity: 0, transform: "translateY(6px)" }, { opacity: 1, transform: "translateY(0)" }],
+      { duration: 200, delay: Math.min(i, 6) * 45, easing: "cubic-bezier(.16,1,.3,1)", fill: "both" }
+    );
+  });
 }
 
 </script>
@@ -4607,6 +6343,10 @@ window.addEventListener('error', (e) => {
 
 parseInitialRoute();
 render();
+// A #quiver= share link needs its forecast fetched before the call can be
+// rendered; parseInitialRoute() flags it, and this is the first point at
+// which app-quiver.js is guaranteed to be defined.
+if (quiverPendingPrefetch) prefetchQuiverForecast(quiverPendingPrefetch);
 if (resumedQuizFromLink) {
   // Defense-in-depth for the URL-hash quiz-progress fix: a focus/DOM move
   // alone doesn't tell a user resuming from a reload *that* they resumed —

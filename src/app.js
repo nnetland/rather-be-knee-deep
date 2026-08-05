@@ -20,6 +20,12 @@ const state = {
   chaseCache: null,         // { forecasts, anyFallback } once resolved
   chaseLoadHandle: null,    // { skip() } while a forecast fetch is in flight
   nicolesFilters: { region: "all", sort: "region" },
+  // Quiver Check: a two-step picker (resort -> day) plus its own forecast
+  // cache, kept separate from chaseCache because the two modes want
+  // different shapes of the same data — Chase needs one 7-day total for
+  // every US resort, Quiver needs seven per-day rows for exactly one.
+  quiver: { step: "resort", resortId: null, dateKey: null, search: "" },
+  quiverForecast: null,     // { resortId, status, days, timeZone, isLive }
 };
 
 const COST_LABEL = { "$": "budget-conscious", "$$": "mid-range", "$$$": "splurge-friendly", "$$$$": "money's no object" };
@@ -91,6 +97,18 @@ function navigate(route, params) {
   const previousRoute = state.route;
   state.route = route;
   state.routeParams = params || {};
+  if (route === "quiver") {
+    // Same resume rule the quiz uses below: bouncing out to Chase or
+    // Nicole's List and back must not silently throw away a mountain the
+    // user already picked, but arriving from the splash should start clean.
+    const cameFromModeSwitch = previousRoute === "chase" || previousRoute === "nicoles" || previousRoute === "plan";
+    if (!cameFromModeSwitch) {
+      state.quiver = { step: "resort", resortId: null, dateKey: null, search: "" };
+      state.quiverForecast = null;
+    } else if (state.quiver.step === "result" && !state.quiver.dateKey) {
+      state.quiver.step = state.quiver.resortId ? "day" : "resort";
+    }
+  }
   if (route === "plan") {
     // Only reset to the first step on a genuinely fresh entry (from the
     // splash screen, a completed result, etc). Jumping Chase/Nicole's List
@@ -137,6 +155,13 @@ function syncHash() {
     history.replaceState(null, "", "#result=" + state.routeParams.shareToken);
   } else if (state.route === "plan") {
     syncQuizHash();
+  } else if (state.route === "quiver") {
+    // renderQuiverResult() writes #quiver= itself once it knows the resort
+    // and day; the two picker steps have nothing shareable yet, so the URL
+    // is cleared rather than left pointing at a stale call.
+    if (state.quiver.step !== "result" && location.hash) {
+      history.replaceState(null, "", location.pathname + location.search);
+    }
   } else {
     // Keep the URL tidy for other routes; result links and in-progress quiz
     // state are the only shareable, resumable states.
@@ -145,6 +170,10 @@ function syncHash() {
 }
 
 let resumedQuizFromLink = false;
+// Set by parseInitialRoute() when the page loads on a #quiver= share link, so
+// the boot sequence in shell.html can kick off the forecast fetch the shared
+// call needs before anything renders.
+let quiverPendingPrefetch = null;
 
 function parseInitialRoute() {
   const hash = location.hash || "";
@@ -158,6 +187,22 @@ function parseInitialRoute() {
         return;
       }
     } catch (e) { /* fall through to splash on any malformed share link */ }
+  }
+  if (hash.startsWith("#quiver=")) {
+    const token = hash.slice("#quiver=".length);
+    try {
+      const payload = JSON.parse(b64urlDecode(token));
+      if (payload && payload.rid && RESORTS_BY_ID[payload.rid] && typeof payload.d === "string") {
+        state.route = "quiver";
+        state.quiver = { step: "result", resortId: payload.rid, dateKey: payload.d, search: "" };
+        // Deliberately NOT restoring a frozen recommendation from the token
+        // (unlike #result=, which does exactly that). A ski call is only
+        // true while the forecast behind it is, so a shared link re-reads
+        // the forecast on arrival — see app-quiver.js's sharing section.
+        quiverPendingPrefetch = payload.rid;
+        return;
+      }
+    } catch (e) { /* fall through to splash on any malformed quiver link */ }
   }
   if (hash.startsWith("#quiz=")) {
     const token = hash.slice("#quiz=".length);
@@ -186,7 +231,7 @@ const mainEl = () => document.getElementById("app-main");
 
 function render() {
   const main = mainEl();
-  const chromeRoutes = ["plan", "chase", "nicoles"];
+  const chromeRoutes = ["plan", "chase", "quiver", "nicoles"];
   const showNav = chromeRoutes.includes(state.route);
   document.getElementById("bottom-nav").hidden = !showNav;
   document.getElementById("top-nav").hidden = !showNav;
@@ -196,6 +241,7 @@ function render() {
   if (state.route === "splash") return renderSplash(main);
   if (state.route === "plan") return renderPlan(main);
   if (state.route === "chase") return renderChase(main);
+  if (state.route === "quiver") return renderQuiver(main);
   if (state.route === "nicoles") return renderNicolesList(main);
   if (state.route === "result") return renderResult(main);
   renderSplash(main);
@@ -232,6 +278,11 @@ function renderSplash(main) {
             <span class="mode-card__label">Chase the snow</span>
             <span class="mode-card__support body-md">See where it's dumping this week.</span>
           </button>
+          <button class="mode-card" id="mode-quiver" type="button">
+            <span class="mode-card__icon">${ICONS.skis}</span>
+            <span class="mode-card__label">Quiver Check</span>
+            <span class="mode-card__support body-md">Already know where you're going? Find out which skis to bring.</span>
+          </button>
         </div>
         <p class="splash-footer">
           <button class="btn-text" id="mode-nicoles" type="button">See everywhere Nicole's actually skied</button>
@@ -240,6 +291,7 @@ function renderSplash(main) {
     </div>`;
   document.getElementById("mode-plan").addEventListener("click", () => navigate("plan"));
   document.getElementById("mode-chase").addEventListener("click", () => navigate("chase"));
+  document.getElementById("mode-quiver").addEventListener("click", () => navigate("quiver"));
   document.getElementById("mode-nicoles").addEventListener("click", () => navigate("nicoles"));
   document.title = "Find your next ski trip";
   setOgMeta({

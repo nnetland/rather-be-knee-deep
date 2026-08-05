@@ -389,3 +389,205 @@ function loadChaseForecasts(resorts, onState) {
 
   return { skip: fallBackNow };
 }
+
+// ---------------------------------------------------------------------------
+// Per-day forecast — added for Quiver Check.
+//
+// Everything above this line answers "how much snow over the next 7 days, in
+// total" — which is the right shape for ranking a list of resorts, and the
+// wrong shape for "what should I ride at Alta on Thursday." That question
+// needs the week broken into days, and it needs two fields the ranking path
+// never asked for: liquid-equivalent precipitation (so quiver.js can compute
+// a real snow-to-liquid ratio rather than inferring density from temperature
+// alone) and a per-day high/low.
+//
+// This is additive on purpose. The Chase-the-Snow path above is verified and
+// shipped; nothing here changes it, and the two share the same fetch chain,
+// the same timeout discipline and the same never-present-history-as-forecast
+// rule.
+// ---------------------------------------------------------------------------
+
+const QUIVER_HORIZON_DAYS = 7;
+
+// NWS gridpoint values are UTC-stamped, but "Thursday" means Thursday at the
+// mountain. `/points` hands back the grid's IANA timezone in the same
+// response we already read gridId/gridX/gridY from, so bucketing by local
+// calendar day costs one extra field and no extra request. 'en-CA' is used
+// purely because it formats as YYYY-MM-DD.
+function localDayKey(date, timeZone) {
+  try {
+    return new Intl.DateTimeFormat("en-CA", {
+      timeZone: timeZone || undefined,
+      year: "numeric", month: "2-digit", day: "2-digit",
+    }).format(date);
+  } catch (e) {
+    // An unrecognised timezone must not take the whole forecast down with
+    // it — fall back to the viewer's own local day.
+    return new Intl.DateTimeFormat("en-CA", { year: "numeric", month: "2-digit", day: "2-digit" }).format(date);
+  }
+}
+
+// ISO-8601 durations, as they actually appear in gridpoint validTime strings
+// ("PT1H", "PT6H", "P1D", "P1DT6H"). Returns hours.
+function parseIsoDurationHours(dur) {
+  const m = /^P(?:(\d+)D)?(?:T(?:(\d+)H)?(?:(\d+)M)?)?$/.exec(dur || "");
+  if (!m) return 1;
+  const days = Number(m[1] || 0), hours = Number(m[2] || 0), mins = Number(m[3] || 0);
+  const total = days * 24 + hours + mins / 60;
+  return total > 0 ? total : 1;
+}
+
+/**
+ * Walks a gridpoint value series and hands each hour of every interval to
+ * `visit(date, value, hours)`.
+ *
+ * Intervals in a gridpoint response are commonly 1h or 6h but run longer at
+ * the far end of the horizon, and they do not align to local midnight — a
+ * 6-hour block straddling midnight belongs partly to each day. Stepping
+ * hour-by-hour and letting the caller apportion is what keeps a storm from
+ * being credited entirely to whichever day its interval happened to start
+ * in, which for a chosen-day feature is the difference between "18 inches on
+ * your day" and "18 inches the day before you arrive."
+ */
+function eachForecastHour(values, visit) {
+  for (const period of values || []) {
+    const [startStr, durStr] = String(period.validTime || "").split("/");
+    const start = Date.parse(startStr);
+    if (Number.isNaN(start) || period.value == null) continue;
+    const hours = parseIsoDurationHours(durStr);
+    const steps = Math.max(1, Math.round(hours));
+    for (let h = 0; h < steps; h++) {
+      visit(new Date(start + h * 3600000), period.value, steps);
+    }
+  }
+}
+
+function emptyDay(dateKey, isLive) {
+  return { dateKey, snowIn: 0, precipIn: 0, highF: null, lowF: null, isLive, hasData: false };
+}
+
+/**
+ * Live per-day forecast for one resort. Same two-request chain as
+ * fetchLiveForecast() above, same bare header-free fetch (see this module's
+ * header for why any custom header breaks the browser path), and it throws
+ * on any failure so callers must fall back rather than receive a guess.
+ */
+async function fetchLiveDailyForecast(resort) {
+  if (resort.lat == null || resort.lon == null) {
+    throw new Error("no coordinates — forecast unavailable for this resort");
+  }
+  const pointsRes = await fetchWithTimeout(
+    `${NOAA_BASE}/points/${resort.lat.toFixed(4)},${resort.lon.toFixed(4)}`,
+    {}, NOAA_TIMEOUT_MS
+  );
+  if (!pointsRes.ok) throw new Error(`NOAA /points failed: ${pointsRes.status}`);
+  const points = await pointsRes.json();
+  const { gridId, gridX, gridY, timeZone } = points.properties || {};
+  if (!gridId || gridX == null || gridY == null) throw new Error("NOAA /points missing grid info");
+
+  const gridRes = await fetchWithTimeout(
+    `${NOAA_BASE}/gridpoints/${gridId}/${gridX},${gridY}/forecastGridData`,
+    {}, NOAA_TIMEOUT_MS
+  );
+  if (!gridRes.ok) throw new Error(`NOAA /gridpoints failed: ${gridRes.status}`);
+  const grid = await gridRes.json();
+  const props = grid.properties || {};
+
+  const days = buildDayFrame(new Date(), timeZone, true);
+  const byKey = Object.fromEntries(days.map((d) => [d.dateKey, d]));
+
+  eachForecastHour((props.snowfallAmount || {}).values, (at, value, steps) => {
+    const d = byKey[localDayKey(at, timeZone)];
+    if (d) { d.snowIn += mmToInches(value) / steps; d.hasData = true; }
+  });
+  eachForecastHour((props.quantitativePrecipitation || {}).values, (at, value, steps) => {
+    const d = byKey[localDayKey(at, timeZone)];
+    if (d) { d.precipIn += mmToInches(value) / steps; }
+  });
+  eachForecastHour((props.temperature || {}).values, (at, value) => {
+    const d = byKey[localDayKey(at, timeZone)];
+    if (!d) return;
+    const f = celsiusToF(value);
+    d.highF = d.highF == null ? f : Math.max(d.highF, f);
+    d.lowF = d.lowF == null ? f : Math.min(d.lowF, f);
+    d.hasData = true;
+  });
+
+  for (const d of days) {
+    d.snowIn = Math.round(d.snowIn * 10) / 10;
+    d.precipIn = Math.round(d.precipIn * 100) / 100;
+    if (d.highF != null) d.highF = Math.round(d.highF);
+    if (d.lowF != null) d.lowF = Math.round(d.lowF);
+  }
+
+  // A response that resolved but carried no usable values for any day is a
+  // failure, not an empty forecast — throwing sends it down the honest
+  // fallback path instead of rendering a week of confident zeroes.
+  if (!days.some((d) => d.hasData)) throw new Error("NOAA gridpoints returned no usable values");
+
+  return { days, timeZone: timeZone || null, isLive: true };
+}
+
+// The frame of days the UI offers, independent of whether any data lands in
+// them — so the day picker is the same shape on the live and fallback paths.
+function buildDayFrame(now, timeZone, isLive) {
+  const out = [];
+  for (let i = 0; i < QUIVER_HORIZON_DAYS; i++) {
+    const at = new Date(now.getTime() + i * 86400000);
+    out.push(emptyDay(localDayKey(at, timeZone), isLive));
+  }
+  return out;
+}
+
+/**
+ * Typical-season per-day fallback. Deliberately FLAT: every day in the frame
+ * gets the same figure.
+ *
+ * The aggregate path above can honestly say "a typical week here is about 20
+ * inches" because a week is the unit the annual average divides into. Split
+ * that across named days and any variation would be invented — there is no
+ * basis whatsoever for claiming Thursday is the snowy one in a normal
+ * February. A flat distribution is the only shape that doesn't fabricate a
+ * storm, and `isLive: false` carries the label the UI is required to render.
+ */
+function historicalDailyForecast(resort, now) {
+  now = now || new Date();
+  const est = historicalEstimate(resort, now);
+  const perDay = Math.round((est.totalInches / 7) * 10) / 10;
+  const days = buildDayFrame(now, null, false);
+  for (const d of days) {
+    d.snowIn = perDay;
+    // 10:1 is the textbook average and the only defensible ratio to assume
+    // when there's no measurement to divide — quiver.js's density read will
+    // land on "average-density" and its copy never claims a measured ratio
+    // on this path.
+    d.precipIn = Math.round((perDay / 10) * 100) / 100;
+    d.highF = est.avgTempF;
+    d.lowF = est.avgTempF != null ? est.avgTempF - 12 : null;
+    d.hasData = true;
+  }
+  return { days, timeZone: null, isLive: false, seasonFraction: est.seasonFraction };
+}
+
+/**
+ * Always resolves. Tries live, falls back to typical-season on any failure,
+ * and — as with resolveForecast() above — logs the classified reason so a
+ * developer can tell a CORS rejection from a genuine outage, while the UI
+ * shows only the honest generic copy.
+ *
+ * Canada resolves straight to the fallback without a request: NOAA has no
+ * non-US coverage, so attempting one would spend a 9-second timeout to learn
+ * something already known.
+ */
+async function resolveDailyForecast(resort, now) {
+  if (resort.country !== "USA" || resort.lat == null) {
+    return { ...historicalDailyForecast(resort, now), fallbackReason: "outside NOAA coverage" };
+  }
+  try {
+    return await fetchLiveDailyForecast(resort);
+  } catch (err) {
+    const reason = classifyFetchError(err);
+    console.warn(`[NOAA daily forecast failed] resort=${resort.id} reason=${reason} message=${(err && err.message) || err}`);
+    return { ...historicalDailyForecast(resort, now), fallbackReason: (err && err.message) || String(err) };
+  }
+}

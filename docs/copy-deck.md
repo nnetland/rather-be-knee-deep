@@ -34,21 +34,20 @@ DM recipient. Flag to design-strategist/Director before ship.
 
 | Key | Copy |
 |---|---|
-| `splash.eyebrow` | Real ski recommendations from Nicole — pick a way in. |
 | `splash.mode.plan.label` | Plan a trip |
 | `splash.mode.plan.support` | Answer 5 quick questions. Get one solid pick. |
 | `splash.mode.chase.label` | Chase the snow |
 | `splash.mode.chase.support` | See where it's dumping this week. |
 | `splash.nicoleslist.link` | See everywhere Nicole's actually skied |
 
-`splash.eyebrow` is 10 words. It does three jobs at once: names the source (Nicole, the trust
-signal), names the two-part nature of the data ("real" implies grounded, not a black box), and
-frames the two buttons below as a choice rather than a form to fill out.
+The eyebrow line ("Real ski recommendations from Nicole — pick a way in.") was removed at the
+Director's direction on 2026-08-05 as unnecessary. The two mode cards carry the explanation on
+their own.
 
-**Screen reader order note:** eyebrow line first, then the two mode buttons in DOM order
-matching visual order (Plan / Chase), then the Nicole's-list link last. A screen reader user
-landing cold should hear "here's what this is → here are your two choices → here's a third,
-lower-commitment option" — the same decision order a sighted user scans.
+**Screen reader order note:** the two mode buttons come first in DOM order matching visual order
+(Plan / Chase), then the Nicole's-list link last. A screen reader user landing cold should hear
+"here are your two choices → here's a third, lower-commitment option" — the same decision order
+a sighted user scans.
 
 ---
 

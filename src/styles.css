@@ -913,6 +913,16 @@ ul { margin: 0; padding: 0; list-style: none; }
   opacity: 0; box-shadow: var(--shadow-md); max-width: calc(100vw - 2rem); text-align: center;
   transition: opacity 220ms var(--ease-entrance), transform 220ms var(--ease-entrance);
 }
+/* The toast is always in the DOM at opacity 0, fixed just above the nav bar
+   — so it silently intercepted taps on whatever sat underneath it, even
+   while invisible. That was latent until Quiver Check made the splash screen
+   taller and pushed "See everywhere Nicole's actually skied" down into
+   exactly that band, at which point the link became untappable on a 390x844
+   phone (caught by verify_contrast.js, which could no longer click it).
+   A toast is a status message: it should never be a pointer target at all,
+   visible or not. `role="status"` already means AT reads it without needing
+   to reach it. */
+.toast { pointer-events: none; }
 .toast--visible { opacity: 1; transform: translate(-50%, 0); }
 .toast--dismissing { transition: opacity 160ms var(--ease-exit); opacity: 0; transform: translate(-50%, 0); }
 @media (prefers-reduced-motion: reduce) { .toast, .toast--dismissing { transition: opacity 160ms ease; transform: translate(-50%,0) !important; } }
@@ -928,4 +938,106 @@ ul { margin: 0; padding: 0; list-style: none; }
 .reveal-hidden { opacity: 0; }
 @media (min-width: 1024px) {
   .page-column--wide { max-width: 64rem; }
+}
+
+/* =========================================================================
+   Quiver Check
+   Added with the fourth mode. Every value here resolves through the existing
+   semantic tokens, so dark mode, the 200%-zoom rem scaling and the reduced-
+   motion path all come for free rather than needing their own overrides.
+   ========================================================================= */
+
+/* --- Four-up nav ---------------------------------------------------------
+   The bar carried three items until Quiver Check. Four at 320px gives each
+   80px, which "Nicole's List" could not survive — hence the shortened
+   visible label (the full name rides on aria-label in shell.html). These
+   rules make the remaining labels behave under the same pressure at 200%
+   zoom, where the rem-based font-size grows but the viewport doesn't:
+   min-width:0 lets a flex item shrink below its content width at all, and
+   `overflow-wrap: anywhere` gives a long word somewhere to break rather
+   than forcing the bar wider than the screen. */
+.nav-item { min-width: 0; }
+.nav-item > span:last-child { min-width: 0; text-align: center; line-height: 1.15; overflow-wrap: anywhere; }
+
+.quiver-step { color: var(--text-secondary); display: block; margin-bottom: var(--space-2); }
+
+/* --- Step 1: resort picker ---------------------------------------------- */
+.quiver-search { margin: var(--space-5) 0 var(--space-4); }
+.quiver-search label { display: block; color: var(--text-secondary); margin-bottom: var(--space-2); }
+.quiver-search__field { position: relative; display: flex; align-items: center; }
+.quiver-search__icon {
+  position: absolute; left: var(--space-3); display: flex; pointer-events: none; color: var(--text-secondary);
+}
+.quiver-search__icon svg { width: 18px; height: 18px; }
+.quiver-search__input {
+  width: 100%; min-height: 56px; padding: var(--space-3) var(--space-4) var(--space-3) var(--space-10);
+  border-radius: var(--radius-md); border: var(--border-default-w) solid var(--border-interactive);
+  background: var(--bg-surface); color: var(--text-primary);
+  font-family: 'Manrope', sans-serif; font-weight: 500; font-size: 1rem;
+}
+.quiver-search__input::placeholder { color: var(--text-secondary); opacity: 1; }
+
+.quiver-group { margin-bottom: var(--space-5); }
+.quiver-group__heading {
+  display: block; padding-bottom: var(--space-2); margin-bottom: var(--space-1);
+  border-bottom: var(--border-hairline-w) solid var(--border-hairline);
+}
+.quiver-group__items { display: flex; flex-direction: column; }
+.quiver-resort {
+  display: grid; grid-template-columns: 1fr auto; align-items: center; gap: var(--space-1) var(--space-3);
+  width: 100%; min-height: 56px; padding: var(--space-3) var(--space-2);
+  background: none; border: none; border-bottom: var(--border-hairline-w) solid var(--border-hairline);
+  cursor: pointer; text-align: left; color: var(--text-primary);
+  transition: background-color var(--dur-fast) var(--ease-standard);
+}
+.quiver-resort:hover { background: var(--bg-tint); }
+.quiver-resort__name { font-family: 'Manrope', sans-serif; font-weight: 600; font-size: 1rem; min-width: 0; overflow-wrap: anywhere; }
+.quiver-resort__meta { grid-column: 1; color: var(--text-secondary); min-width: 0; }
+.quiver-resort__chev { grid-column: 2; grid-row: 1 / span 2; display: flex; color: var(--text-secondary); }
+.quiver-resort__chev svg { width: 18px; height: 18px; }
+
+/* --- Step 2: day picker -------------------------------------------------- */
+.quiver-day-list { display: flex; flex-direction: column; gap: var(--space-3); margin-top: var(--space-5); }
+
+/* --- Step 3: the call ---------------------------------------------------- */
+.quiver-card { display: flex; flex-direction: column; }
+.quiver-card .result-eyebrow { color: var(--text-secondary); margin-bottom: var(--space-2); }
+/* The ski name is the single thing this whole mode exists to say, so it gets
+   the hero treatment the trip planner reserves for a resort name. */
+.quiver-call { margin: 0 0 var(--space-2); color: var(--text-primary); }
+.quiver-call__tagline { color: var(--text-secondary); margin: 0 0 var(--space-2); }
+/* Waist width is a measurement, so it renders in the monospace "instrument"
+   face the rest of the app reserves for data — visual-system.md's rule that
+   numbers read as instrument rather than decoration. */
+.quiver-call__waist {
+  display: inline-block; padding: 2px var(--space-2); border-radius: var(--radius-sm);
+  background: var(--bg-tint); color: var(--text-primary);
+}
+.quiver-context { color: var(--text-primary); margin: 0 0 var(--space-4); }
+
+.quiver-whatis, .quiver-fallback, .quiver-aside {
+  border-top: var(--border-hairline-w) solid var(--border-hairline);
+  padding-top: var(--space-4); margin-bottom: var(--space-4);
+}
+.quiver-whatis .data-label, .quiver-fallback .data-label, .quiver-aside .data-label,
+.quiver-caveats .data-label { display: block; margin-bottom: var(--space-2); }
+/* The "if you don't own a pair" answer is the one most people actually need,
+   so it's tinted rather than left as another anonymous section. */
+.quiver-fallback {
+  background: var(--bg-tint); border: var(--border-default-w) solid var(--border-hairline);
+  border-radius: var(--radius-md); padding: var(--space-4); margin-top: var(--space-1);
+}
+.quiver-aside { border-top-style: dashed; }
+
+.quiver-caveats { margin-top: var(--space-5); }
+.quiver-caveat-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: var(--space-3); }
+.quiver-caveat-list li { display: flex; gap: var(--space-3); align-items: flex-start; }
+/* Shape plus text, never colour alone (R12) — the warning triangle is the
+   status indicator here and it carries its own outline. */
+.quiver-caveat__icon { flex: none; display: flex; color: var(--accent-warm-text); }
+.quiver-caveat__icon svg { width: 18px; height: 18px; }
+
+.quiver-limits {
+  color: var(--text-secondary); margin: var(--space-5) 0;
+  padding: var(--space-3) var(--space-4); border-left: 3px solid var(--border-hairline);
 }

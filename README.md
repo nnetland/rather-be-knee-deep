@@ -1,6 +1,6 @@
 # Rather Be Knee Deep
 
-A ski trip recommender. Answer five questions and get one resort, with the numbers behind the pick and Nicole's take on it if she's been there. Also chases live snow forecasts, and lists everywhere she's actually skied.
+A ski trip recommender. Answer five questions and get one resort, with the numbers behind the pick and Nicole's take on it if she's been there. Also chases live snow forecasts, tells you which skis to bring on a given day, and lists everywhere she's actually skied.
 
 No accounts, no paywall, no tracking. The whole app is one self-contained HTML file that works offline.
 
@@ -138,8 +138,10 @@ src/                    the actual source — edit here
   data.js               71 resorts + Nicole's list, inlined
   engine.js             matching logic for both modes
   badges.js             52-motif SVG badge system
+  quiver.js             Quiver Check's recommendation model (pure, no DOM)
   app.js                trip planner
   app-chase.js          snow chaser
+  app-quiver.js         Quiver Check
   app-nicoles.js        Nicole's list
   icons.js              interface icons
   noaa.js               weather API client with historical fallback
@@ -169,7 +171,15 @@ node verify_a11y.js             # accessibility assertions
 node verify_zoom_overlap.js     # 200% zoom text overlap
 node verify_badge_system.js     # badge determinism and region dedupe
 node verify_reason_anchor_sweep.js
+node verify_quiver.js           # 64k assertions over the ski-type model
+node verify_quiver_visual.js    # walks Quiver Check against a synthetic January storm
 ```
+
+`verify_quiver_visual.js` freezes the clock to mid-January and serves a fake
+NOAA response, because Quiver Check correctly refuses to render anything but
+its off-season screen from May to November — which is the right product
+behaviour and impossible review conditions. Its screenshots land in
+`screenshots-quiver/`.
 
 All of them should pass before you deploy anything.
 
