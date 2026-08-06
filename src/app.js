@@ -26,6 +26,15 @@ const state = {
   // every US resort, Quiver needs seven per-day rows for exactly one.
   quiver: { step: "resort", resortId: null, dateKey: null, search: "" },
   quiverForecast: null,     // { resortId, status, days, timeZone, isLive }
+  // Rants & Raves. `tab`, `scope` and `topic` are DERIVED FROM THE URL and
+  // never held independently of it — two sources of truth for "what is this
+  // feed showing" is how a filter and a URL drift apart, and this feed's URLs
+  // are its entire distribution model. `sort` is deliberately NOT in the URL:
+  // it is a reading preference, not a thing worth sending to somebody else.
+  // `hadPrev` records that a detail view was reached by tapping a card rather
+  // than by landing cold on a shared link, which is what the back control's
+  // wording and destination both branch on.
+  rants: { tab: "rants", scope: null, topic: null, sort: "unusual", hadPrev: false, focusPanel: false },
 };
 
 const COST_LABEL = { "$": "budget-conscious", "$$": "mid-range", "$$$": "splurge-friendly", "$$$$": "money's no object" };
@@ -109,6 +118,17 @@ function navigate(route, params) {
       state.quiver.step = state.quiver.resortId ? "day" : "resort";
     }
   }
+  if (route === "rants") {
+    // Rants is the default tab, every time the surface is entered from the
+    // nav. The resort filter and the topic are cleared with it: arriving from
+    // Chase holding a filter you set ten minutes ago is a feed that looks
+    // empty for a reason nothing on screen explains. `sort` survives, because
+    // it is a reading preference rather than a claim about what is shown.
+    state.rants.tab = "rants";
+    state.rants.scope = null;
+    state.rants.topic = null;
+    state.rants.hadPrev = false;
+  }
   if (route === "plan") {
     // Only reset to the first step on a genuinely fresh entry (from the
     // splash screen, a completed result, etc). Jumping Chase/Nicole's List
@@ -155,6 +175,12 @@ function syncHash() {
     history.replaceState(null, "", "#result=" + state.routeParams.shareToken);
   } else if (state.route === "plan") {
     syncQuizHash();
+  } else if (state.route === "rants") {
+    // Every Rants & Raves view is a real, shareable, back-button-correct URL —
+    // the tabs and cards are links, and this keeps the hash correct for the
+    // entries the surface is arrived at rather than navigated to.
+    const next = rantsCurrentHref();
+    if (location.hash !== next) history.replaceState(null, "", next);
   } else if (state.route === "quiver") {
     // renderQuiverResult() writes #quiver= itself once it knows the resort
     // and day; the two picker steps have nothing shareable yet, so the URL
@@ -204,6 +230,21 @@ function parseInitialRoute() {
       }
     } catch (e) { /* fall through to splash on any malformed quiver link */ }
   }
+  if (hash.startsWith("#rants=")) {
+    // No try/catch and no token decode: this route is plain readable segments,
+    // not base64, precisely so that a link surviving a chat client's mangling
+    // still says what it was for. Every unknown value degrades — an unknown
+    // tab falls back to Rants, an unknown scope renders the "this link is from
+    // an older version" state, and an unknown topic renders the expired state.
+    // Nothing here can throw.
+    const parsed = parseRantsHash(hash);
+    state.route = "rants";
+    state.rants.tab = parsed.tab;
+    state.rants.scope = parsed.scope;
+    state.rants.topic = parsed.topic;
+    state.rants.hadPrev = false;   // a cold landing, by definition
+    return;
+  }
   if (hash.startsWith("#quiz=")) {
     const token = hash.slice("#quiz=".length);
     try {
@@ -231,7 +272,7 @@ const mainEl = () => document.getElementById("app-main");
 
 function render() {
   const main = mainEl();
-  const chromeRoutes = ["plan", "chase", "quiver", "nicoles"];
+  const chromeRoutes = ["plan", "chase", "quiver", "nicoles", "rants"];
   const showNav = chromeRoutes.includes(state.route);
   document.getElementById("bottom-nav").hidden = !showNav;
   document.getElementById("top-nav").hidden = !showNav;
@@ -247,6 +288,7 @@ function render() {
   if (state.route === "chase") return renderChase(main);
   if (state.route === "quiver") return renderQuiver(main);
   if (state.route === "nicoles") return renderNicolesList(main);
+  if (state.route === "rants") return renderRants(main);
   if (state.route === "result") return renderResult(main);
   renderSplash(main);
 }
@@ -287,6 +329,11 @@ function renderSplash(main) {
             <span class="mode-card__label">Quiver Check</span>
             <span class="mode-card__support body-md">Already know where you're going? Find out which skis to bring.</span>
           </button>
+          <button class="mode-card" id="mode-rants" type="button">
+            <span class="mode-card__icon">${ICONS.speech}</span>
+            <span class="mode-card__label">Rants &amp; Raves</span>
+            <span class="mode-card__support body-md">See what skiers are saying on Reddit right now.</span>
+          </button>
         </div>
         <p class="splash-footer">
           <button class="btn-text" id="mode-nicoles" type="button">See everywhere Nicole's actually skied</button>
@@ -296,6 +343,7 @@ function renderSplash(main) {
   document.getElementById("mode-plan").addEventListener("click", () => navigate("plan"));
   document.getElementById("mode-chase").addEventListener("click", () => navigate("chase"));
   document.getElementById("mode-quiver").addEventListener("click", () => navigate("quiver"));
+  document.getElementById("mode-rants").addEventListener("click", () => navigate("rants"));
   document.getElementById("mode-nicoles").addEventListener("click", () => navigate("nicoles"));
   document.title = "Find your next ski trip";
   setOgMeta({
