@@ -14,8 +14,8 @@
 // ---------------------------------------------------------------------------
 
 function renderQuiver(main) {
-  const now = new Date();
-  const seasonInfo = classifySeasonState(RESORTS, now);
+  const now = appNow();
+  const seasonInfo = effectiveSeasonState(RESORTS, now);
   state.chaseSeasonInfo = seasonInfo;
 
   main.innerHTML = `<div class="page-column"><div id="quiver-body"></div></div>`;
@@ -71,7 +71,7 @@ function quiverPool() {
   // by a forecast existing for its coordinates. Canada stays in — it has no
   // NOAA coverage, so it resolves to the typical-season path with the label
   // that comes with it, exactly as it does in Chase.
-  const now = new Date();
+  const now = appNow();
   const shoulder = state.chaseSeasonInfo && state.chaseSeasonInfo.state === "shoulder";
   return RESORTS.filter((r) => {
     if (r.lat == null) return false;
@@ -149,7 +149,7 @@ function renderQuiverResortList() {
         ${groups[key].map((r) => `
           <button class="quiver-resort" type="button" data-rid="${r.id}">
             <span class="quiver-resort__name">${escapeHtml(r.name)}</span>
-            <span class="quiver-resort__meta body-sm">${r.country === "USA" ? "Live forecast" : "Typical season only"}${r.scale === "day-trip" ? " · Day-trip hill" : ""}</span>
+            <span class="quiver-resort__meta body-sm">${DEMO.active() ? "Demo data" : (r.country === "USA" ? "Live forecast" : "Typical season only")}${r.scale === "day-trip" ? " · Day-trip hill" : ""}</span>
             <span class="quiver-resort__chev" aria-hidden="true">${ICONS.arrowRight}</span>
           </button>`).join("")}
       </div>
@@ -181,7 +181,7 @@ function prefetchQuiverForecast(rid) {
   if (!resort) return;
   const seq = ++quiverFetchSeq;
   state.quiverForecast = { resortId: rid, status: "loading", days: null };
-  resolveDailyForecast(resort, new Date()).then((res) => {
+  resolveDailyForecast(resort, appNow()).then((res) => {
     // A stale response for a resort the user has since navigated away from
     // must not overwrite the current one.
     if (seq !== quiverFetchSeq) return;
@@ -202,7 +202,7 @@ function renderQuiverDayStep(body) {
   const resort = RESORTS_BY_ID[state.quiver.resortId];
   if (!resort) { state.quiver.step = "resort"; return renderQuiverStep(); }
 
-  const now = new Date();
+  const now = appNow();
   const tz = (state.quiverForecast && state.quiverForecast.timeZone) || null;
   const frame = buildDayFrame(now, tz, true);
 
@@ -300,7 +300,7 @@ function renderQuiverResult(body) {
 
   const day = fc.days[idx];
   const priorDays = fc.days.slice(0, idx);
-  const result = quiverCheck(resort, day, priorDays, new Date());
+  const result = quiverCheck(resort, day, priorDays, appNow());
   const c = result.conditions;
   const label = quiverDayLabel(day.dateKey, idx);
   const dayPhrase = idx === 0 ? "today" : idx === 1 ? "tomorrow" : `on ${label.primary}`;
@@ -400,6 +400,7 @@ function renderQuiverResult(body) {
 }
 
 function quiverFreshnessHtml(fc) {
+  if (fc.isDemo) return demoFreshnessHtml();
   if (fc.isLive) {
     return `<div class="freshness-badge"><span>${ICONS.live}</span><span class="freshness-badge__text body-sm">Live forecast · updated moments ago</span></div>`;
   }

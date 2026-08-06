@@ -19,6 +19,7 @@ replacements = {
     "/*__BADGES_JS__*/": read("badges.js"),
     "/*__ENGINE_JS__*/": read("engine.js"),
     "/*__NOAA_JS__*/": read("noaa.js"),
+    "/*__DEMO_JS__*/": read("demo.js"),
     "/*__QUIVER_JS__*/": read("quiver.js"),
     "/*__APP_JS__*/": read("app.js"),
     "/*__APP_CHASE_JS__*/": read("app-chase.js"),

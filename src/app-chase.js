@@ -12,8 +12,8 @@ function renderChase(main) {
   // the pool is plausibly open, the region/beginner controls have nothing to
   // act on — showing them anyway would invite tweaking filters on a ranking
   // that isn't going to appear, so they're omitted rather than disabled.
-  const now = new Date();
-  const seasonInfo = classifySeasonState(RESORTS, now);
+  const now = appNow();
+  const seasonInfo = effectiveSeasonState(RESORTS, now);
   state.chaseSeasonInfo = seasonInfo;
   const showControls = seasonInfo.state !== "off-season";
 
@@ -85,8 +85,8 @@ function wireBeginnerToggle() {
 
 function loadAndRenderChase() {
   const body = document.getElementById("chase-body");
-  const now = new Date();
-  const seasonInfo = classifySeasonState(RESORTS, now);
+  const now = appNow();
+  const seasonInfo = effectiveSeasonState(RESORTS, now);
   state.chaseSeasonInfo = seasonInfo;
 
   if (seasonInfo.state === "off-season") {
@@ -105,7 +105,8 @@ function loadAndRenderChase() {
   // themselves plausibly open by SEASON_OPEN_FRACTION's definition — a
   // resort that's still weeks from its published open date isn't made
   // "open" by a live forecast existing for its coordinates.
-  const usResorts = RESORTS.filter((r) => r.country === "USA" && r.lat != null &&
+  const inDemo = DEMO.active();
+  const usResorts = RESORTS.filter((r) => (inDemo || r.country === "USA") && r.lat != null &&
     (seasonInfo.state !== "shoulder" || seasonFraction(r, now) >= SEASON_OPEN_FRACTION));
 
   if (!usResorts.length) {
@@ -158,7 +159,9 @@ function renderChaseList(isRefresh) {
   if (!state.chaseCache) return;
 
   const { forecasts, anyFallback } = state.chaseCache;
-  freshnessWrap.innerHTML = anyFallback
+  freshnessWrap.innerHTML = DEMO.active()
+    ? demoFreshnessHtml()
+    : anyFallback
     ? `<div class="freshness-badge freshness-badge--fallback" id="freshness-badge">
         <span id="freshness-icon-historical">${ICONS.signalSlash}</span>
         <span class="freshness-badge__text body-sm">Not a live forecast</span>
@@ -170,7 +173,7 @@ function renderChaseList(isRefresh) {
   if (retryBtn) retryBtn.addEventListener("click", () => { state.chaseCache = null; loadAndRenderChase(); });
 
   const ranked = rankChaseTheSnow(forecasts, state.chaseAnswers, RESORTS);
-  const canada = rankCanadaTypicalSeason(RESORTS);
+  const canada = DEMO.active() ? [] : rankCanadaTypicalSeason(RESORTS);
 
   // Shoulder-season notice (October, May): the list below only includes
   // resorts that are individually plausibly open (see loadAndRenderChase's

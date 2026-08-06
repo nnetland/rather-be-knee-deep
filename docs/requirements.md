@@ -142,6 +142,36 @@ Added 2026-08-05. The 2.0 draft's third item, and the first of that list to be b
 
 ---
 
+## Demo snow — a temporary invented dataset
+
+Added 2026-08-05, Director's call: *"Let's make a call to use an invented data set for now. You can flag it in the site UI for clarity. But that will unlock iterating on Chase the Snow and Quiver Check."*
+
+Both forecast-driven modes read a live 7-day NOAA forecast, and from roughly May to November there is nothing to read — every resort is closed and both modes correctly render an off-season screen. That is right, and it made the two most data-heavy features impossible to iterate on for half the year. This fills the dead window.
+
+**S1 · Invented, not last season's real numbers. SHIPPED.** Real per-day history was the preferred option and isn't reachable: NOAA's forecast API is forward-only, and the archives that do carry daily snowfall (NCEI, SNOTEL) have no egress from the build environment. So the season is generated — but generated *from* the real dataset. Each resort's invented season is scaled to sum to its own published annual snowfall, runs between its own published open and close dates, takes its temperatures from its own base elevation and latitude, and takes its snow-to-liquid ratio from its region's real character. Alta generates a deep dry season averaging 16.9:1; Mt. Baker a deeper wetter one at 9.3:1; interior BC separates from the coast range. Snowfall arrives in clustered storms with dry spells between, not as uniform daily drizzle — a model tuned against uniform noise is tuned against nothing.
+
+**S2 · It only fills a window it cannot be wrong about. SHIPPED.** Demo data activates solely when the real calendar says the season is over — the one state in which there is no true answer to displace. It never overrides a live forecast, and it never replaces the honest typical-season fallback *during* the season: Canada's no-NOAA-coverage tier and a February NOAA outage both still behave exactly as shipped.
+
+**S3 · It switches itself off. SHIPPED.** There is no flag to remember. Once enough of the pool is open for the season classifier to stop reporting "off-season" — around mid-November — demo mode goes false on its own and the real path takes over untouched. Verified across all twelve months.
+
+**S4 · Nothing it generates can render unlabelled. SHIPPED.** Every value carries `isDemo: true`, a banner sits at the top of every screen, and each card carries its own badge. The banner names what is *not* affected ("Trip planning and Nicole's list are unaffected") so it can't be read as casting doubt on the planner's real data. The ski model attaches an explicit invented-data caveat to every call.
+
+**S5 · Demo data exercises the real code path, not a degraded one. SHIPPED.** Because the generated data carries a genuine liquid-equivalent figure — unlike the typical-season fallback, whose ratio is an assumed 10:1 — demo days take the live reasoning path in full, including the measured snow-to-liquid ratio. That is the point: iterating on copy and models means running the code that actually ships.
+
+**S6 · Dev controls. SHIPPED.** A collapsed strip on the banner sets the date (bounded to the season) and forces a condition — deep and cold, heavy and wet, dry spell, spring slush, thin early season. The two season-gated conditions move the date with them, because forcing warm temperatures in January produced a bump call rather than the slush the control named.
+
+**S7 · Removal. AGREED.** Delete `src/demo.js` and its two tokens from `assemble.py`, or set `DEMO_ENABLED = false`. Every call site is guarded. Nothing else references it. No deadline — it disables itself in November either way.
+
+**S8 · Side effect: the test suite is fully green again. NOTED.** `verify_contrast.js`, `verify_share_and_offline.js` and `verify_zoom_overlap.js` had all been failing since the season ended, because they navigate into Chase the Snow and assert on a ranked list that off-season correctly refuses to render. With demo data present they pass — 10/10, 14/14 and 76/76.
+
+**S9 · One test goes the other way. NOTED 2026-08-06.** `verify_fixround.js` drops to 28/29 while demo mode is on. Its final assertion throttles `api.weather.gov` to force Chase the Snow's 4-second escalated loading state and check that the skip-ahead control appears. Demo mode short-circuits `resolveForecast` *before* any network call, so there is no wait to escalate and no skip button — the test asserts a behaviour that correctly cannot occur while demo data is active. It passes again the moment demo mode switches itself off in November. Not fixed, because the alternative is making the demo path do a pointless network round-trip.
+
+**S10 · Two verify scripts have been pointing at a path that does not exist. NOTED 2026-08-06.** `verify_dom_prose_sweep.js` and `verify_focus_entry.js` both load `build/rather-be-knee-deep.html`; the bundle has lived at the repo root since the build was reorganised, so both have been failing with `ERR_FILE_NOT_FOUND` rather than actually testing anything. Predates the demo work. One-line fix in each, not yet applied.
+
+**R12b · The demo banner was occluding taps beneath it. FIXED 2026-08-05.** Built as a sticky bar, which overlays whatever scrolls under it — and with the controls panel open it is roughly 500px tall, swallowing taps on the resort picker below. Now in normal flow. Second instance of this defect class in two days (see R12a); `verify_demo.js` now asserts directly that the banner occludes no interactive element beneath it.
+
+---
+
 ## Explicitly out of scope
 
 Booking, live pricing, or inventory. Accounts, saved trips, or cross-session personalisation. Backcountry, cat-skiing and heli operations. International resorts in the recommender.

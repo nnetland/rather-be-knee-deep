@@ -309,6 +309,10 @@ function classifyFetchError(err) {
  * specific technical cause to the end user).
  */
 async function resolveForecast(resort) {
+  // Demo mode short-circuits before any network attempt — it is only ever
+  // active when the real calendar says nothing is open, so there is no live
+  // forecast here to displace. See demo.js for the full rules.
+  if (typeof DEMO !== "undefined" && DEMO.active()) return demoAggregateForecast(resort, appNow());
   try {
     const live = await fetchLiveForecast(resort);
     return live;
@@ -580,6 +584,7 @@ function historicalDailyForecast(resort, now) {
  * something already known.
  */
 async function resolveDailyForecast(resort, now) {
+  if (typeof DEMO !== "undefined" && DEMO.active()) return demoDailyForecast(resort, now || appNow());
   if (resort.country !== "USA" || resort.lat == null) {
     return { ...historicalDailyForecast(resort, now), fallbackReason: "outside NOAA coverage" };
   }

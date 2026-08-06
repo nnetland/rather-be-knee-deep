@@ -225,6 +225,14 @@ function assessQuiverConditions(resort, day, priorDays, now) {
   const newSnow = day.snowIn || 0;
   const stormTotal = Math.round((newSnow + leadSnow) * 10) / 10;
 
+  // Demo data is forecast-SHAPED — it carries a real per-day snowfall and a
+  // real liquid-equivalent figure, unlike the typical-season fallback, whose
+  // liquid figure is an assumed 10:1. So demo days take the live reasoning
+  // path in full. That is the entire point of the demo dataset: iterating on
+  // the copy and the model means exercising the code that actually ships,
+  // not a degraded branch of it. What marks the data out is the banner, the
+  // badge and the caveat — never a quieter set of sentences.
+  const forecastShaped = !!(day.isLive || day.isDemo);
   const precipTotal = (day.precipIn || 0) + lead.reduce((s, d) => s + (d.precipIn || 0), 0);
   // Only trust the ratio when there's enough of both sides of it to divide
   // meaningfully — a trace of each produces a wild, meaningless number — and
@@ -239,7 +247,7 @@ function assessQuiverConditions(resort, day, priorDays, now) {
   // the app never made, on a path that has no forecast at all. Withholding
   // it drops the fallback onto the coarser temperature read, which is what
   // it actually knows. R8: never present derived history as measurement.
-  const slr = (day.isLive && stormTotal >= 1 && precipTotal >= 0.1) ? stormTotal / precipTotal : null;
+  const slr = (forecastShaped && stormTotal >= 1 && precipTotal >= 0.1) ? stormTotal / precipTotal : null;
   const density = slr != null ? densityFromRatio(slr) : densityFromTemp(day.highF);
 
   const terrain = quiverTerrainFactor(resort);
@@ -271,6 +279,8 @@ function assessQuiverConditions(resort, day, priorDays, now) {
     resort,
     dateKey: day.dateKey,
     isLive: !!day.isLive,
+    isDemo: !!day.isDemo,
+    forecastShaped,
     newSnow: Math.round(newSnow * 10) / 10,
     stormTotal,
     leadDaysObserved: lead.length,
@@ -396,8 +406,8 @@ function quiverCheck(resort, day, priorDays, now) {
     } else {
       callId = "skinny";
       reasons.push(c.stormTotal < 0.5
-        ? (c.isLive ? "Nothing in the forecast — this is a groomer day." : "No meaningful snow typical for this time of year — plan on a groomer day.")
-        : `Only ${fmtInches(c.stormTotal)} ${c.isLive ? "in the forecast" : "typical for this stretch of the season"}, which is a dusting on a firm surface rather than something to float in.`);
+        ? (c.forecastShaped ? "Nothing in the forecast — this is a groomer day." : "No meaningful snow typical for this time of year — plan on a groomer day.")
+        : `Only ${fmtInches(c.stormTotal)} ${c.forecastShaped ? "in the forecast" : "typical for this stretch of the season"}, which is a dusting on a firm surface rather than something to float in.`);
       reasons.push(c.highF != null && c.highF < 20
         ? `At ${Math.round(c.highF)}°F that surface will stay firm and fast all day, and a sharp edge is what holds on it.`
         : "On firm snow, edge grip beats surface area — a narrower ski gets from edge to edge faster.");
@@ -408,10 +418,12 @@ function quiverCheck(resort, day, priorDays, now) {
   }
 
   // --- Caveats — things that don't change the call but change the day ------
-  if (!c.isLive) {
+  if (c.isDemo) {
+    caveats.push("These snow figures are invented. The app is running on a made-up season so the forecast features work out of season — none of these numbers describe real weather anywhere.");
+  } else if (!c.isLive) {
     caveats.push("This is typical snowfall for this time of year, not a live forecast — treat it as a starting point and check the resort's own snow report before you pack.");
   }
-  if (c.leadDaysObserved < 2 && c.isLive) {
+  if (c.leadDaysObserved < 2 && c.forecastShaped) {
     caveats.push(`The forecast only runs forward, so this counts ${c.leadDaysObserved === 0 ? "no" : pluralize(c.leadDaysObserved, "day")} of snow before your day. If there's already fresh snow on the ground, size up.`);
   }
   if (isPowderDay && (resort.crowd_level === "brutal" || resort.crowd_level === "high")) {
@@ -454,7 +466,7 @@ function shouldSuggestPark(resort, c) {
 // therefore get genuinely different sentences, not the same sentence with a
 // disclaimer bolted on.
 function stormSentence(c) {
-  if (!c.isLive) {
+  if (!c.forecastShaped) {
     return c.stormTotal >= 1
       ? `A typical week at ${c.resort.name} at this point in the season brings around ${fmtInches(c.stormTotal * (7 / Math.max(1, c.leadDaysObserved + 1)))} of snow — roughly ${fmtInches(c.newSnow)} on any given day.`
       : `${c.resort.name} doesn't typically get meaningful snow at this point in the season.`;
@@ -472,7 +484,7 @@ function densitySentence(c) {
   if (c.slr != null) {
     return `The forecast works out to about ${c.slr}:1 snow-to-water — ${c.density.word}. ${c.density.long}`;
   }
-  if (c.highF != null && !c.isLive) {
+  if (c.highF != null && !c.forecastShaped) {
     return `Temperatures here typically sit around ${Math.round(c.highF)}°F at this time of year, which usually means ${c.density.word} snow. ${c.density.long}`;
   }
   if (c.highF != null) {
