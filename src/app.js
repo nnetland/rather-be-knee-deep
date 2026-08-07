@@ -24,7 +24,12 @@ const state = {
   // cache, kept separate from chaseCache because the two modes want
   // different shapes of the same data — Chase needs one 7-day total for
   // every US resort, Quiver needs seven per-day rows for exactly one.
-  quiver: { step: "resort", resortId: null, dateKey: null, search: "" },
+  // `hadPrev` mirrors the Rants surface's flag of the same name: it records
+  // that the call was reached by picking a day, rather than by landing cold on
+  // a shared #quiver= link. The result page's back control branches its
+  // wording AND its destination on it, because on a cold landing there is no
+  // picker behind you to go back to.
+  quiver: { step: "resort", resortId: null, dateKey: null, search: "", hadPrev: false },
   quiverForecast: null,     // { resortId, status, days, timeZone, isLive }
   // Rants & Raves. `tab`, `scope` and `topic` are DERIVED FROM THE URL and
   // never held independently of it — two sources of truth for "what is this
@@ -99,6 +104,29 @@ function b64urlDecode(str) {
   return decodeURIComponent(escape(atob(str)));
 }
 
+/**
+ * The back control for a leaf page — a view the app can leave you standing on
+ * with nothing above it. Two use it: the Quiver call and the trip-planner
+ * result card. Modelled on .rants-back (app-rants.js), the first place this
+ * problem was solved here.
+ *
+ * `label` always names the destination. A bare chevron gives a screen-reader
+ * user nothing to act on and gives a cold-landed reader — who never saw the
+ * screen it points back to — nothing at all. The arrow is decoration on top of
+ * that name, never a substitute for it, so it is aria-hidden.
+ *
+ * `isBack` is not styling. It records whether this is genuinely a return to a
+ * screen the user came from, or a first trip to the surface's entry point.
+ * Both are honest destinations; only one of them is "back", and the caller has
+ * to have decided which before it gets here (see the cold-landing notes at
+ * each call site). The arrow renders only for the real thing.
+ */
+function leafBackHtml(id, label, isBack) {
+  return `<button class="leaf-back" id="${id}" type="button">` +
+    (isBack ? `<span class="leaf-back__arrow" aria-hidden="true">&larr;</span>` : "") +
+    `<span>${escapeHtml(label)}</span></button>`;
+}
+
 // ---------------------------------------------------------------------------
 // Routing
 // ---------------------------------------------------------------------------
@@ -112,7 +140,7 @@ function navigate(route, params) {
     // user already picked, but arriving from the splash should start clean.
     const cameFromModeSwitch = previousRoute === "chase" || previousRoute === "nicoles" || previousRoute === "plan";
     if (!cameFromModeSwitch) {
-      state.quiver = { step: "resort", resortId: null, dateKey: null, search: "" };
+      state.quiver = { step: "resort", resortId: null, dateKey: null, search: "", hadPrev: false };
       state.quiverForecast = null;
     } else if (state.quiver.step === "result" && !state.quiver.dateKey) {
       state.quiver.step = state.quiver.resortId ? "day" : "resort";
@@ -136,7 +164,14 @@ function navigate(route, params) {
     // at Step 1 — the underlying answers were already retained, but the
     // visible step wasn't, which reads as "start over" even though nothing
     // was actually lost (heuristic-evaluation.md, H3/H6 major finding).
-    const cameFromModeSwitch = previousRoute === "chase" || previousRoute === "nicoles";
+    // "result" joins this list for the leaf-page back control. Coming back
+    // from your own finished pick has to land on the last question you
+    // answered — the whole reason to press it is to change an answer. Resetting
+    // to step 1 with the answers still filled in reads as "start over" for a
+    // move labelled "Back to your answers". Nothing else can take this branch:
+    // result is the one route that renders no nav chrome, and its other two
+    // exits go to the splash and Nicole's list.
+    const cameFromModeSwitch = previousRoute === "chase" || previousRoute === "nicoles" || previousRoute === "result";
     if (!cameFromModeSwitch) {
       state.quizStepIdx = 0;
     } else {
@@ -220,7 +255,10 @@ function parseInitialRoute() {
       const payload = JSON.parse(b64urlDecode(token));
       if (payload && payload.rid && RESORTS_BY_ID[payload.rid] && typeof payload.d === "string") {
         state.route = "quiver";
-        state.quiver = { step: "result", resortId: payload.rid, dateKey: payload.d, search: "" };
+        // hadPrev: false — a cold landing, by definition. Nobody picked a day
+        // to get here, so the call's back control must offer the picker as a
+        // destination rather than claim to return them to one.
+        state.quiver = { step: "result", resortId: payload.rid, dateKey: payload.d, search: "", hadPrev: false };
         // Deliberately NOT restoring a frozen recommendation from the token
         // (unlike #result=, which does exactly that). A ski call is only
         // true while the forecast behind it is, so a shared link re-reads
@@ -723,7 +761,11 @@ function submitQuiz() {
     return;
   }
   const payload = buildSharePayload(result, state.quizAnswers);
-  navigate("result", { shared: payload, shareToken: b64urlEncode(JSON.stringify(payload)), fresh: true });
+  // origin: the surface this result was generated from, and the only thing the
+  // result page's back control trusts. A cold #result= link carries no origin,
+  // which is exactly how a share-link reader is told apart from someone who
+  // just finished the quiz.
+  navigate("result", { shared: payload, shareToken: b64urlEncode(JSON.stringify(payload)), fresh: true, origin: "plan" });
 }
 
 function renderNoMatch() {
@@ -1003,8 +1045,28 @@ function renderResult(main) {
   const isFreshResult = !!state.routeParams.fresh;
   const displayBullets = isFreshResult ? shared.reasonBullets : shared.reasonBullets.map(toColdViewBullet);
 
+  // Back, at the top, above the card — and ONLY when this session generated
+  // the result. `origin` is set by the quiz and by a Chase row tap; a cold
+  // #result= link has none.
+  //
+  // A cold-landed result deliberately gets no back control at all, and that is
+  // a decision rather than an omission. It is not a leaf of anything: nobody
+  // navigated into it, there is no list it belongs to, and the screen is
+  // already asserted to carry zero nav chrome (verify_share_and_offline) —
+  // it is a share artifact, and the app's front door for whoever opened it.
+  // Its two honest destinations are already in the footer, named plainly:
+  // "Make your own pick" and "See more of Nicole's picks". A control at the
+  // top saying "back" to someone who has never been anywhere would be the
+  // dishonest kind of affordance this whole change exists to remove.
+  const origin = state.routeParams.origin;
+  const backHtml =
+    origin === "chase" ? leafBackHtml("result-leaf-back", "Back to Chase the snow", true) :
+    origin === "plan" ? leafBackHtml("result-leaf-back", "Back to your answers", true) :
+    "";
+
   main.innerHTML = `
     <div class="result-wrap">
+      ${backHtml}
       <article class="result-card" id="result-card">
         <div class="attribution reveal-hidden">
           <span class="attribution__mark">${ICONS.mountain}</span>
@@ -1044,6 +1106,13 @@ function renderResult(main) {
         </div>
       </article>
     </div>`;
+
+  // navigate() re-renders the destination, and both renderChase() and
+  // renderPlan() already call focusHeading() on the way in — so focus lands on
+  // the destination's own heading with no extra handling here, matching every
+  // other route change in the app.
+  const leafBack = document.getElementById("result-leaf-back");
+  if (leafBack) leafBack.addEventListener("click", () => navigate(origin === "chase" ? "chase" : "plan"));
 
   document.getElementById("share-btn").addEventListener("click", () => shareResult(resort, shared));
   document.getElementById("make-own-btn").addEventListener("click", () => navigate("splash"));

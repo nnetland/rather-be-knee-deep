@@ -410,7 +410,11 @@ function showChaseRowDetail(rid) {
   // fresh: true — this is a same-session, self-generated view (the user just
   // tapped their own Chase-the-Snow row), not a cold shared link, so it must
   // render in the "Your pick" / "You said" voice, not the cold-view one.
-  navigate("result", { shared: payload, shareToken: b64urlEncode(JSON.stringify(payload)), fresh: true });
+  // origin: "chase" — this detail view is the trip-planner result card reused,
+  // so it shares that route's dead-end problem and its fix. Back returns to the
+  // ranked list, which is still in state.chaseCache and re-renders without a
+  // refetch.
+  navigate("result", { shared: payload, shareToken: b64urlEncode(JSON.stringify(payload)), fresh: true, origin: "chase" });
 }
 
 function revealListRows(rows) {
