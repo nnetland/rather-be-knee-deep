@@ -418,9 +418,19 @@ function quiverCheck(resort, day, priorDays, now) {
   }
 
   // --- Caveats — things that don't change the call but change the day ------
-  if (c.isDemo) {
-    caveats.push("These snow figures are invented. The app is running on a made-up season so the forecast features work out of season — none of these numbers describe real weather anywhere.");
-  } else if (!c.isLive) {
+  // Demo mode contributes NO caveat. It used to push an invented-data line
+  // here, which put the app's third statement of the same fact into "Worth
+  // knowing" — under the banner and the per-card badge, on one screen.
+  // Removed at the Director's call (2026-08-07); the banner carries it.
+  //
+  // `!c.isDemo` still has to guard the line below. Demo days carry
+  // `isLive: false` like every non-live day, so dropping the demo branch
+  // without this guard would hand demo mode the typical-season caveat — and
+  // "this is typical snowfall for this time of year" is a different false
+  // claim about invented numbers, not a softer one. When demo.js is gone,
+  // `c.isDemo` is false for every day and this reads as the plain
+  // `if (!c.isLive)` it was before demo mode existed.
+  if (!c.isLive && !c.isDemo) {
     caveats.push("This is typical snowfall for this time of year, not a live forecast — treat it as a starting point and check the resort's own snow report before you pack.");
   }
   if (c.leadDaysObserved < 2 && c.forecastShaped) {

@@ -28,8 +28,20 @@
 //      forecast path takes over untouched.
 //
 //   3. Nothing it generates can render unlabelled. Every value carries
-//      `isDemo: true` alongside `isLive: false`, the app shows a persistent
-//      banner on any screen using it, and each card carries its own badge.
+//      `isDemo: true` alongside `isLive: false`, and the app shows a
+//      persistent banner on every screen while demo mode is on.
+//
+//      That banner is now the ONLY place the claim is made. Until 2026-08-07
+//      it was made three times on one journey: the banner, a per-card demo
+//      badge in both forecast modes' freshness slots, and an invented-data
+//      caveat in the Quiver call's "Worth knowing" list. Director's call
+//      after phone testing — the repetition was loud enough to get in the way
+//      of using the app, so the two restatements are gone and the banner
+//      stays exactly as worded. One persistent, honest declaration is the
+//      point; three is a different failure from zero, but still a failure.
+//
+//      verify_demo.js §3b greps src/ for the removed helper and its pill
+//      copy, so neither this comment nor any other may quote them literally.
 //
 // --- Why invented rather than last season's real numbers -------------------
 // Real per-day history would be better and isn't reachable: NOAA's forecast
@@ -365,29 +377,21 @@ function effectiveSeasonState(pool, now) {
 }
 
 // ---------------------------------------------------------------------------
-// Demo chrome — banner, per-card badge, and the dev controls.
+// Demo chrome — the banner and the dev controls.
 //
 // All of it lives in this file so the whole feature can be removed by
-// deleting one file and one token from assemble.py. The only hooks anywhere
-// else are `syncDemoChrome()` (called from render()) and `demoFreshnessHtml()`
-// (called from the two modes' freshness badges), both guarded by
-// DEMO.active().
+// deleting one file and one token from assemble.py. `syncDemoChrome()`,
+// called from render() and guarded by DEMO.active(), is now the only hook
+// anywhere else in the app.
+//
+// There was a second hook until 2026-08-07: a demo freshness-badge helper,
+// whose pill was rendered into Chase the Snow's and Quiver Check's freshness
+// slots. Removed at the Director's call — see the header. Both call sites now
+// render nothing at all in demo mode rather than falling through to a
+// real-data badge, because neither real badge can stand in for it: "Live
+// forecast" would be a lie, and "Not a live forecast" blames a network
+// outage for data that was never fetched.
 // ---------------------------------------------------------------------------
-
-/**
- * The per-card badge. Deliberately reuses `.freshness-badge--fallback`, which
- * already carries the app's "this is not live data" visual language — an
- * outlined, warm-toned pill with an icon, verified for contrast on both
- * backgrounds (M4 fix) and readable without relying on colour (R12). A demo
- * badge is a stronger claim than a fallback badge, not a different kind of
- * one, so it inherits the treatment and sharpens the words.
- */
-function demoFreshnessHtml() {
-  return `<div class="freshness-badge freshness-badge--fallback freshness-badge--demo">
-      <span aria-hidden="true">${ICONS.warning}</span>
-      <span class="freshness-badge__text body-sm">Demo data · invented, not a forecast</span>
-    </div>`;
-}
 
 function demoBannerHtml() {
   const forceLabel = (DEMO_FORCE_MODES.find((m) => m.id === DEMO.force) || DEMO_FORCE_MODES[0]).label;

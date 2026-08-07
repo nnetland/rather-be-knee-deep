@@ -124,14 +124,78 @@ console.log("\n3. Everything it generates is flagged");
   assert(flags.every((f) => f.dailyDemo && f.dayDemo && f.aggDemo),
     `all ${flags.length} resorts emit isDemo:true / isLive:false on every path`);
 
-  // And the ski model must attach the invented-data caveat to every call.
-  const missing = vm.runInContext(`
+  // The ski model must attach NO data-provenance caveat to a demo-backed call.
+  //
+  // This assertion is the inverse of the one it replaces, and the inversion is
+  // the Director's decision of 2026-08-07, not a weakened test. The invented-
+  // data line was the third statement of the same fact on one screen (banner,
+  // per-card badge, "Worth knowing"), and it was the one buried deepest. The
+  // banner in §5 below is what now carries the claim, and it is asserted there
+  // verbatim so this removal cannot quietly become a removal of all of them.
+  const stillCaveated = vm.runInContext(`
     RESORTS.map(r => {
       const fc = demoDailyForecast(r, appNow());
       const res = quiverCheck(r, fc.days[3], fc.days.slice(0,3), appNow());
-      return res.caveats.some(t => t.includes("invented")) ? null : r.id;
+      return res.caveats.some(t => /invented|typical snowfall for this time of year/i.test(t)) ? r.id : null;
     }).filter(Boolean)`, ctx);
-  assert(missing.length === 0, `every demo-backed ski call carries the invented-data caveat${missing.length ? " — missing: " + missing.slice(0,3) : ""}`);
+  assert(stillCaveated.length === 0,
+    `no demo-backed ski call carries a data-provenance caveat${stillCaveated.length ? " — still on: " + stillCaveated.slice(0,3) : ""}`);
+
+  // The specific trap in removing it: demo days carry isLive:false like any
+  // non-live day, so dropping the demo branch without guarding the one below
+  // would swap one false claim ("invented") for another ("typical snowfall for
+  // this time of year"). The sweep above covers that, and this proves the
+  // real, non-demo path that caveat exists for is still intact — the typical-
+  // season fallback in a live month must still say so.
+  const jan = load(JANUARY);
+  const typicalSeasonCaveat = vm.runInContext(`
+    (function () {
+      const r = RESORTS.find(x => x.id === 'alta-ut');
+      const mk = k => ({ dateKey: k, snowIn: 0.2, precipIn: 0.02, highF: 24, lowF: 13, isLive: false, hasData: true });
+      const res = quiverCheck(r, mk("2027-01-24"), ["2027-01-21","2027-01-22","2027-01-23"].map(mk), appNow());
+      return res.caveats.some(t => /typical snowfall for this time of year/i.test(t));
+    })()`, jan);
+  assert(typicalSeasonCaveat,
+    "with demo off, a non-live day still carries the typical-season caveat (the real path is untouched)");
+}
+
+// ---------------------------------------------------------------------------
+console.log("\n3b. The per-card demo badge is gone at the source");
+// ---------------------------------------------------------------------------
+{
+  // Structural removal, not display:none and not a dead helper left behind:
+  // demo.js gets deleted wholesale once the season starts, so a call site that
+  // outlived it would be a hard ReferenceError on a live screen.
+  const srcFiles = fs.readdirSync(SRC).filter((f) => f.endsWith(".js"));
+  const referencing = srcFiles.filter((f) =>
+    fs.readFileSync(path.join(SRC, f), "utf8").includes("demoFreshnessHtml("));
+  assert(referencing.length === 0,
+    `demoFreshnessHtml() is defined and called nowhere${referencing.length ? " — still in: " + referencing.join(", ") : ""}`);
+
+  const pillText = srcFiles.filter((f) =>
+    fs.readFileSync(path.join(SRC, f), "utf8").includes("Demo data · invented, not a forecast"));
+  assert(pillText.length === 0,
+    `the "Demo data · invented, not a forecast" pill string is gone from src${pillText.length ? " — still in: " + pillText.join(", ") : ""}`);
+
+  // Demo CHROME (as distinct from the demo clock, which the whole app reads
+  // through appNow()/effectiveSeasonState()) is now sealed inside demo.js,
+  // with syncDemoChrome() as its single entry point. A chrome helper called
+  // from an app file is the coupling that just got removed; it should not
+  // come back by a different name.
+  const chromeHelpers = ["demoFreshnessHtml", "demoBannerHtml", "wireDemoControls", "demoInvalidate"];
+  const leaked = [];
+  for (const f of srcFiles.filter((x) => x !== "demo.js")) {
+    const body = fs.readFileSync(path.join(SRC, f), "utf8");
+    for (const h of chromeHelpers) if (body.includes(h + "(")) leaked.push(`${f}: ${h}`);
+  }
+  assert(leaked.length === 0,
+    `demo chrome is reachable only via syncDemoChrome()${leaked.length ? " — leaked: " + leaked.join(", ") : ""}`);
+
+  // The CSS rule that styled the pill goes with it — a selector matching
+  // nothing is the stylesheet's version of a dead node.
+  const css = fs.readFileSync(path.join(SRC, "styles.css"), "utf8");
+  assert(!css.includes("freshness-badge--demo"),
+    "the .freshness-badge--demo rule is gone from styles.css");
 }
 
 // ---------------------------------------------------------------------------
@@ -213,6 +277,18 @@ console.log("\n5. In the browser, today");
   assert(/invented/i.test(bannerText), "the banner says the numbers are invented");
   assert(/unaffected/i.test(bannerText), "the banner names what is NOT affected");
 
+  // THE BANNER IS THE SURVIVING DECLARATION. The badge and the caveat were
+  // removed on 2026-08-07 precisely so this one could stay unqualified, which
+  // makes its exact wording load-bearing rather than incidental: weakening it
+  // would leave the app with three softened statements where it used to have
+  // one hard one. Asserted verbatim, deliberately.
+  assert(
+    bannerText.includes("Demo snow.") &&
+    bannerText.includes("Snow forecasts are invented while the season is out — no number here describes real weather.") &&
+    bannerText.includes("Trip planning and Nicole's list are unaffected."),
+    "the banner's wording is intact, word for word");
+  assert(await page.locator("#demo-controls-toggle").isVisible(), "the banner still carries its Controls button");
+
   // Chase the Snow ranks instead of showing the off-season screen.
   await page.click("#mode-chase");
   await page.waitForTimeout(1200);
@@ -222,7 +298,28 @@ console.log("\n5. In the browser, today");
   // rankChaseTheSnow() returns a top-8 by design (engine.js) — this asserts a
   // full ranked list, not an arbitrary count.
   assert(rows === 8, `Chase the Snow ranks a full top-8 list (${rows} rows)`);
-  assert(/Demo data/i.test(chaseText), "the Chase list carries the demo badge");
+
+  // 1a — the pill is gone from the Chase list. #app-main excludes the banner
+  // (which lives outside .app-shell), so this is specifically "the second
+  // statement is not in the page body", not "no statement anywhere".
+  assert(!/Demo data · invented, not a forecast/.test(chaseText),
+    "the Chase list no longer restates the demo warning under the beginner toggle");
+  assert(await page.locator(".freshness-badge--demo").count() === 0,
+    "no demo freshness pill is rendered on the Chase list");
+
+  // Structural removal: no empty node holding open the space the pill used to
+  // occupy. #chase-freshness is a real container in the Chase markup and stays
+  // there for the live/fallback badges — in demo mode it must simply collapse.
+  const freshnessBox = await page.evaluate(() => {
+    const el = document.getElementById("chase-freshness");
+    if (!el) return null;
+    const cs = getComputedStyle(el);
+    return { children: el.childElementCount, h: el.getBoundingClientRect().height,
+             mt: parseFloat(cs.marginTop), mb: parseFloat(cs.marginBottom) };
+  });
+  assert(freshnessBox && freshnessBox.children === 0 && freshnessBox.h === 0 &&
+         freshnessBox.mt === 0 && freshnessBox.mb === 0,
+    `the freshness slot collapses to nothing in demo mode — no dead node, no gap (${JSON.stringify(freshnessBox)})`);
   await page.screenshot({ path: "screenshots-quiver/20-demo-chase.png", fullPage: true });
 
   // Quiver Check reaches a call.
@@ -237,8 +334,37 @@ console.log("\n5. In the browser, today");
   const call = (await page.locator(".quiver-call").innerText()).trim();
   const cardText = await page.locator("#quiver-card").innerText();
   assert(call.length > 0, `Quiver Check produces a call (${call})`);
-  assert(/Demo data/i.test(cardText), "the call card carries the demo badge");
-  assert(/invented/i.test(cardText), "the call card carries the invented-data caveat");
+
+  // 1a/1b — neither restatement survives on the Quiver result. The pill
+  // rendered here too (same helper as the Chase list), so removing only the
+  // screenshotted one would have left the page still saying it twice.
+  assert(!/Demo data · invented, not a forecast/.test(cardText),
+    "the call card no longer carries the demo pill");
+  assert(await page.locator("#quiver-card .freshness-badge").count() === 0,
+    "no freshness badge of any kind is rendered on a demo-backed call card");
+  assert(!/invented/i.test(cardText),
+    "the call card no longer carries the invented-data caveat in Worth knowing");
+
+  // AND THE PERMANENT CAVEAT DIRECTLY BELOW IT STAYS. This one is not a demo
+  // artifact — it is true in a live February with a real NOAA forecast behind
+  // it, and it sat close enough to the removed paragraph to be deleted by
+  // accident. It is asserted here so that can't happen silently.
+  assert(/This reads the weather forecast, not the mountain's snow report/.test(cardText),
+    "the standing forecast-vs-snow-report caveat is still on the call card");
+
+  // "Worth knowing" is a shared list, not a demo container: it also holds the
+  // mogul inference, the forward-only-forecast note and the powder-crowd
+  // warning. The heading is already conditional on the list being non-empty,
+  // so it survives on its own merits and disappears structurally when the
+  // list is empty — it must never render as an empty heading.
+  const caveatSection = await page.evaluate(() => {
+    const box = document.querySelector(".quiver-caveats");
+    if (!box) return { present: false };
+    return { present: true, heading: !!box.querySelector(".data-label"),
+             items: box.querySelectorAll(".quiver-caveat-list li").length };
+  });
+  assert(!caveatSection.present || caveatSection.items > 0,
+    `"Worth knowing" never renders as a bare heading with nothing under it (${JSON.stringify(caveatSection)})`);
   await page.screenshot({ path: "screenshots-quiver/21-demo-quiver.png", fullPage: true });
 
   // The controls actually drive the data.
@@ -306,6 +432,45 @@ console.log("\n5. In the browser, today");
   });
   assert(occluded.length === 0,
     `the banner occludes nothing beneath it${occluded.length ? " — " + occluded.slice(0, 3).join(", ") : ""}`);
+
+  // -------------------------------------------------------------------------
+  // The OFF state — what every screen looks like from November, and what it
+  // looks like permanently once demo.js is deleted. The removals above must
+  // not have taken any real-data labelling with them.
+  // -------------------------------------------------------------------------
+  const offBranches = await page.evaluate(() => ({
+    demo: quiverFreshnessHtml({ isDemo: true }),
+    live: quiverFreshnessHtml({ isLive: true }),
+    fallback: quiverFreshnessHtml({ isLive: false, fallbackReason: "outside NOAA coverage" }),
+  }));
+  assert(offBranches.demo === "",
+    "demo mode contributes an empty string, not a hidden node, to the freshness slot");
+  assert(/freshness-badge/.test(offBranches.live) && /Live forecast/.test(offBranches.live),
+    "with demo off, a live forecast still renders the live badge");
+  assert(/freshness-badge--fallback/.test(offBranches.fallback) && /Not a live forecast/.test(offBranches.fallback),
+    "with demo off, a non-live forecast still renders the fallback badge and its explanation");
+
+  // Flip the switch the calendar will flip in November and re-render the same
+  // list from the same cache: the slot the pill vacated has to fill back in
+  // with a real badge, not stay empty.
+  const offChase = await page.evaluate(() => {
+    DEMO._activeCache = false;
+    renderChaseList();
+    const slot = document.getElementById("chase-freshness");
+    const banner = document.getElementById("demo-banner");
+    syncDemoChrome();
+    return {
+      badges: slot.querySelectorAll(".freshness-badge").length,
+      demoPills: slot.querySelectorAll(".freshness-badge--demo").length,
+      bannerHidden: banner.hidden,
+      bannerEmpty: banner.innerHTML === "",
+    };
+  });
+  assert(offChase.badges === 1 && offChase.demoPills === 0,
+    `with demo off, the Chase freshness slot renders exactly one real badge (${JSON.stringify(offChase)})`);
+  assert(offChase.bannerHidden && offChase.bannerEmpty,
+    "with demo off, the banner is hidden AND emptied — no dead node left in the DOM");
+  await page.evaluate(() => { DEMO._activeCache = true; });
 
   // Nothing else regressed.
   assert(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2) : ""}`);

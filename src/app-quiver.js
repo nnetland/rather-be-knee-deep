@@ -238,6 +238,9 @@ function renderQuiverDayStep(body) {
     chip.addEventListener("click", () => {
       state.quiver.dateKey = chip.dataset.daykey;
       state.quiver.step = "result";
+      // Leaving the picker for the call: remember there is a picker to go back
+      // to, which is what separates this from a cold-landed shared link.
+      state.quiver.hadPrev = true;
       renderQuiverStep();
     });
     // Roving tabindex, matching the quiz's radiogroup keyboard model.
@@ -306,7 +309,25 @@ function renderQuiverResult(body) {
   const dayPhrase = idx === 0 ? "today" : idx === 1 ? "tomorrow" : `on ${label.primary}`;
   const location = resort.country === "Canada" ? `${resort.state_province}, Canada` : resort.state_province;
 
-  body.innerHTML = `
+  // Back, at the top, above the heading — the Rants detail view's pattern.
+  //
+  // NO history.back(). This page is shareable (Share this call writes a
+  // #quiver= link, and parseInitialRoute reads it), so a reader arriving from
+  // a group chat has no in-app entry behind them; back would be a no-op or
+  // would throw them out of the app entirely, from the one screen whose whole
+  // job is to receive a pasted link. `hadPrev` answers the question directly
+  // instead of guessing at the history stack, and the label changes with the
+  // answer rather than lying about where it goes.
+  //
+  // This overlaps "Try a different day" in the footer, and that is the point
+  // being additive: the footer exits are lateral moves sitting below a long
+  // card, and a reader looking for the way out looks up, not down.
+  const cameFromPicker = !!state.quiver.hadPrev;
+  const backHtml = cameFromPicker
+    ? leafBackHtml("quiver-leaf-back", "Back to Quiver Check", true)
+    : leafBackHtml("quiver-leaf-back", "Start a Quiver Check", false);
+
+  body.innerHTML = backHtml + `
     <article class="quiver-card" id="quiver-card">
       <p class="result-eyebrow label">The call</p>
       <h1 class="display-hero quiver-call" tabindex="-1">${escapeHtml(result.call.label)}</h1>
@@ -367,6 +388,21 @@ function renderQuiverResult(body) {
       </div>
     </article>`;
 
+  document.getElementById("quiver-leaf-back").addEventListener("click", () => {
+    if (cameFromPicker) {
+      // The day step re-renders with the chosen day still selected, so this is
+      // a genuine step back rather than a reset.
+      state.quiver.step = "day";
+    } else {
+      // Cold landing: there is no picker behind this reader, so the control
+      // takes them to the surface's own entry point and its label said so.
+      state.quiver = { step: "resort", resortId: null, dateKey: null, search: "", hadPrev: false };
+      state.quiverForecast = null;
+    }
+    renderQuiverStep();
+    focusHeading(mainEl());
+  });
+
   document.getElementById("quiver-share").addEventListener("click", () => shareQuiverCall(resort, result, day, idx));
   document.getElementById("quiver-another-day").addEventListener("click", () => {
     state.quiver.step = "day";
@@ -400,7 +436,13 @@ function renderQuiverResult(body) {
 }
 
 function quiverFreshnessHtml(fc) {
-  if (fc.isDemo) return demoFreshnessHtml();
+  // Demo mode renders no freshness badge — the persistent banner above the
+  // card carries the claim once, for the whole app (Director, 2026-08-07;
+  // see demo.js). Deliberately keyed on the data flag rather than on
+  // DEMO.active(), so this stays correct with no dangling reference on the
+  // day demo.js is deleted: `fc.isDemo` is simply undefined then, and every
+  // forecast takes the live/fallback branches below exactly as it does now.
+  if (fc.isDemo) return "";
   if (fc.isLive) {
     return `<div class="freshness-badge"><span>${ICONS.live}</span><span class="freshness-badge__text body-sm">Live forecast · updated moments ago</span></div>`;
   }

@@ -159,8 +159,17 @@ function renderChaseList(isRefresh) {
   if (!state.chaseCache) return;
 
   const { forecasts, anyFallback } = state.chaseCache;
+  // In demo mode this slot stays empty. The demo banner at the top of the
+  // screen already says these numbers are invented, and a second badge saying
+  // it again — directly under the beginner toggle, on the same scroll —
+  // crowded out the list it was labelling (Director, 2026-08-07). Falling
+  // through to one of the real-data badges is not an option: "Live forecast"
+  // would be false, and the fallback badge blames a network outage for data
+  // that was never fetched. `#chase-freshness` is an unstyled block, so an
+  // empty one contributes no height and no margin — the list closes up
+  // against the controls rather than leaving a hole where the badge was.
   freshnessWrap.innerHTML = DEMO.active()
-    ? demoFreshnessHtml()
+    ? ""
     : anyFallback
     ? `<div class="freshness-badge freshness-badge--fallback" id="freshness-badge">
         <span id="freshness-icon-historical">${ICONS.signalSlash}</span>
@@ -401,7 +410,11 @@ function showChaseRowDetail(rid) {
   // fresh: true — this is a same-session, self-generated view (the user just
   // tapped their own Chase-the-Snow row), not a cold shared link, so it must
   // render in the "Your pick" / "You said" voice, not the cold-view one.
-  navigate("result", { shared: payload, shareToken: b64urlEncode(JSON.stringify(payload)), fresh: true });
+  // origin: "chase" — this detail view is the trip-planner result card reused,
+  // so it shares that route's dead-end problem and its fix. Back returns to the
+  // ranked list, which is still in state.chaseCache and re-renders without a
+  // refetch.
+  navigate("result", { shared: payload, shareToken: b64urlEncode(JSON.stringify(payload)), fresh: true, origin: "chase" });
 }
 
 function revealListRows(rows) {

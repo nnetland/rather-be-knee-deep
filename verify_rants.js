@@ -1199,7 +1199,71 @@ async function run() {
     bigSkyExits.some((e) => /Read Nicole's take on Big Sky/.test(e)), bigSkyExits);
 
   // =====================================================================
-  // 23 · NO ERRORS, ON ANY ROUTE
+  // 23 · THE FRONT DOOR
+  // The nav is hidden on the splash route, so without a mode card a first-time
+  // visitor has no path to this surface at all — they would have to enter
+  // another surface first, or hand-type the hash. That is exactly what shipped
+  // in the first pass of this branch, and nothing caught it, so it is asserted
+  // here now.
+  // =====================================================================
+  const splash = await newPage(browser, { viewport: { width: 320, height: 568 } });
+  await splash.goto(FILE_URL);
+  await splash.waitForTimeout(400);
+  const front = await splash.evaluate(() => {
+    const card = document.getElementById('mode-rants');
+    const cards = [...document.querySelectorAll('.mode-card')];
+    if (!card) return { present: false, count: cards.length };
+    const label = card.querySelector('.mode-card__label');
+    const support = card.querySelector('.mode-card__support');
+    const box = card.getBoundingClientRect();
+    return {
+      present: true,
+      count: cards.length,
+      tag: card.tagName, type: card.getAttribute('type'),
+      label: label.textContent.trim(),
+      support: support.textContent.trim(),
+      labelFits: label.getBoundingClientRect().right <= box.right + 0.5,
+      h: +box.height.toFixed(0), w: +box.width.toFixed(0),
+      navHidden: document.getElementById('bottom-nav').hidden && document.getElementById('top-nav').hidden,
+      overflowX: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+      // The splash card and the nav item are two doors to one room. If the
+      // marks drift they stop reading as the same destination, so the paths are
+      // compared rather than eyeballed.
+      splashPath: card.querySelector('svg path').getAttribute('d'),
+    };
+  });
+  assert('the splash offers a Rants & Raves entry point', front.present, front);
+  assert('the nav really is hidden on the splash, which is why the card has to exist', front.navHidden, front);
+  assert('it is a real <button type="button">, like the other three modes',
+    front.tag === 'BUTTON' && front.type === 'button', front);
+  assert('it carries equal billing as a fourth mode card, not a footer link', front.count === 4, front);
+  assert('its label is the surface name in full', front.label === 'Rants & Raves', front);
+  assert('the label does not overflow its card at 320px', front.labelFits, front);
+  assert('the support copy names Reddit and points outward',
+    /skiers are saying on Reddit/.test(front.support), front.support);
+  assert('the support copy asserts nothing about what the content says',
+    !/\b(buzz|chatter|reviews?|ratings?|best|worst|top|hot|trending|popular)\b/i.test(front.support), front.support);
+  assert('the splash grid does not overflow at 320px with four cards', front.overflowX <= 0, front);
+  const navPath = await splash.evaluate(() =>
+    document.querySelector('#bottom-nav .nav-item[data-route="rants"] svg path').getAttribute('d'));
+  assert('the splash card and the nav item use the SAME glyph, so the two doors read as one room',
+    front.splashPath === navPath, { splash: front.splashPath, nav: navPath });
+  await splash.click('#mode-rants');
+  await splash.waitForTimeout(500);
+  const landed = await splash.evaluate(() => ({
+    route: state.route, hash: location.hash,
+    h1: document.querySelector('h1') ? document.querySelector('h1').textContent : null,
+    navShown: !document.getElementById('bottom-nav').hidden,
+    current: (document.querySelector('#bottom-nav .nav-item[aria-current="page"]') || {}).dataset,
+  }));
+  assert('the card actually navigates to the surface', landed.route === 'rants' && /Rants/.test(landed.h1 || ''), landed);
+  assert('and it lands on the default Rants tab with a real URL', landed.hash === '#rants=rants', landed);
+  assert('arriving from the splash reveals the nav with Rants current',
+    landed.navShown && landed.current && landed.current.route === 'rants', landed);
+  await splash.close();
+
+  // =====================================================================
+  // 24 · NO ERRORS, ON ANY ROUTE
   // =====================================================================
   for (const hash of ['#rants=rants', '#rants=raves', '#rants=rants/alta-ut/lift-wait-2027-01-18',
     '#rants=rants/alta-ut/lift-wait-2026-12-20', '#rants=rants/wolf-creek-co', '#rants=rants/not-a-real-resort',

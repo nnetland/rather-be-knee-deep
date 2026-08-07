@@ -28,6 +28,17 @@ const ICONS = {
   // alone rule.
   skis: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 21V8.6c0-2.2 1.1-3.6 2.7-3.6"/><path d="M14.8 21V8.6c0-2.2 1.1-3.6 2.7-3.6"/></svg>`,
   search: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20.5 20.5L16.7 16.7"/></svg>`,
+  // A speech bubble with a tail, for Rants & Raves. Nothing in the library
+  // fitted: `crowd` is people (it means crowding, not talking), `share` is the
+  // three-node share graph, and `list` is already Nicole's List in the nav.
+  //
+  // THE PATH BELOW IS DUPLICATED VERBATIM IN shell.html, on both nav buttons.
+  // That is the established pattern here — mountain, snow, skis and list are
+  // each literal inline SVG in the nav and an ICONS entry for the splash — and
+  // it matters more than usual for this one: the splash card and the nav item
+  // are the two entry points to the same surface, and if the marks drift they
+  // stop reading as the same destination. Change one, change the other.
+  speech: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v12h-9l-5 4v-4H4z"/></svg>`,
 };
 
 const LEVEL_GLYPH = {

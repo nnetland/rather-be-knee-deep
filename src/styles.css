@@ -404,6 +404,26 @@ ul { margin: 0; padding: 0; list-style: none; }
 /* =========================================================================
    Result card — the shareable product
    ========================================================================= */
+/* --- Leaf-page back control ----------------------------------------------
+   The two views the app could strand you on: the Quiver call and the trip
+   planner's result card. Same treatment as .rants-back, which solved this
+   first on the Rants detail view — a text link rather than a filled control,
+   because it sits on the page rather than in a row of controls — but built on
+   a <button>, since neither of these routes has a hash route to link to.
+   Sits above the heading, not in the footer with the lateral exits, so it is
+   reachable without reading the whole card first. */
+.leaf-back {
+  display: inline-flex; align-items: center; gap: var(--space-2);
+  min-height: 44px; padding: 0; margin-bottom: var(--space-2);
+  background: none; border: none; cursor: pointer;
+  font-family: 'Manrope', sans-serif; font-weight: 700; font-size: .875rem;
+  /* The label names its destination, so it is a phrase rather than a word and
+     has to be allowed to wrap at 200% zoom instead of overflowing. */
+  line-height: 1.25; text-align: start;
+  color: var(--brand-primary-text);
+}
+.leaf-back__arrow { flex: none; }
+
 .result-wrap { max-width: 30rem; margin: 0 auto; padding: var(--space-4); }
 @media (min-width: 768px) { .result-wrap { padding: var(--space-6) 0; } }
 .result-card {
@@ -1178,7 +1198,6 @@ ul { margin: 0; padding: 0; list-style: none; }
 }
 .demo-radio input { margin-top: 2px; width: 18px; height: 18px; flex: none; accent-color: var(--brand-primary); }
 .demo-radio__note { color: var(--text-secondary); }
-.freshness-badge--demo .freshness-badge__text { font-weight: 700; }
 
 /* =========================================================================
    Rants & Raves
