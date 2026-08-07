@@ -1178,7 +1178,6 @@ ul { margin: 0; padding: 0; list-style: none; }
 }
 .demo-radio input { margin-top: 2px; width: 18px; height: 18px; flex: none; accent-color: var(--brand-primary); }
 .demo-radio__note { color: var(--text-secondary); }
-.freshness-badge--demo .freshness-badge__text { font-weight: 700; }
 
 /* =========================================================================
    Rants & Raves

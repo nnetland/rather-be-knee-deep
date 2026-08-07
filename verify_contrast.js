@@ -99,11 +99,30 @@ async function run() {
     assert(`${scheme} mode: Nicole's List "All regions" selected chip clears 4.5:1`, chipRatio >= 4.5, { chipRatio, chipFg, chipBg });
 
     if (scheme === 'light') {
-      // Forecast fallback badge text, on bg.tint
+      // Forecast fallback badge text, on bg.tint.
+      //
+      // Demo mode has to be switched off to reach this badge at all, and that
+      // is a correction rather than a workaround. While the invented season is
+      // running, Chase the Snow takes the demo branch of the freshness slot
+      // instead of the fallback branch — so from the day demo mode landed
+      // until 2026-08-07 this assertion was silently measuring the demo pill
+      // and reporting it as the "Not a live forecast" badge. Removing that
+      // pill (Director's call, see verify_demo.js) emptied the slot and turned
+      // a wrong-element pass into a hard selector failure, which is how the
+      // substitution came to light.
+      //
+      // The cache is real: every resort resolved through the aborted-network
+      // path above, so anyFallback is genuinely true and re-rendering with the
+      // demo flag off produces the actual fallback badge in the actual page
+      // cascade — not an injected probe.
       await page.goto(FILE_URL);
       await page.route('**://api.weather.gov/**', (r) => r.abort());
       await page.click('#mode-chase');
       await page.waitForTimeout(1500);
+      await page.evaluate(() => {
+        if (typeof DEMO !== 'undefined' && DEMO.active()) { DEMO._activeCache = false; renderChaseList(); }
+      });
+      await page.waitForSelector('.freshness-badge--fallback .freshness-badge__text');
       const badgeFg = parseRgb(await page.$eval('.freshness-badge__text', (el) => getComputedStyle(el).color));
       const badgeBg = parseRgb(await effectiveBg(page, '.freshness-badge__text'));
       const badgeRatio = contrast(badgeFg, badgeBg);

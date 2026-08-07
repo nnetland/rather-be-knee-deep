@@ -21,7 +21,21 @@ async function run() {
   await page.waitForTimeout(1500);
   const chaseHasRows = await page.$$eval('.chase-row', (els) => els.length > 0);
   assert('Chase-the-Snow renders a ranked list with network fully blocked', chaseHasRows);
-  const fallbackBadgeVisible = await page.$eval('.freshness-badge--fallback', (el) => !!el).catch(() => false);
+  // Demo mode is switched off before reading the badge, for the same reason
+  // verify_contrast.js does it: while the invented season runs, Chase the Snow
+  // takes the demo branch of the freshness slot rather than the fallback
+  // branch. The demo pill carried .freshness-badge--fallback too (it borrowed
+  // the not-live visual language), so this selector matched it and this
+  // assertion passed on the wrong element. Removing the pill (Director's call,
+  // 2026-08-07) exposed that. The offline state under test is real either way
+  // — every request above is aborted — so flipping the flag off and
+  // re-rendering the same cache reaches the badge this line is named after.
+  await page.evaluate(() => {
+    if (typeof DEMO !== 'undefined' && DEMO.active()) { DEMO._activeCache = false; renderChaseList(); }
+  });
+  const fallbackBadgeVisible = await page
+    .$eval('.freshness-badge--fallback .freshness-badge__text', (el) => /Not a live forecast/.test(el.textContent))
+    .catch(() => false);
   assert('Fallback badge (not-live) renders when network is blocked', fallbackBadgeVisible);
 
   await page.click('[data-route="nicoles"]:visible');
