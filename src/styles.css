@@ -73,6 +73,30 @@
      to 3.97:1 — below AA. warm-800 clears 4.5:1 on both bg.page and
      bg.tint. */
   --accent-warm-text-tint: var(--warm-800);
+
+  /* --bg-control: a filled control background that can actually be SEEN.
+     Added with Rants & Raves, whose founding visual rule is that an outline on
+     that surface means "not our words" — so every control there is a filled
+     rectangle rather than a bordered one. The obvious fill, --bg-tint, is
+     1.13:1 against --bg-page: a fill you cannot see is an outline you refused
+     to draw, and it fails SC 1.4.11 as a control boundary.
+       --purple-500 vs --bg-page (white) ...... 3.04:1  (needs >=3, SC 1.4.11)
+       --text-primary on --purple-500 ......... 6.03:1  (needs >=4.5)
+     The dark value is a different primitive for the same reason the accent
+     tokens are: --purple-500 clears 3:1 against night-900 easily (6.15:1) but
+     --text-primary on it is 2.75:1, which fails. See the dark block.
+     Not used outside Rants & Raves today; named generically because nothing
+     about it is surface-specific. */
+  --bg-control: var(--purple-500);
+
+  /* --font-quote: the only serif in the app. Used on the quote text run in
+     Rants & Raves and NOWHERE ELSE — if it appears on a second selector, that
+     is a bug. A system stack on purpose: the shell already loads three Google
+     families, and a fourth webfont for one text run is a network cost this does
+     not justify. The serif is the second non-colour signal, after the border,
+     saying that these are not the app's words. */
+  --font-quote: "Iowan Old Style", Charter, Georgia, "Times New Roman", serif;
+
   --trail-beginner: var(--trail-green-700);
   --trail-intermediate: var(--trail-blue-600);
   --trail-advanced: var(--text-primary);
@@ -124,6 +148,12 @@
     --accent-cold-text: var(--cold-600);
     --accent-warm-text: var(--warm-600);
     --accent-warm-text-tint: var(--warm-600); /* already ≥4.5:1 on night-800 in dark mode — no separate shift needed */
+    /* --bg-control in dark. --purple-500 would clear 3:1 against the page here
+       (6.15:1) but --text-primary on it is only 2.75:1. --night-500 clears both
+       ends, the same way --brand-primary-text shifts to indigo-350:
+         --night-500 vs --bg-page (night-900) ... 3.01:1  (needs >=3)
+         --text-primary on --night-500 .......... 5.62:1  (needs >=4.5) */
+    --bg-control: var(--night-500);
     --trail-beginner: var(--trail-green-600);
     --trail-intermediate: var(--trail-blue-500);
     --trail-advanced: var(--text-primary);
@@ -1149,3 +1179,444 @@ ul { margin: 0; padding: 0; list-style: none; }
 .demo-radio input { margin-top: 2px; width: 18px; height: 18px; flex: none; accent-color: var(--brand-primary); }
 .demo-radio__note { color: var(--text-secondary); }
 .freshness-badge--demo .freshness-badge__text { font-weight: 700; }
+
+/* =========================================================================
+   Rants & Raves
+   The sixth surface. Every value here resolves through the existing semantic
+   tokens, so dark mode, the 200%-zoom rem scaling and the reduced-motion path
+   all come for free rather than needing their own overrides. Two tokens were
+   added for it and both live in the token block at the top of this file:
+   --bg-control (a control fill that clears 3:1) and --font-quote.
+
+   THE FOUNDING RULE, and it is a rule rather than a preference: on this
+   surface an OUTLINE MEANS "NOT OUR WORDS". The quote block is the only
+   four-sided border in the feature, so corroboration can never be
+   screenshotted looking like part of a quote, and a reader learns the
+   convention from one screenshot without being told. Cards are unboxed, the
+   standing frame is rules-not-a-box, corroboration is unboxed, and controls
+   are filled rather than outlined. The search field inside the filter sheet is
+   the single scoped amendment — see there for the arithmetic.
+
+   GOLD IS BANNED HERE. Not in a link, a rule, a focus state or a border.
+   --accent-gold / --accent-gold-text mean Nicole across this app (see the
+   comment on --accent-gold-text), and Nicole does not speak on this surface.
+   verify_rants.js asserts the absence, so this is enforced rather than
+   remembered.
+   ========================================================================= */
+
+.rants-view { transition: opacity var(--dur-fast) var(--ease-standard); }
+.rants-view[data-fading="true"] { opacity: 0; }
+
+.rants-sub { color: var(--text-secondary); margin: var(--space-1) 0 var(--space-5); }
+
+/* --- Standing frame ------------------------------------------------------
+   Rules above and below. No box, no tint, no icon, no colour. A rule reads as
+   record; a box reads as notice. This is provenance, not a warning, and
+   styling it as a warning would be the app editorialising about its own
+   sources. --border-interactive, not --border-hairline: this is the one
+   element whose entire visual identity is "rules, not a box", and at
+   --border-hairline's 1.41:1 there would be no box AND no rules. */
+.rants-frame {
+  border-block: var(--border-hairline-w) solid var(--border-interactive);
+  padding-block: var(--space-3);
+  margin: 0 0 var(--space-4);
+}
+.rants-frame__short { color: var(--text-primary); margin: 0; }
+/* A 44px target, keyboard-operable natively, and its own accessible name — no
+   aria-label replacement. NOT display:flex: WebKit drops the ::marker on a flex
+   summary, and the disclosure triangle is the only affordance saying this thing
+   opens. Without it the control looks exactly like the heading it replaced. */
+.rants-frame__more > summary {
+  min-height: 44px;
+  padding-block: var(--space-3);
+  letter-spacing: .1em;
+  cursor: pointer;
+}
+.rants-frame__more[open] > summary { margin-block-end: var(--space-1); }
+.rants-frame dl { margin: 0; }
+.rants-frame__row { margin: 0 0 var(--space-2); }
+.rants-frame__row:last-child { margin-bottom: 0; }
+/* dt and dd are BOTH inline so the value wraps to full width with no hanging
+   indent at 320px. The em dash is CSS, not a text node: in CSS a screen reader
+   hears term-and-definition; as content it would hear "em dash". */
+.rants-frame dt { display: inline; }
+.rants-frame dd { display: inline; margin: 0; color: var(--text-primary); }
+.rants-frame dd::before { content: " — "; }
+@media (min-width: 30em) {
+  .rants-frame dl { display: grid; grid-template-columns: max-content 1fr; column-gap: var(--space-3); row-gap: var(--space-1); }
+  .rants-frame__row { display: contents; }
+  .rants-frame dd::before { content: none; }
+}
+
+/* --- Tabs ----------------------------------------------------------------
+   Links, not an ARIA tablist. Tabs must never resemble the nav, so every
+   property that could confuse them is inverted: tabs are inline with one-line
+   labels, a rule on the BOTTOM edge and 48px height; the nav is fixed to the
+   bottom of the screen with an icon over a label, a rule on the TOP edge and
+   56px cells. */
+.rants-tabs {
+  display: flex; gap: 0; margin: 0 0 var(--space-4);
+  border-block-end: var(--border-hairline-w) solid var(--border-hairline);
+}
+/* padding-inline, not margin. Margin is not target area, and a 48x40 target
+   with 24px of dead space between items is the exact failure this costs the
+   most. The current-tab underline widens with the padding: accepted, because a
+   wider underline under the selected tab is a STRONGER state signal.
+   The first tab keeps padding-inline-start:0 so its label still aligns with the
+   h1 and the cards below; the extra target area is bought on the trailing edge,
+   where there is nothing to align to. */
+.rants-tabs a {
+  position: relative;
+  display: flex; align-items: center; min-height: 48px;
+  padding-inline: var(--space-3); margin-inline-end: var(--space-1);
+  font-family: 'Manrope', sans-serif; font-weight: 500; font-size: .9375rem;
+  color: var(--text-secondary); text-decoration: none;
+}
+.rants-tabs a:hover { color: var(--text-primary); }
+.rants-tabs a[aria-current] { color: var(--text-primary); font-weight: 700; }
+/* The selected rule appears instantly. It never slides — a sliding indicator is
+   the app performing, and it breaks orientation on a route change. */
+.rants-tabs a[aria-current]::after {
+  content: ""; position: absolute; inset-inline: 0; inset-block-end: -1px;
+  height: 3px; background: var(--text-primary);
+}
+.rants-tabs a:first-child { padding-inline: 0 var(--space-6); }
+.rants-tabs a:last-child { margin-inline-end: 0; }
+
+/* --- Controls — filled, never outlined ----------------------------------- */
+.rants-controls { display: flex; flex-wrap: wrap; gap: var(--space-2); margin: 0 0 var(--space-4); }
+/* The wrap, min-width:0 and max-width are all load-bearing at 200% zoom on a
+   320px viewport, which is the narrowest case this surface has. A <select>
+   takes its intrinsic width from its longest OPTION and will not shrink below
+   it, so at 26px text "Unusual first" plus the arrow gutter measured 255px —
+   against the 256px of content width the page column has left — and with the
+   "Sort" label beside it the row ran 45px off the side of the screen. Wrapping
+   puts the label above the control rather than beside it, and the max-widths
+   stop either control from being the thing that overflows. Measured, not
+   assumed; verify_rants.js pins it at 320px and at 320px/200%. */
+.rants-ctl { display: inline-flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); min-width: 0; max-width: 100%; }
+.rants-btn, .rants-select {
+  appearance: none; border: 0; border-radius: var(--radius-sm);
+  background: var(--bg-control); color: var(--text-primary);
+  font-family: 'Manrope', sans-serif; font-weight: 700; font-size: .8125rem;
+  /* line-height 1.25, not 1. At 200% zoom with a long resort name the filter
+     button's label wraps, and line-height:1 sets wrapped lines solid so
+     ascenders and descenders collide. 1.25 costs nothing when it does not
+     wrap. */
+  line-height: 1.25;
+  min-height: 44px; padding: var(--space-2) var(--space-4);
+  display: inline-flex; align-items: center; gap: var(--space-2);
+  cursor: pointer; text-align: start;
+  min-width: 0; max-width: 100%;
+}
+.rants-select {
+  padding-inline: var(--space-4) var(--space-8);
+  background-image: linear-gradient(45deg, transparent 50%, currentColor 50%),
+                    linear-gradient(135deg, currentColor 50%, transparent 50%);
+  /* em, not px, so the disclosure arrow tracks its label at 200% text zoom
+     instead of staying 5px while the label grows to 26px. */
+  background-position: calc(100% - 1rem) 50%, calc(100% - .7rem) 50%;
+  background-size: .38em .38em, .38em .38em;
+  background-repeat: no-repeat;
+}
+/* A text link, not a filled control: it sits on the page rather than in a row
+   of controls, and it is the one control on the one view a stranger reaches
+   with no tab above it. */
+.rants-back {
+  display: inline-flex; align-items: center; min-height: 44px;
+  font-family: 'Manrope', sans-serif; font-weight: 700; font-size: .875rem;
+  color: var(--brand-primary-text);
+}
+.rants-help { color: var(--text-secondary); margin: var(--space-3) 0 0; }
+.rants-kicker, .rants-listbar { letter-spacing: .1em; }
+.rants-kicker { margin: 0 0 var(--space-1); }
+
+/* --- The feed bracket ----------------------------------------------------
+   2px rules top and bottom close the list into an object; 1px hairlines
+   separate cards inside it. A closed set of three reads as complete; an open
+   column of three reads as truncated. That is the whole answer to "a short feed
+   must read as an answer, not a bug".
+
+   NO min-height. NO trailing spacer. NO skeletons. NO centring. The feed
+   shrinks rather than ages, and it never animates — on a tab switch the
+   bracket and its rules stay put while the contents change, and that visual
+   continuity IS the orientation aid. */
+.rants-bracket { border-block: 2px solid var(--text-primary); }
+/* Four jobs: the panel h2 (so the outline runs h1 -> h2 frame -> h2 panel ->
+   h3 cards with nothing skipped), the focus target on a tab change, the name of
+   which tab you are reading, and the top of the bracket. */
+.rants-listbar {
+  padding: var(--space-2) 0;
+  border-block-end: var(--border-hairline-w) solid var(--border-hairline);
+}
+
+/* --- Card ----------------------------------------------------------------
+   Not boxed. Hairline separators only. */
+.rants-card { padding-block: var(--space-4) var(--space-5); }
+.rants-card + .rants-card { border-block-start: var(--border-hairline-w) solid var(--border-hairline); }
+.rants-card:hover { background: var(--bg-tint); }
+.rants-card__scope { color: var(--text-secondary); margin: 0 0 var(--space-1); }
+.rants-card h3 { margin: 0 0 var(--space-3); }
+/* Block-level so the whole width of the heading row is the target, not just the
+   glyphs. The card is deliberately NOT one stretched link: the quote block has
+   to stay selectable and its outbound link has to stay a real target, and an
+   overlay that sits under one and over the other is three z-index bugs waiting
+   to happen. */
+.rants-card h3 a {
+  /* A real 44px target on both axes, measured. It was 30.1px tall — the natural
+     height of one line of display-h3 plus 4px of padding — which is the exact
+     class of failure that "margin is not target area" describes on the tabs.
+     Flex rather than extra padding so a one-line heading stays optically
+     centred in the box and the spacing down to the rule does not drift.
+     The card grows 14px for this; that is the price of the target. */
+  display: flex; align-items: center; min-height: 44px;
+  color: var(--text-primary); text-decoration: none;
+  padding-block: var(--space-1);
+}
+.rants-card h3 a:hover { text-decoration: underline; text-underline-offset: .15em; }
+.rants-card__rule { border: 0; border-block-start: var(--border-hairline-w) solid var(--border-hairline); margin: 0 0 var(--space-3); }
+
+/* Count and window. flex-wrap with a column gap: they share a line when they
+   fit and stack when they do not. No breakpoint, no truncation risk — and no
+   middle dot, so there is no aria-hidden separator to manage. The gap IS the
+   separator. */
+.rants-meta {
+  display: flex; flex-wrap: wrap;
+  column-gap: var(--space-4); row-gap: 2px;
+  margin: 0 0 var(--space-2);
+}
+.rants-count { color: var(--text-primary); }
+/* Volume as weight contrast inside one string. Not a bar, not a dot, not size
+   scaling — anything that detaches the numeral from its unit turns a fact about
+   posts into a score about the resort. The numeral never counts up. */
+.rants-count b { font-weight: 700; font-style: normal; }
+.rants-window { color: var(--text-secondary); }
+/* Mandatory on every card: this is the card's only crop defence, because any
+   crop tight enough to lose the word "Reddit" also loses the count above it. */
+.rants-threads { color: var(--text-secondary); margin: 0; }
+
+/* Chrome zone -> quote block is double the largest internal chrome gap.
+   Proximity does the "these are not our words" work alongside the border. */
+.rants-quotes { margin-block-start: var(--space-4); display: flex; flex-direction: column; gap: var(--space-3); }
+
+/* --- Corroboration — hueless, three states, shape AND text ---------------
+   No green, no red. Green/red would say that matching is good and not-matching
+   is bad; corroboration has no valence, and a green tick beside a rant reads as
+   the app endorsing the rant. The glyphs are distinguishable by silhouette at
+   16px and a text label is always adjacent, so shape is never the sole carrier.
+   Never boxed, and it never animates: a self-drawing checkmark is a *verified*
+   gesture, and this feature exists in order not to make that claim. */
+.rants-corrob { margin-block-start: var(--space-3); }
+.rants-corrob__line {
+  display: flex; gap: var(--space-2); align-items: flex-start;
+  color: var(--text-primary); margin: 0 0 var(--space-1);
+}
+.rants-corrob__line b { font-weight: 700; font-style: normal; }
+.rants-corrob__glyph { flex: 0 0 auto; width: 16px; height: 16px; margin-block-start: 2px; color: var(--text-primary); }
+.rants-corrob__note { color: var(--text-secondary); margin: 0 0 var(--space-1); }
+.rants-corrob a {
+  display: inline-flex; align-items: center; min-height: 44px;
+  font-family: 'Manrope', sans-serif; font-weight: 700; font-size: .8125rem;
+}
+
+/* --- Quote block — the only four-sided border in the feature -------------
+   Keeps its own opaque field so it never inherits the card hover tint, which is
+   what stops the tint reading as part of the quotation. Never moves: no
+   entrance, no hover lift, no shadow, no scale. Any motion applied here is the
+   app performing with someone else's speech. */
+.rants-quote {
+  background: var(--bg-elevated);
+  border: var(--border-hairline-w) solid var(--text-secondary);
+  border-radius: var(--radius-sm);
+  padding: var(--space-3) var(--space-3) var(--space-2);
+  margin: 0;
+}
+/* Attribution at the TOP of the block. Three reasons: a screen-reader user
+   meets it before the slang; there is no state in which the quote appears
+   without it, which a tall quote at high zoom would otherwise produce; and with
+   "Read on Reddit" at the foot the block is topped and tailed by Reddit
+   signifiers, which is what a cropped screenshot needs.
+   Full --text-primary, never --text-secondary: muted attribution is a soft form
+   of the truncation this surface bans. */
+.rants-quote__attrib {
+  font-family: 'IBM Plex Mono', monospace; font-weight: 500; font-size: .75rem; line-height: 1.4;
+  color: var(--text-primary); margin: 0 0 var(--space-2);
+  /* A Reddit handle is one unbreakable token in a monospace face. At 200% zoom
+     on a 320px viewport "u/gallatin_local" measured 231px against 206px of
+     content width and pushed the whole feed off the side of the screen. */
+  overflow-wrap: anywhere;
+}
+.rants-quote__text {
+  font-family: var(--font-quote); font-weight: 400; font-size: 1rem; line-height: 1.55;
+  color: var(--text-primary); margin: 0;
+  /* Quotes are verbatim and are never truncated — which is exactly why this is
+     here. People paste raw URLs into Reddit comments, and one is in the sample
+     corpus on purpose; at 200% zoom on a 320px viewport that single unbreakable
+     token measured 346px against 206px of content width and took the entire
+     feed off-screen with it. Wrapping mid-token is the opposite of truncation:
+     it is what guarantees the whole string renders. */
+  overflow-wrap: anywhere;
+}
+.rants-quote__text p { margin: 0; }
+.rants-quote__out {
+  display: inline-flex; align-items: center; min-height: 44px;
+  font-family: 'Manrope', sans-serif; font-weight: 700; font-size: .8125rem;
+}
+
+/* --- End of list / empty states -----------------------------------------
+   Nothing centred. No fixed heights, no trailing spacer, no footer. Absence is
+   information: empty says empty and says why. */
+.rants-endoflist {
+  border-block-start: var(--border-hairline-w) solid var(--border-hairline);
+  padding-block: var(--space-3) var(--space-4);
+}
+.rants-endoflist p { color: var(--text-secondary); margin: 0; }
+.rants-endoflist p:first-child { color: var(--text-primary); font-weight: 700; margin-bottom: var(--space-1); }
+.rants-endoflist p + p { margin-block-start: var(--space-1); }
+
+.rants-empty { padding-block: var(--space-5); }
+.rants-empty__h { margin: 0 0 var(--space-2); }
+.rants-empty p { color: var(--text-secondary); margin: 0 0 var(--space-3); }
+/* "This is not a rating." The load-bearing sentence gets full text colour, so
+   it is never the quietest thing on a page whose subject is an absence. */
+.rants-empty p.rants-emph { color: var(--text-primary); }
+.rants-empty p.rants-emph b { font-weight: 700; }
+.rants-exits { display: flex; flex-wrap: wrap; gap: var(--space-3); margin-block-start: var(--space-1); }
+.rants-exits a {
+  display: inline-flex; align-items: center; min-height: 44px;
+  font-family: 'Manrope', sans-serif; font-weight: 700; font-size: .875rem;
+}
+
+/* "The link was for" block on an expired share. Same rules-not-a-box mechanics
+   as the standing frame, so the same boundary token. */
+.rants-wasfor {
+  border-block: var(--border-hairline-w) solid var(--border-interactive);
+  padding-block: var(--space-3); margin: 0 0 var(--space-3);
+}
+.rants-wasfor div { margin-bottom: var(--space-2); }
+.rants-wasfor div:last-child { margin-bottom: 0; }
+.rants-wasfor dt { display: inline; }
+.rants-wasfor dd { display: inline; margin: 0; color: var(--text-primary); }
+.rants-wasfor dd::before { content: " — "; }
+
+/* --- Detail view --------------------------------------------------------- */
+.rants-detail h1 { margin: 0 0 var(--space-3); }
+.rants-detail__h2 { margin: var(--space-6) 0 var(--space-3); letter-spacing: .1em; }
+.rants-detail .rants-meta { margin-block-start: var(--space-3); }
+.rants-share { margin-block-start: var(--space-6); }
+/* The expiry caveat is PERSISTENT and sits beside the control, not inside a
+   toast that appears after the fact for two seconds. It is the only explanation
+   of link expiry a user meets, and they need it BEFORE they send the link to
+   somebody else, not after. */
+.rants-share .rants-help { max-width: 34rem; }
+
+/* --- Filter sheet --------------------------------------------------------
+   Full-screen at narrow widths, a constrained left panel above 480px. 48px
+   rows. Close button AND Escape. Focus trapped while open, returned on close.
+   No swipe, no drag — there is no gesture-only affordance anywhere here. */
+.rants-sheet {
+  position: fixed; inset: 0; z-index: 120;
+  background: var(--bg-page);
+  display: flex; flex-direction: column;
+  opacity: 0; transition: opacity var(--dur-fast) var(--ease-standard);
+}
+.rants-sheet[data-open="true"] { opacity: 1; }
+.rants-sheet[hidden] { display: none; }
+/* An opacity-0 element is still hit-testable, and this one is fixed, inset:0,
+   z-index 120 — so any window between the close starting and `hidden` landing
+   is a full-screen invisible dialog eating taps. Gate hit-testing on the same
+   attribute that gates opacity and the window cannot exist. */
+.rants-sheet:not([data-open="true"]) { pointer-events: none; }
+.rants-sheet[data-open="true"] { pointer-events: auto; }
+/* Above 480px the sheet is a left panel, so the rest of the viewport stays
+   visible and — without the scrim — clickable. `inert` on .app-shell does the
+   semantic half; this does the visible half. */
+.rants-sheet-scrim {
+  position: fixed; inset: 0; z-index: 119; background: rgba(23, 16, 43, .45);
+  opacity: 0; transition: opacity var(--dur-fast) var(--ease-standard); pointer-events: none;
+}
+.rants-sheet-scrim[data-open="true"] { opacity: 1; pointer-events: auto; }
+.rants-sheet-scrim[hidden] { display: none; }
+.rants-sheet__head {
+  display: flex; align-items: center; justify-content: space-between; gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-block-end: var(--border-hairline-w) solid var(--border-interactive);
+}
+.rants-sheet__head h2 { margin: 0; }
+.rants-sheet__search {
+  padding: var(--space-3) var(--space-4);
+  border-block-end: var(--border-hairline-w) solid var(--border-interactive);
+}
+/* THE ONE SCOPED AMENDMENT to "filled, never outlined", and it is an amendment
+   rather than an exception: the rule holds for buttons and yields for text
+   inputs. The rule's rationale is that an outline on this surface reads as "not
+   our words" — and that rationale is about the QUOTE BLOCK. Nobody reads a
+   search field with a cursor in it as a quotation. Practically, a control fill
+   dark enough to clear 3:1 leaves no tonal room between a value and a
+   placeholder sitting on it, and this pattern is already shipped on the Quiver
+   Check resort search, so it is the house form as well as the correct one.
+   This is the second and last four-sided border in the feature. */
+.rants-sheet__search input {
+  width: 100%; min-height: 44px; padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  border: var(--border-default-w) solid var(--border-interactive);
+  background: var(--bg-surface); color: var(--text-primary);
+  font-family: 'Manrope', sans-serif; font-weight: 500; font-size: 1rem;
+}
+/* opacity:1 because Firefox dims placeholders by default, which would drop the
+   contrast below the floor without changing a single declared colour. */
+.rants-sheet__search input::placeholder { color: var(--text-secondary); opacity: 1; }
+.rants-sheet__body { overflow-y: auto; flex: 1; padding-block-end: var(--space-8); }
+.rants-sheet__body li button {
+  display: flex; align-items: center; justify-content: space-between; gap: var(--space-3);
+  width: 100%; min-height: 48px; padding: 0 var(--space-4);
+  border: 0; background: none; text-align: start; cursor: pointer;
+  font-family: 'Manrope', sans-serif; font-weight: 500; font-size: .9375rem;
+  color: var(--text-primary);
+  /* 71 of these in a row. --border-hairline at 1.41:1 would be a wall of tap
+     targets with no visible edges, which is the single clearest case for the
+     3:1 boundary token in the whole app. */
+  border-block-end: var(--border-hairline-w) solid var(--border-interactive);
+}
+.rants-sheet__body li button[aria-current] { font-weight: 700; }
+.rants-sheet__count { color: var(--text-secondary); flex: 0 0 auto; }
+.rants-sheet__body details { border-block-end: var(--border-hairline-w) solid var(--border-interactive); }
+.rants-sheet__body summary {
+  min-height: 44px; display: flex; align-items: center; padding: 0 var(--space-4); cursor: pointer;
+  font-family: 'Manrope', sans-serif; font-weight: 700; font-size: .875rem; color: var(--text-primary);
+}
+.rants-sheet__body details p { color: var(--text-secondary); margin: 0 var(--space-4) var(--space-2); }
+.rants-sheet__body details p b { color: var(--text-primary); font-weight: 700; }
+.rants-sheet__nomatch { color: var(--text-primary); margin: var(--space-4); }
+@media (min-width: 30.0625em) {
+  .rants-sheet { inset: 0 auto 0 0; width: 22.5rem; border-inline-end: var(--border-hairline-w) solid var(--border-interactive); }
+}
+
+/* --- Motion --------------------------------------------------------------
+   The entire budget: opacity, one duration, four places (route change,
+   tab-content swap, filter sheet, toast). Zero transforms anywhere.
+   REMOVED, not reduced, under prefers-reduced-motion — and the JS path skips
+   the deferred paint entirely rather than merely shortening it, so there is no
+   window in which a faded-out view is still on screen.
+
+   MUST NEVER MOVE, at any setting: the count, the corroboration glyph, the
+   quote block, the standing frame, the selected-tab rule, the bracket, every
+   empty state, scroll restoration and every focus ring. */
+@media (prefers-reduced-motion: reduce) {
+  .rants-view, .rants-sheet, .rants-sheet-scrim { transition: none; }
+  .rants-view[data-fading="true"] { opacity: 1; }
+}
+
+/* --- Forced colors -------------------------------------------------------
+   The quote border and the bracket must both survive: without an explicit
+   border-color the quote block loses the one signal that says "not our words",
+   and the bracket stops closing the feed. No forced-color-adjust:none — it
+   inherits, and the declarations below do the job without it. */
+@media (forced-colors: active) {
+  .rants-quote { border-color: CanvasText; background: Canvas; color: CanvasText; }
+  .rants-bracket { border-color: CanvasText; }
+  .rants-tabs a[aria-current]::after { background: CanvasText; }
+  /* The no-outline rule yields to forced colors: a fill is invisible here, so a
+     filled control needs an edge or it is not a control at all. */
+  .rants-btn, .rants-select { border: 1px solid CanvasText; }
+}

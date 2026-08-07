@@ -64,6 +64,18 @@ function renderNicolesList(main) {
   });
 
   renderNicolesTable(rows);
+
+  // Arrived from the one permitted link out of Rants & Raves ("Read Nicole's
+  // take on Alta"). That link only renders when a take actually exists, so the
+  // row is always there — but this page is 44 rows long, and dropping the user
+  // at the top of it would make the link's promise technically true and
+  // practically false. Scroll only: the row is not an interactive target, and
+  // focus stays on the h1 where focusHeading() puts it below.
+  if (state.routeParams && state.routeParams.focusResort) {
+    const row = document.getElementById(`nicoles-row-${state.routeParams.focusResort}`);
+    if (row) row.scrollIntoView({ block: "center", behavior: "auto" });
+  }
+
   document.title = "Nicole's list — find your next ski trip";
   setOgMeta({ title: "Find your next ski trip", description: "Everywhere Nicole's actually skied, with her real takes where she has one." });
   focusHeading(main);
@@ -146,7 +158,7 @@ function nicolesRowHtml(row) {
     : `<span class="take-empty body-sm">No take yet</span>`;
 
   return `
-    <tr role="row" class="nicoles-table__row">
+    <tr role="row" class="nicoles-table__row"${row.resortId ? ` id="nicoles-row-${escapeHtml(row.resortId)}"` : ""}>
       <td role="cell" class="nicoles-table__cell nicoles-table__cell--place">
         <span class="display-h3" style="display:block">${escapeHtml(row.place)}</span>
         ${badges.length ? `<div class="nicoles-badges" style="margin-top:var(--space-1)">${badges.join("")}</div>` : ""}

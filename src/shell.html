@@ -28,6 +28,10 @@
 <a class="skip-link" href="#app-main">Skip to content</a>
 <div id="reveal-announcer" class="visually-hidden" aria-live="polite"></div>
 <div id="forecast-status-announcer" class="visually-hidden" aria-live="polite"></div>
+<!-- Rants & Raves announces the OUTCOME of a filter, sort or search (SC 4.1.3).
+     Its own region, not a shared one: a copy-link confirmation arriving at the
+     same moment must not clobber a filter result, and vice versa. -->
+<div id="rants-status-announcer" class="visually-hidden" aria-live="polite"></div>
 <div id="app-toast" class="toast" role="status"></div>
 <div id="demo-banner" hidden></div>
 
@@ -44,6 +48,9 @@
     </button>
     <button class="nav-item" type="button" data-route="nicoles" aria-label="Nicole's List">
       <span aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></span><span>Nicole's</span>
+    </button>
+    <button class="nav-item" type="button" data-route="rants" aria-label="Rants &amp; Raves">
+      <span aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v12h-9l-5 4v-4H4z"/></svg></span><span>Rants</span>
     </button>
   </nav>
 
@@ -62,7 +69,30 @@
     <button class="nav-item" type="button" data-route="nicoles" aria-label="Nicole's List">
       <span aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></span><span>Nicole's</span>
     </button>
+    <button class="nav-item" type="button" data-route="rants" aria-label="Rants &amp; Raves">
+      <span aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v12h-9l-5 4v-4H4z"/></svg></span><span>Rants</span>
+    </button>
   </nav>
+</div>
+
+<!-- Rants & Raves filter sheet. Declared OUTSIDE .app-shell on purpose: opening
+     it sets `inert` on the whole shell, and a dialog nested inside the element
+     it inerts would inert itself. -->
+<div class="rants-sheet-scrim" id="rants-sheet-scrim" hidden></div>
+<div class="rants-sheet" id="rants-sheet" role="dialog" aria-modal="true" aria-labelledby="rants-sheet-title" hidden>
+  <div class="rants-sheet__head">
+    <!-- tabindex="-1": the sheet opens focus HERE, not on the search field.
+         Autofocusing a text input at 320px pops the on-screen keyboard over most
+         of the list the user came to read, and it skips the dialog's own name so
+         a screen-reader user never hears what opened. -->
+    <h2 id="rants-sheet-title" class="display-h3" tabindex="-1">Filter by resort</h2>
+    <button type="button" class="rants-btn" id="rants-sheet-close">Close</button>
+  </div>
+  <div class="rants-sheet__search">
+    <label class="visually-hidden" for="rants-sheet-q">Search for a resort</label>
+    <input type="search" id="rants-sheet-q" placeholder="Search resorts" autocomplete="off">
+  </div>
+  <div class="rants-sheet__body" id="rants-sheet-body"></div>
 </div>
 
 <script>
@@ -87,6 +117,9 @@
 /*__QUIVER_JS__*/
 </script>
 <script>
+/*__RANTS_JS__*/
+</script>
+<script>
 /*__APP_JS__*/
 </script>
 <script>
@@ -97,6 +130,9 @@
 </script>
 <script>
 /*__APP_NICOLES_JS__*/
+</script>
+<script>
+/*__APP_RANTS_JS__*/
 </script>
 <script>
 document.querySelectorAll('.nav-item').forEach((btn) => {
@@ -118,6 +154,10 @@ window.addEventListener('error', (e) => {
     if (retry) retry.addEventListener('click', () => { navigate('splash'); });
   }
 });
+
+// The Rants & Raves filter sheet is declared in this shell rather than built by
+// its renderer, so its handlers are bound once here rather than on every paint.
+wireRantsSheet();
 
 parseInitialRoute();
 render();
