@@ -316,10 +316,6 @@ function render() {
   document.getElementById("top-nav").hidden = !showNav;
   main.classList.toggle("no-bottom-nav", !showNav);
   updateNavCurrent();
-  // Demo-snow banner. No-op (and hidden) whenever demo mode is off, which is
-  // its state from November onward and its permanent state once demo.js is
-  // removed. See demo.js.
-  if (typeof syncDemoChrome === "function") syncDemoChrome();
 
   if (state.route === "splash") return renderSplash(main);
   if (state.route === "plan") return renderPlan(main);

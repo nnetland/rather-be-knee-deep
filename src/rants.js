@@ -342,16 +342,16 @@ const RANTS_TOPICS = [
 const RANTS_MAX_AGE_DAYS = 14;
 
 // appNow(), never `new Date()` — the same clock every other season-aware code
-// path in this app reads. demo.js freezes it to a mid-season date whenever the
-// real calendar says nothing is open, which is the only way a 14-day feed is
-// reviewable in August; with demo mode off it IS `new Date()`. The sample
-// corpus below is stamped to sit inside the demo clock's window, so both the
-// live feed and the expired-link state are reachable out of season.
+// path in this app reads, and since 2026-10-25 it is simply the real clock
+// (the demo module that froze it to mid-January is gone).
 //
-// The consequence is deliberate and worth stating: move the demo date more than
-// 14 days past this corpus and the surface goes empty. That is not a bug to
-// work around — it is the 14-day ceiling doing exactly what the frame promises,
-// visible in a review build.
+// The sample corpus below was stamped for that frozen clock: December and
+// January. On the real calendar those are FUTURE dates, and a negative age
+// would pass a plain `<= 14` check — so a post "from Dec 20" would render on
+// Oct 25 under a frame that says "the last 14 days". rantsAgeInDays() can go
+// negative; rantsWithinCeiling() is the gate, and it refuses anything dated
+// after today. Until the pipeline delivers real posts, the surface shows its
+// empty state, which is the true answer.
 function rantsToday() {
   return typeof appNow === "function" ? appNow() : new Date();
 }
@@ -368,8 +368,12 @@ function rantsAgeInDays(iso) {
 // the worst defect this feature can carry, because the frame IS the product and
 // the date is printed right there on the attribution line for anyone to check.
 // Both gates run.
+function rantsWithinCeiling(iso) {
+  const age = rantsAgeInDays(iso);
+  return age >= 0 && age <= RANTS_MAX_AGE_DAYS;
+}
 function rantsLiveQuotes(t) {
-  return t.quotes.filter((qt) => rantsAgeInDays(qt.posted_at) <= RANTS_MAX_AGE_DAYS);
+  return t.quotes.filter((qt) => rantsWithinCeiling(qt.posted_at));
 }
 
 // The publish gate re-runs against the SURVIVORS. A topic that drops below two
@@ -379,7 +383,7 @@ function rantsLiveQuotes(t) {
 // topic can therefore expire BETWEEN builds by quote attrition rather than by
 // window_end, and the pipeline cannot be assumed to have caught it.
 function rantsIsLive(t) {
-  return rantsAgeInDays(t.window_end) <= RANTS_MAX_AGE_DAYS && rantsLiveQuotes(t).length >= 2;
+  return rantsWithinCeiling(t.window_end) && rantsLiveQuotes(t).length >= 2;
 }
 
 // An unknown category can never render. This is the taxonomy gate from RR-13

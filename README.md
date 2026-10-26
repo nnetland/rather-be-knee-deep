@@ -139,7 +139,6 @@ src/                    the actual source — edit here
   engine.js             matching logic for both modes
   badges.js             52-motif SVG badge system
   quiver.js             Quiver Check's recommendation model (pure, no DOM)
-  demo.js               TEMPORARY — invented off-season snow (see below)
   app.js                trip planner
   app-chase.js          snow chaser
   app-quiver.js         Quiver Check
@@ -174,7 +173,7 @@ node verify_badge_system.js     # badge determinism and region dedupe
 node verify_reason_anchor_sweep.js
 node verify_quiver.js           # 64k assertions over the ski-type model
 node verify_quiver_visual.js    # walks Quiver Check against a synthetic January storm
-node verify_demo.js             # the invented-season dataset and its guarantees
+node verify_live_snow.js        # real clock, live NOAA path, season gate, no demo leftovers
 ```
 
 `verify_quiver_visual.js` freezes the clock to mid-January and serves a fake
@@ -191,25 +190,14 @@ They live in `research/nicoles-list.json`, keyed to resorts by `resort_id`. Add 
 
 Nine of 47 are written so far.
 
-## Demo snow — temporary, and self-removing
+## Season gate
 
-From roughly May to November nothing is open, NOAA has nothing to forecast, and
-Chase the Snow and Quiver Check both correctly render an off-season screen —
-which makes them impossible to work on for half the year. `src/demo.js`
-generates an invented season to fill that window.
-
-It activates **only** when the real calendar says the season is over, and turns
-itself off around mid-November with no action from anyone. It never displaces a
-live forecast or the honest typical-season fallback. Everything it produces is
-labelled: a banner on every screen, a badge on every card, and an explicit
-caveat on every ski recommendation.
-
-The data is invented but not arbitrary — each resort's season is scaled to its
-own published annual snowfall, bounded by its own open/close dates, and given
-its region's real snow character, so a Baker week still behaves like Baker.
-
-To remove it: delete `src/demo.js` and its two tokens from `assemble.py`, or set
-`DEMO_ENABLED = false` at the top of that file. Every call site is guarded.
+Chase the Snow and Quiver Check read the real calendar and live NOAA forecasts.
+They show the off-season screen only while fewer than three US resorts are
+inside their own published season window (roughly early June to early
+October). Either side of that they show a shoulder list of just the resorts
+that are typically open, then the full list from mid-November. The demo-snow
+dataset that used to fill the summer was removed on 2026-10-25.
 
 ## Data honesty rules
 

@@ -105,8 +105,7 @@ function loadAndRenderChase() {
   // themselves plausibly open by SEASON_OPEN_FRACTION's definition — a
   // resort that's still weeks from its published open date isn't made
   // "open" by a live forecast existing for its coordinates.
-  const inDemo = DEMO.active();
-  const usResorts = RESORTS.filter((r) => (inDemo || r.country === "USA") && r.lat != null &&
+  const usResorts = RESORTS.filter((r) => r.country === "USA" && r.lat != null &&
     (seasonInfo.state !== "shoulder" || seasonFraction(r, now) >= SEASON_OPEN_FRACTION));
 
   if (!usResorts.length) {
@@ -159,18 +158,7 @@ function renderChaseList(isRefresh) {
   if (!state.chaseCache) return;
 
   const { forecasts, anyFallback } = state.chaseCache;
-  // In demo mode this slot stays empty. The demo banner at the top of the
-  // screen already says these numbers are invented, and a second badge saying
-  // it again — directly under the beginner toggle, on the same scroll —
-  // crowded out the list it was labelling (Director, 2026-08-07). Falling
-  // through to one of the real-data badges is not an option: "Live forecast"
-  // would be false, and the fallback badge blames a network outage for data
-  // that was never fetched. `#chase-freshness` is an unstyled block, so an
-  // empty one contributes no height and no margin — the list closes up
-  // against the controls rather than leaving a hole where the badge was.
-  freshnessWrap.innerHTML = DEMO.active()
-    ? ""
-    : anyFallback
+  freshnessWrap.innerHTML = anyFallback
     ? `<div class="freshness-badge freshness-badge--fallback" id="freshness-badge">
         <span id="freshness-icon-historical">${ICONS.signalSlash}</span>
         <span class="freshness-badge__text body-sm">Not a live forecast</span>
@@ -182,7 +170,7 @@ function renderChaseList(isRefresh) {
   if (retryBtn) retryBtn.addEventListener("click", () => { state.chaseCache = null; loadAndRenderChase(); });
 
   const ranked = rankChaseTheSnow(forecasts, state.chaseAnswers, RESORTS);
-  const canada = DEMO.active() ? [] : rankCanadaTypicalSeason(RESORTS);
+  const canada = rankCanadaTypicalSeason(RESORTS);
 
   // Shoulder-season notice (October, May): the list below only includes
   // resorts that are individually plausibly open (see loadAndRenderChase's

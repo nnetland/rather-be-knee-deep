@@ -36,6 +36,10 @@ function assert(cond, msg, extra) {
 
 async function newPage(ctx, width) {
   const p = await ctx.newPage();
+  // Demo snow is gone, so the app reads the real clock. These checks need an
+  // open season (Quiver's picker, and the sample Rants corpus dated Dec–Jan),
+  // so the harness freezes the clock mid-season instead of the app doing it.
+  await p.clock.setFixedTime(new Date("2027-01-20T10:00:00"));
   p.on("pageerror", (e) => pageErrors.push(String(e)));
   await p.route("**://fonts.g**/**", (r) => r.abort());
   await p.route("**://api.weather.gov/**", (r) => r.abort());
