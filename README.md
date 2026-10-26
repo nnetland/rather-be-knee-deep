@@ -220,3 +220,7 @@ These are load-bearing, not stylistic:
 - Missing data says "not published" rather than being estimated
 - Editorial judgments (cost tier, crowd level, vibe) are marked as judgment, not fact
 - Nicole's takes carry no ranking weight — commentary only
+
+## Shipping without the Mac
+
+Claude can work on this repo from the cloud: it opens a pull request against `main`, and merging that PR (from GitHub on the web or the GitHub mobile app) triggers the same GitHub Actions deploy as a push from the Mac.
