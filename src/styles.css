@@ -1145,61 +1145,6 @@ ul { margin: 0; padding: 0; list-style: none; }
 
 
 /* =========================================================================
-   Demo-snow chrome — temporary. Removable with demo.js; nothing else
-   references these classes.
-   ========================================================================= */
-#demo-banner[hidden] { display: none; }
-/* Deliberately NOT sticky. A pinned bar overlays whatever scrolls under it,
-   and with the controls panel open this one is ~500px tall — it swallowed
-   taps on the resort picker beneath it (caught by verify_demo.js failing to
-   click a resort row). Same defect class as the toast fix in R12a. It sits in
-   normal flow at the top of every screen instead; the per-card badge is what
-   carries the warning down the page, and unlike a banner it survives being
-   screenshotted. */
-#demo-banner {
-  background: var(--bg-tint); border-bottom: var(--border-default-w) solid var(--accent-warm-text);
-}
-.demo-banner__bar {
-  display: flex; align-items: flex-start; gap: var(--space-3);
-  max-width: 48rem; margin: 0 auto; padding: var(--space-3) var(--space-4);
-}
-/* Icon plus words, never colour alone (R12) — the warning triangle carries
-   its own outline and the text says "demo" in as many words. */
-.demo-banner__icon { flex: none; display: flex; color: var(--accent-warm-text); }
-.demo-banner__icon svg { width: 20px; height: 20px; }
-.demo-banner__text {
-  flex: 1; min-width: 0; margin: 0;
-  font-family: 'Manrope', sans-serif; font-size: .8125rem; line-height: 1.4; color: var(--text-primary);
-}
-.demo-banner__toggle {
-  flex: none; min-height: 44px; padding: var(--space-2) var(--space-3);
-  background: none; border: var(--border-default-w) solid var(--accent-warm-text); border-radius: var(--radius-pill);
-  color: var(--accent-warm-text-tint); cursor: pointer;
-  font-family: 'Manrope', sans-serif; font-weight: 700; font-size: .75rem;
-}
-.demo-banner__panel {
-  max-width: 48rem; margin: 0 auto; padding: 0 var(--space-4) var(--space-4);
-  display: flex; flex-direction: column; gap: var(--space-4);
-}
-.demo-banner__panel[hidden] { display: none; }
-.demo-field { border: none; margin: 0; padding: 0; min-width: 0; }
-.demo-field .data-label, .demo-field legend { display: block; margin-bottom: var(--space-2); padding: 0; }
-.demo-field__note { color: var(--text-secondary); margin: var(--space-2) 0 0; }
-.demo-input {
-  min-height: 44px; width: 100%; max-width: 16rem; padding: var(--space-2) var(--space-3);
-  border-radius: var(--radius-md); border: var(--border-default-w) solid var(--border-interactive);
-  background: var(--bg-surface); color: var(--text-primary);
-  font-family: 'Manrope', sans-serif; font-size: 1rem;
-}
-.demo-radio {
-  display: flex; align-items: flex-start; gap: var(--space-3); min-height: 44px;
-  padding: var(--space-1) 0; cursor: pointer;
-  font-family: 'Manrope', sans-serif; font-size: .875rem; color: var(--text-primary);
-}
-.demo-radio input { margin-top: 2px; width: 18px; height: 18px; flex: none; accent-color: var(--brand-primary); }
-.demo-radio__note { color: var(--text-secondary); }
-
-/* =========================================================================
    Rants & Raves
    The sixth surface. Every value here resolves through the existing semantic
    tokens, so dark mode, the 200%-zoom rem scaling and the reduced-motion path

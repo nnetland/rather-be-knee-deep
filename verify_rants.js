@@ -88,6 +88,10 @@ const R = (h) => FILE_URL + h;
 async function newPage(browser, opts) {
   const ctx = await browser.newContext(Object.assign({ viewport: { width: 390, height: 844 } }, opts || {}));
   const page = await ctx.newPage();
+  // Demo snow is gone, so the app reads the real clock. These checks need an
+  // open season (Quiver's picker, and the sample Rants corpus dated Dec–Jan),
+  // so the harness freezes the clock mid-season instead of the app doing it.
+  await page.clock.setFixedTime(new Date("2027-01-20T10:00:00"));
   await page.route('**://fonts.googleapis.com/**', (r) => r.abort());
   await page.route('**://fonts.gstatic.com/**', (r) => r.abort());
   await page.route('**api.weather.gov**', (r) => r.abort());

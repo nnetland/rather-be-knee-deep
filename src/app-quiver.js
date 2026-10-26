@@ -149,7 +149,7 @@ function renderQuiverResortList() {
         ${groups[key].map((r) => `
           <button class="quiver-resort" type="button" data-rid="${r.id}">
             <span class="quiver-resort__name">${escapeHtml(r.name)}</span>
-            <span class="quiver-resort__meta body-sm">${DEMO.active() ? "Demo data" : (r.country === "USA" ? "Live forecast" : "Typical season only")}${r.scale === "day-trip" ? " · Day-trip hill" : ""}</span>
+            <span class="quiver-resort__meta body-sm">${r.country === "USA" ? "Live forecast" : "Typical season only"}${r.scale === "day-trip" ? " · Day-trip hill" : ""}</span>
             <span class="quiver-resort__chev" aria-hidden="true">${ICONS.arrowRight}</span>
           </button>`).join("")}
       </div>
@@ -436,13 +436,6 @@ function renderQuiverResult(body) {
 }
 
 function quiverFreshnessHtml(fc) {
-  // Demo mode renders no freshness badge — the persistent banner above the
-  // card carries the claim once, for the whole app (Director, 2026-08-07;
-  // see demo.js). Deliberately keyed on the data flag rather than on
-  // DEMO.active(), so this stays correct with no dangling reference on the
-  // day demo.js is deleted: `fc.isDemo` is simply undefined then, and every
-  // forecast takes the live/fallback branches below exactly as it does now.
-  if (fc.isDemo) return "";
   if (fc.isLive) {
     return `<div class="freshness-badge"><span>${ICONS.live}</span><span class="freshness-badge__text body-sm">Live forecast · updated moments ago</span></div>`;
   }

@@ -179,7 +179,16 @@ const SEASON_OPEN_FRACTION = 0.5;
 // used to classify the whole Chase-the-Snow screen's state. Tuned against
 // the real 71-resort dataset's actual open/close spread — see
 // build-notes.md for the day-by-day sweep that produced these numbers.
-const SEASON_STATE_OFF_MAX = 0.10;
+//
+// Off-season is now a COUNT, not a share (2026-10-25; was openShare <= 0.10).
+// The share rule kept the screen on "nothing's open" until ~1 Nov even with
+// A-Basin, Keystone, Loveland and Timberline inside their own published
+// windows — real, live-forecastable mountains hidden behind a pool-wide
+// average. A bare "any one open" rule doesn't work either: Timberline's
+// Palmer snowfield is year-round in the data, so August would go shoulder.
+// Three is the smallest count that clears both: on the real dataset it reads
+// off-season from ~5 Jun to ~5 Oct and shoulder either side of that.
+const SEASON_STATE_MIN_OPEN = 3;
 const SEASON_STATE_IN_MIN = 0.70;
 
 /**
@@ -207,9 +216,24 @@ function classifySeasonState(pool, now) {
   const avgFraction = sum / resorts.length;
   const openShare = openCount / resorts.length;
   let state = "shoulder";
-  if (openShare <= SEASON_STATE_OFF_MAX) state = "off-season";
+  if (openCount < SEASON_STATE_MIN_OPEN) state = "off-season";
   else if (openShare >= SEASON_STATE_IN_MIN) state = "in-season";
   return { state, openShare, avgFraction };
+}
+
+/**
+ * The clock every season-aware and forecast-aware code path reads. It is the
+ * real clock — the demo-snow module that used to freeze it to mid-January is
+ * gone (2026-10-25). Kept as one named function so tests have a single seam
+ * and no code path drifts back to its own idea of "today".
+ */
+function appNow() {
+  return new Date();
+}
+
+/** classifySeasonState() against appNow(). */
+function effectiveSeasonState(pool, now) {
+  return classifySeasonState(pool, now || appNow());
 }
 
 /**
@@ -309,10 +333,6 @@ function classifyFetchError(err) {
  * specific technical cause to the end user).
  */
 async function resolveForecast(resort) {
-  // Demo mode short-circuits before any network attempt — it is only ever
-  // active when the real calendar says nothing is open, so there is no live
-  // forecast here to displace. See demo.js for the full rules.
-  if (typeof DEMO !== "undefined" && DEMO.active()) return demoAggregateForecast(resort, appNow());
   try {
     const live = await fetchLiveForecast(resort);
     return live;
@@ -584,7 +604,6 @@ function historicalDailyForecast(resort, now) {
  * something already known.
  */
 async function resolveDailyForecast(resort, now) {
-  if (typeof DEMO !== "undefined" && DEMO.active()) return demoDailyForecast(resort, now || appNow());
   if (resort.country !== "USA" || resort.lat == null) {
     return { ...historicalDailyForecast(resort, now), fallbackReason: "outside NOAA coverage" };
   }

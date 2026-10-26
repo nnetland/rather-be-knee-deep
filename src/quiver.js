@@ -225,14 +225,9 @@ function assessQuiverConditions(resort, day, priorDays, now) {
   const newSnow = day.snowIn || 0;
   const stormTotal = Math.round((newSnow + leadSnow) * 10) / 10;
 
-  // Demo data is forecast-SHAPED — it carries a real per-day snowfall and a
-  // real liquid-equivalent figure, unlike the typical-season fallback, whose
-  // liquid figure is an assumed 10:1. So demo days take the live reasoning
-  // path in full. That is the entire point of the demo dataset: iterating on
-  // the copy and the model means exercising the code that actually ships,
-  // not a degraded branch of it. What marks the data out is the banner, the
-  // badge and the caveat — never a quieter set of sentences.
-  const forecastShaped = !!(day.isLive || day.isDemo);
+  // Only a live day carries a real per-day snowfall AND a real liquid figure;
+  // the typical-season fallback's liquid figure is an assumed 10:1.
+  const forecastShaped = !!day.isLive;
   const precipTotal = (day.precipIn || 0) + lead.reduce((s, d) => s + (d.precipIn || 0), 0);
   // Only trust the ratio when there's enough of both sides of it to divide
   // meaningfully — a trace of each produces a wild, meaningless number — and
@@ -279,7 +274,6 @@ function assessQuiverConditions(resort, day, priorDays, now) {
     resort,
     dateKey: day.dateKey,
     isLive: !!day.isLive,
-    isDemo: !!day.isDemo,
     forecastShaped,
     newSnow: Math.round(newSnow * 10) / 10,
     stormTotal,
@@ -418,19 +412,7 @@ function quiverCheck(resort, day, priorDays, now) {
   }
 
   // --- Caveats — things that don't change the call but change the day ------
-  // Demo mode contributes NO caveat. It used to push an invented-data line
-  // here, which put the app's third statement of the same fact into "Worth
-  // knowing" — under the banner and the per-card badge, on one screen.
-  // Removed at the Director's call (2026-08-07); the banner carries it.
-  //
-  // `!c.isDemo` still has to guard the line below. Demo days carry
-  // `isLive: false` like every non-live day, so dropping the demo branch
-  // without this guard would hand demo mode the typical-season caveat — and
-  // "this is typical snowfall for this time of year" is a different false
-  // claim about invented numbers, not a softer one. When demo.js is gone,
-  // `c.isDemo` is false for every day and this reads as the plain
-  // `if (!c.isLive)` it was before demo mode existed.
-  if (!c.isLive && !c.isDemo) {
+  if (!c.isLive) {
     caveats.push("This is typical snowfall for this time of year, not a live forecast — treat it as a starting point and check the resort's own snow report before you pack.");
   }
   if (c.leadDaysObserved < 2 && c.forecastShaped) {
