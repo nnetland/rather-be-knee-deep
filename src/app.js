@@ -348,11 +348,6 @@ function renderSplash(main) {
       <div class="splash">
         <p class="splash-eyebrow body-md">Real ski recommendations from Nicole — pick a way in.</p>
         <div class="splash-modes">
-          <button class="mode-card" id="mode-plan" type="button">
-            <span class="mode-card__icon">${ICONS.mountain}</span>
-            <span class="mode-card__label">Plan a trip</span>
-            <span class="mode-card__support body-md">Answer 5 quick questions. Get one solid pick.</span>
-          </button>
           <button class="mode-card" id="mode-chase" type="button">
             <span class="mode-card__icon">${ICONS.snow}</span>
             <span class="mode-card__label">Chase the snow</span>
@@ -365,8 +360,13 @@ function renderSplash(main) {
           </button>
           <button class="mode-card" id="mode-rants" type="button">
             <span class="mode-card__icon">${ICONS.speech}</span>
-            <span class="mode-card__label">Rants &amp; Raves</span>
+            <span class="mode-card__label">Buzz</span>
             <span class="mode-card__support body-md">See what skiers are saying on Reddit right now.</span>
+          </button>
+          <button class="mode-card" id="mode-plan" type="button">
+            <span class="mode-card__icon">${ICONS.mountain}</span>
+            <span class="mode-card__label">Plan a trip</span>
+            <span class="mode-card__support body-md">Answer 5 quick questions. Get one solid pick.</span>
           </button>
         </div>
         <p class="splash-footer">

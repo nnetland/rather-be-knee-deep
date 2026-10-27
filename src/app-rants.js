@@ -166,11 +166,11 @@ function rantsSetMeta(t) {
   } else if (r.scope) {
     head = `${r.tab === "raves" ? "Raves" : "Rants"} — ${rantsScopeName(r.scope) || r.scope}`;
   } else {
-    head = r.tab === "raves" ? "Raves — Rants & Raves" : "Rants — Rants & Raves";
+    head = r.tab === "raves" ? "Raves — Buzz" : "Rants — Buzz";
   }
   document.title = `${head} — find your next ski trip`;
   setOgMeta({
-    title: "Rants & Raves",
+    title: "Buzz",
     description: "Complaints and praise from skiers on Reddit, picked by Nicole. Not fact-checked, and nothing older than 14 days.",
   });
 }
@@ -431,7 +431,7 @@ function rantsFeedHtml() {
   // without this the choice between the only two routes the surface has is a
   // coin toss for a non-native reader.
   const head =
-    '<h1 class="display-h1">Rants &amp; Raves</h1>' +
+    '<h1 class="display-h1">Buzz</h1>' +
     '<p class="rants-sub body-md">Complaints and praise from skiers on Reddit.</p>' +
     rantsFrameHtml() + rantsTabsHtml() + rantsControlsHtml();
 
@@ -695,7 +695,7 @@ async function rantsShare(id) {
   const url = `${location.origin}${location.pathname}${rantsShareHash(t)}`;
   const text = rantsShareText(t);
   if (navigator.share) {
-    try { await navigator.share({ title: "Rants & Raves", text, url }); return; }
+    try { await navigator.share({ title: "Buzz", text, url }); return; }
     catch (e) { /* cancelled or unsupported — fall through to the clipboard */ }
   }
   try {

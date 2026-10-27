@@ -49,7 +49,7 @@ function renderNicolesList(main) {
 
   main.innerHTML = `
     <div class="page-column">
-      <h1 class="display-h1">Nicole's list</h1>
+      <h1 class="display-h1">Nicole's picks</h1>
       <p class="nicoleslist-voice body-md">Everywhere I've skied, and what I <strong>actually</strong> think. Not a ranked list, just my record — and some of these aren't flattering.</p>
       <p class="nicoleslist-status data-label">${rows.filter((r) => r.take).length} of ${rows.length} written so far</p>
       <div class="nicoleslist-filters" role="group" aria-label="Filter Nicole's list">
@@ -76,7 +76,7 @@ function renderNicolesList(main) {
     if (row) row.scrollIntoView({ block: "center", behavior: "auto" });
   }
 
-  document.title = "Nicole's list — find your next ski trip";
+  document.title = "Nicole's picks — find your next ski trip";
   setOgMeta({ title: "Find your next ski trip", description: "Everywhere Nicole's actually skied, with her real takes where she has one." });
   focusHeading(main);
 }

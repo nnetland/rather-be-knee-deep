@@ -100,7 +100,7 @@ async function run() {
   console.log("\n5. Rants & Raves refuses future-dated posts");
   {
     const { page, ctx } = await open(browser, "2026-10-25T20:00:00", { noaa: false });
-    await page.goto(FILE_URL); await page.getByText("Rants & Raves", { exact: true }).first().click();
+    await page.goto(FILE_URL); await page.click("#mode-rants");
     await page.waitForTimeout(600);
     const n = await page.evaluate(() => rantsLiveTopics().length);
     check(n === 0, "no topics live on Oct 25 (sample corpus is dated Dec–Jan)", n);

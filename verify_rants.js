@@ -1106,6 +1106,8 @@ async function run() {
     };
   });
   assert('the nav carries five items', nav.count === 5, nav.count);
+  assert('the nav runs Chase, Quiver, Buzz, Plan, Picks — most-used first (Director, 2026-10-26)',
+    nav.labels.map((l) => l.text).join(',') === 'Chase,Quiver,Buzz,Plan,Picks', nav.labels);
   assert('five nav items fit at 320px with no overflow', nav.navOverflow <= 0, nav);
   assert('and no nav label is wider than its cell at 320px',
     nav.labels.every((l) => l.w <= l.cell), nav.labels);
@@ -1126,8 +1128,8 @@ async function run() {
   assert('the Rants item is in BOTH navs', navSemantics.inBoth, navSemantics);
   assert('it follows the house nav pattern: a real <button type="button">',
     navSemantics.tag === 'BUTTON' && navSemantics.type === 'button', navSemantics);
-  assert('its visible label is one word and its full name rides on aria-label, per the Nicole\'s precedent',
-    navSemantics.visible === 'Rants' && navSemantics.label === 'Rants & Raves', navSemantics);
+  assert('its visible label is one word, Buzz, and its aria-label starts with that word (SC 2.5.3) and names both tabs',
+    navSemantics.visible === 'Buzz' && navSemantics.label === 'Buzz: Rants & Raves', navSemantics);
   assert('its icon matches the house stroke style and is aria-hidden',
     navSemantics.svg === '2' && navSemantics.iconHidden === 'true', navSemantics);
   await navP.close();
@@ -1241,7 +1243,7 @@ async function run() {
   assert('it is a real <button type="button">, like the other three modes',
     front.tag === 'BUTTON' && front.type === 'button', front);
   assert('it carries equal billing as a fourth mode card, not a footer link', front.count === 4, front);
-  assert('its label is the surface name in full', front.label === 'Rants & Raves', front);
+  assert('its label is the surface name, Buzz', front.label === 'Buzz', front);
   assert('the label does not overflow its card at 320px', front.labelFits, front);
   assert('the support copy names Reddit and points outward',
     /skiers are saying on Reddit/.test(front.support), front.support);
@@ -1260,7 +1262,7 @@ async function run() {
     navShown: !document.getElementById('bottom-nav').hidden,
     current: (document.querySelector('#bottom-nav .nav-item[aria-current="page"]') || {}).dataset,
   }));
-  assert('the card actually navigates to the surface', landed.route === 'rants' && /Rants/.test(landed.h1 || ''), landed);
+  assert('the card actually navigates to the surface', landed.route === 'rants' && /Buzz/.test(landed.h1 || ''), landed);
   assert('and it lands on the default Rants tab with a real URL', landed.hash === '#rants=rants', landed);
   assert('arriving from the splash reveals the nav with Rants current',
     landed.navShown && landed.current && landed.current.route === 'rants', landed);
