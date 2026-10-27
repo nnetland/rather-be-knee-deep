@@ -194,7 +194,7 @@ function rantsFrameHtml() {
   // the bottom-of-page disclosure (rantsAboutHtml) — still an ADDITION to the
   // short form, never a replacement for it.
   return `
-    <section class="rants-frame" aria-label="Where this comes from">
+    <section class="rants-frame" aria-label="Source">
       <ul class="page-meta rants-frame__short body-sm">${RANTS_FRAME_FACTS.map((f) => `<li>${escapeHtml(f)}</li>`).join("")}</ul>
     </section>`;
 }
@@ -214,7 +214,6 @@ function rantsAboutHtml() {
           </div>`).join("")}
         </dl>
         <p>Rants are complaints; raves are praise.</p>
-        <p class="rants-help" id="rants-sort-help">${escapeHtml(RANTS_SORT_HELP[state.rants.sort] || RANTS_SORT_HELP.unusual)}</p>
       </div>
     </details>`;
 }
@@ -268,8 +267,11 @@ function rantsControlsHtml() {
 // engage the sort, and at 200% zoom that band of chrome is a real slice of the
 // vertical space before any content. aria-describedby does not care about DOM
 // order.
+// The sort hint stays visible at the foot of the feed: #rants-sort points at
+// it with aria-describedby, and a description sighted users can't see without
+// opening a disclosure isn't a description.
 function rantsSortHelpHtml() {
-  return rantsAboutHtml();
+  return `<p class="rants-help body-sm" id="rants-sort-help">${escapeHtml(RANTS_SORT_HELP[state.rants.sort] || RANTS_SORT_HELP.unusual)}</p>` + rantsAboutHtml();
 }
 
 // The three exits, used by every state that is a dead end without them.

@@ -82,6 +82,20 @@ function quiverPool() {
   return RESORTS.filter((r) => r.lat != null && quiverPickable(r, now));
 }
 
+// The one fact a user needs when nothing can be picked yet: when the first
+// ski call becomes possible. Calls open a week before opening day, when the
+// 7-day forecast first reaches it.
+function quiverFirstUnlockText() {
+  const now = appNow();
+  const first = RESORTS
+    .map((r) => ({ r, o: resortOpening(r, now) }))
+    .filter((x) => x.o.date && !x.o.open)
+    .sort((a, b) => a.o.date - b.o.date)[0];
+  if (!first) return "Ski calls start a week before opening day";
+  const unlock = new Date(first.o.date.getTime() - (QUIVER_HORIZON_DAYS - 1) * 864e5);
+  return `Ski calls start ${escapeHtml(shortDate(unlock))}, a week before ${escapeHtml(first.r.name)} opens`;
+}
+
 function quiverUpcoming() {
   const now = appNow();
   const horizon = now.getTime() + CHASE_UPCOMING_WINDOW_DAYS * 864e5;
@@ -97,7 +111,9 @@ function quiverUpcoming() {
 function renderQuiverResortStep(body) {
   body.innerHTML = `
     <h1 class="display-h1 quiz-title">Where are you skiing?</h1>
-    ${pageMetaHtml(["Step 1 of 2", "Pick a mountain, then a day"])}
+    ${quiverPool().length
+      ? pageMetaHtml(["Step 1 of 2"])
+      : pageMetaHtml(["Nothing's open yet", quiverFirstUnlockText()], "quiver-unlock")}
     <div class="quiver-search">
       <label class="visually-hidden" for="quiver-search-input">Search by name or state</label>
       <div class="quiver-search__field">
@@ -149,7 +165,7 @@ function renderQuiverResortList() {
   const metaFor = (r) => {
     const o = resortOpening(r, now);
     const bits = [];
-    if (!o.open) bits.push(`<span class="chase-row__status">${escapeHtml(o.label)}</span>`);
+    if (!o.open) bits.push(openingStatusHtml(o, now));
     if (r.country !== "USA") bits.push("Typical season");
     if (r.scale === "day-trip") bits.push("Day-trip hill");
     return bits.join(" · ");
@@ -173,9 +189,9 @@ function renderQuiverResortList() {
 
   const upcomingHtml = upcoming.length ? `
     <section class="quiver-group" aria-labelledby="quiver-upcoming-h">
-      <h2 class="data-label quiver-group__heading" id="quiver-upcoming-h">${pool.length ? "Opening soon" : "Nothing's open yet · Opening soon"}</h2>
+      <h2 class="data-label quiver-group__heading" id="quiver-upcoming-h">Opening soon</h2>
       <ul class="quiver-upcoming">
-        ${upcoming.map((r) => `<li><span class="quiver-upcoming__name">${escapeHtml(r.name)}</span><span class="chase-row__status body-sm">${escapeHtml(resortOpening(r, now).label)}</span></li>`).join("")}
+        ${upcoming.map((r) => `<li><span class="quiver-upcoming__name">${escapeHtml(r.name)}</span>${openingStatusHtml(resortOpening(r, now), now)}</li>`).join("")}
       </ul>
     </section>` : "";
 
@@ -240,7 +256,7 @@ function renderQuiverDayStep(body) {
 
   body.innerHTML = `
     <h1 class="display-h1 quiz-title">Which day?</h1>
-    ${pageMetaHtml(["Step 2 of 2", escapeHtml(resort.name), opening.open ? null : `<span class="chase-row__status">${escapeHtml(opening.label)}</span>`])}
+    ${pageMetaHtml(["Step 2 of 2", escapeHtml(resort.name), opening.open ? null : openingStatusHtml(opening, now)])}
     <div class="quiver-day-list" role="radiogroup" aria-label="Which day are you skiing?">
       ${frame.map((d, i) => {
         const label = quiverDayLabel(d.dateKey, i + firstIndex);

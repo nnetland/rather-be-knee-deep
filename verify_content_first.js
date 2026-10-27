@@ -95,7 +95,8 @@ async function topText(page) {
     await page.$eval('#chase-beginner-toggle-wrap', (el) => el.tagName === 'BUTTON' && el.getAttribute('aria-pressed') === 'false'));
   await page.click('#chase-beginner-toggle-wrap');
   assert('Chase: toggling sets aria-pressed', await page.$eval('#chase-beginner-toggle-wrap', (el) => el.getAttribute('aria-pressed') === 'true'));
-  assert('Chase: the region select has an accessible name', await page.$eval('#chase-region-select', (el) => !!el.getAttribute('aria-label')));
+  assert('Chase: the region select is named by its visible "Near" label (2.5.3)',
+    await page.$eval('#chase-region-select', (el) => !el.hasAttribute('aria-label') && el.closest('label') && /Near/.test(el.closest('label').textContent)));
   const statuses = await page.locator('#chase-body .chase-row__status').allInnerTexts();
   assert('Chase: not-yet-open rows carry their opening date', statuses.length > 0 && statuses.every((t) => /^(Opens [A-Z][a-z]{2} \d{1,2}|Usually .+|Opening TBA)$/.test(t)), statuses.slice(0, 5));
   const spoken = await page.$eval('#chase-body .chase-row--upcoming', (el) => el.getAttribute('aria-label')).catch(() => '');
@@ -154,7 +155,7 @@ async function topText(page) {
   assert('on opening day it reads Open', logic.breckDay.open && logic.breckDay.label === 'Open', logic.breckDay);
   assert('researched, unannounced and past its usual date: not open, "Opening TBA"', !logic.lovelandOct.open && logic.lovelandOct.label === 'Opening TBA', logic.lovelandOct);
   assert('two weeks past the usual date, an unannounced resort is treated as open', logic.lovelandDec.open, logic.lovelandDec);
-  assert('updated stamp: same day is just the time', logic.stamp === '9:42 AM', logic.stamp);
+  assert('updated stamp: same day is just the time', logic.stamp === '9:42 AM today', logic.stamp);
   assert('updated stamp: yesterday says so', logic.stampY === 'Yesterday 9:05 PM', logic.stampY);
   await ctx.close();
 

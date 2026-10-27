@@ -23,7 +23,7 @@ function renderChase(main) {
         <div class="chip-row chase-controls" role="group" aria-label="Filter the list">
           <label class="select-chip">
             <span class="select-chip__label">Near</span>
-            <select id="chase-region-select" aria-label="Closest to home">
+            <select id="chase-region-select">
               <option value="">Anywhere</option>
               ${REGIONS.filter((r) => r.id !== "elsewhere").map((r) => `<option value="${r.id}" ${state.chaseAnswers.region === r.id ? "selected" : ""}>${r.label}</option>`).join("")}
             </select>
@@ -41,6 +41,7 @@ function renderChase(main) {
     document.getElementById("chase-region-select").addEventListener("change", (e) => {
       state.chaseAnswers.region = e.target.value || null;
       renderChaseList(); // re-rank with new feasibility discount, no reload of forecasts needed
+      announceChaseCount();
     });
     wireBeginnerToggle();
   }
@@ -65,7 +66,14 @@ function wireBeginnerToggle() {
     state.chaseAnswers.includeBeginnerFriendly = !state.chaseAnswers.includeBeginnerFriendly;
     sync();
     renderChaseList(true);
+    announceChaseCount();
   });
+}
+
+// Filters re-render the list silently otherwise (SC 4.1.3).
+function announceChaseCount() {
+  const n = document.querySelectorAll("#chase-body .chase-row").length;
+  announce("forecast-status-announcer", `${pluralize(n, "resort")} listed.`);
 }
 
 // Which US resorts get a forecast fetched. In season: all of them. In the
@@ -156,8 +164,10 @@ function chaseFreshnessHtml(forecasts, now) {
   const live = Object.values(forecasts || {}).filter((f) => f && f.isLive);
   if (!live.length) {
     return `<div class="page-meta-wrap" id="freshness-badge">
-      <ul class="page-meta body-sm">
-        <li class="freshness-badge--fallback"><span><span class="freshness-badge__text">Not a live forecast</span> — typical snowfall for this time of year. <button class="btn-text" id="retry-forecast" type="button">Try again</button></span></li>
+      <ul class="page-meta body-sm" role="list">
+        <li class="freshness-badge--fallback"><span class="freshness-badge__text">Not a live forecast</span></li>
+        <li>Forecast unavailable</li>
+        <li><button class="btn-text" id="retry-forecast" type="button">Try again</button></li>
       </ul>
     </div>`;
   }
@@ -166,13 +176,15 @@ function chaseFreshnessHtml(forecasts, now) {
   return `<div class="page-meta-wrap" id="freshness-badge">${pageMetaHtml([
     "NWS 7-day forecast",
     stamp ? `Updated ${escapeHtml(stamp)}` : "Updated today",
+    `${Object.keys(forecasts).filter((id) => RESORTS_BY_ID[id] && resortOpening(RESORTS_BY_ID[id], now).open).length} open`,
   ])}</div>`;
 }
 
 function chaseAboutHtml(anyCanada) {
   return pageAboutHtml("About this data", `
     <p>Snow totals are the National Weather Service's 7-day forecast for each mountain, refreshed every time you open this page. Ranked by snow quality and terrain, not just inches — cold, light snow on steep terrain beats a wet foot on groomers.</p>
-    <p>Opening days are each resort's published ${OPENINGS_SEASON} date. Resorts sometimes slip a few days; "Usually" means the resort hasn't announced one yet.</p>
+    <p>Opening days are each resort's published ${OPENINGS_SEASON} date, checked ${OPENINGS_CHECKED}. Resorts sometimes slip a few days. "Usually mid-Nov" means the resort hasn't announced a date and that's its typical opening; "Opening TBA" means it's past that and still unannounced.</p>
+    <p>When nothing is open, the list shows what's opening soon, most forecast snow first.</p>
     ${anyCanada ? "<p>The forecast service only covers the US, so Canadian resorts show typical season snowfall instead. Check the resort's own snow report for real-time numbers.</p>" : ""}
     <p>A weather forecast, not a snow report: it can't see base depth, grooming, or what's already tracked out.</p>`, "chase-about-details");
 }
@@ -197,7 +209,18 @@ function renderChaseList(isRefresh) {
     if (resortOpening(r, now).open) openFc[id] = forecasts[id];
     else upcoming.push(r);
   }
-  upcoming.sort((a, b) => openingSortKey(a, now) - openingSortKey(b, now));
+  // Upcoming order follows the page's question, "where's it dumping?": most
+  // forecast snow first. Without a live forecast there's no snow to sort by,
+  // so they fall back to opening order — and the heading says which.
+  const anyLive = chaseAnyLive(forecasts);
+  upcoming.sort((a, b) => {
+    const fa = forecasts[a.id], fb = forecasts[b.id];
+    if (anyLive && (fa.isLive || fb.isLive)) {
+      if (fa.isLive !== fb.isLive) return fa.isLive ? -1 : 1;
+      if (fb.totalInches !== fa.totalInches) return fb.totalInches - fa.totalInches;
+    }
+    return openingSortKey(a, now) - openingSortKey(b, now);
+  });
 
   const ranked = rankChaseTheSnow(openFc, state.chaseAnswers, RESORTS);
   const canada = rankCanadaTypicalSeason(RESORTS);
@@ -216,14 +239,14 @@ function renderChaseList(isRefresh) {
   const openHeading = upcomingRows.length && !nothingOpen
     ? `<h2 class="chase-group-h data-label" id="chase-open-h">Open now · ${ranked.length}</h2>` : "";
   const upcomingHtml = upcomingRows.length ? `
-    <h2 class="chase-group-h data-label" id="chase-upcoming-h">${nothingOpen ? "Nothing's open yet · Opening soon" : "Opening soon"}</h2>
+    <h2 class="chase-group-h data-label" id="chase-upcoming-h">Opening soon · ${anyLive ? "most snow first" : "by opening day"}</h2>
     <ul class="chase-list chase-list--upcoming" id="chase-upcoming-list" aria-labelledby="chase-upcoming-h">
-      ${upcomingRows.map((row) => chaseRowHtml(row, null)).join("")}
+      ${upcomingRows.map((row) => chaseRowHtml(row, null, anyLive)).join("")}
     </ul>` : "";
 
   let openHtml = "";
   if (ranked.length) {
-    openHtml = `<ol class="chase-list" id="chase-us-list"${openHeading ? ' aria-labelledby="chase-open-h"' : ""}>` + ranked.map((row, i) => chaseRowHtml(row, i + 1)).join("") + `</ol>`;
+    openHtml = `<ol class="chase-list" id="chase-us-list"${openHeading ? ' aria-labelledby="chase-open-h"' : ""}>` + ranked.map((row, i) => chaseRowHtml(row, i + 1, anyLive)).join("") + `</ol>`;
   } else if (!nothingOpen || !upcomingRows.length) {
     openHtml = `<div class="center-state">${ICONS.warning}<p class="body-md">Nothing open matches right now — try Beginner-friendly.</p></div>`;
   }
@@ -240,7 +263,7 @@ function renderChaseList(isRefresh) {
   if (!isRefresh) revealListRows(rows); else refreshListRows(rows);
 }
 
-function chaseRowHtml(row, rank) {
+function chaseRowHtml(row, rank, anyLive) {
   const { resort, totalInches, snowQuality, feasibility } = row;
   const fc = state.chaseCache && state.chaseCache.forecasts[resort.id];
   const isLive = !fc || fc.isLive;
@@ -251,7 +274,12 @@ function chaseRowHtml(row, rank) {
   const reason = `${qualityWord} + ${terrainWord}`;
   const region = resort.state_province + (resort.country === "Canada" ? ", Canada" : "");
   const opening = resortOpening(resort);
-  const statusHtml = opening.open ? "" : `<span class="chase-row__status">${escapeHtml(opening.label)}</span>`;
+  const statusHtml = opening.open ? "" : openingStatusHtml(opening);
+  // No live forecast anywhere: a closed resort's "typical week" figure means
+  // nothing (it's scaled toward zero before its season), so the row is just
+  // the name and the date. Partial outage: the one fallen-back row is tagged.
+  const showTile = isLive || opening.open;
+  const tagTypical = !isLive && anyLive;
 
   let feasibilityChip = "";
   if (state.chaseAnswers.region && feasibility && feasibility.distanceMiles != null) {
@@ -262,7 +290,8 @@ function chaseRowHtml(row, rank) {
     ? `<span class="chase-flag chase-flag--crowd">${ICONS.crowd} Crowded on powder days</span>` : "";
   const nicoleFlag = resort.hot_take ? `<span class="chase-flag chase-flag--nicole">● Nicole's take →</span>` : "";
   const rankHtml = rank != null ? `<span class="chase-row__rank">${rank}</span>` : "";
-  const spoken = `${escapeHtml(resort.name)}, ${escapeHtml(region)}.${opening.open ? "" : " " + escapeHtml(opening.label) + "."} ${totalInches} inches ${isLive ? "forecast next 7 days" : "in a typical week, not a live forecast"}. ${opening.open ? escapeHtml(reason) + "." : ""}`;
+  const snowSpoken = !showTile ? "" : ` ${totalInches} inches ${isLive ? "forecast over the next 7 days" : "in an average week, not a live forecast"}.`;
+  const spoken = `${escapeHtml(resort.name)}, ${escapeHtml(region)}.${opening.open ? "" : " " + escapeHtml(opening.label) + "."}${snowSpoken}${opening.open ? " " + escapeHtml(reason) + "." : ""}`;
 
   return `
     <li>
@@ -270,20 +299,20 @@ function chaseRowHtml(row, rank) {
         <span class="chase-row__avatar" aria-hidden="true">${badgeSvg(resort, "chase-row")}${rankHtml}</span>
         <span class="chase-row__main">
           <span class="chase-row__name display-h3">${escapeHtml(resort.name)}</span>
-          <span class="chase-row__region body-sm">${escapeHtml(region)}${statusHtml ? " · " : ""}${statusHtml}</span>
+          <span class="chase-row__region body-sm">${escapeHtml(region)}</span>
+          ${statusHtml}
           ${opening.open ? `<span class="chase-row__reason body-sm">${escapeHtml(reason)}</span>` : ""}
           <span class="chase-row__flags">${feasibilityChip}${crowdFlag}${nicoleFlag}</span>
         </span>
-        <span class="chase-row__badge">
+        ${showTile ? `<span class="chase-row__badge">
           <span class="forecast-badge">
-            ${isLive ? "" : '<span class="typical-season-tag">Typical</span>'}
+            ${tagTypical ? '<span class="typical-season-tag">Avg week</span>' : ""}
             <span class="forecast-badge__top">
               <span class="forecast-badge__icon">${cold ? ICONS.crystal : ICONS.droplet}</span>
               <span class="forecast-badge__inches data-inline">${totalInches}"</span>
             </span>
-            <span class="forecast-badge__desc">next 7 days</span>
           </span>
-        </span>
+        </span>` : ""}
       </div>
     </li>`;
 }
@@ -304,14 +333,15 @@ function typicalSeasonRowHtml(resort, rank) {
   const region = resort.state_province + (resort.country === "Canada" ? ", Canada" : "");
   const nicoleFlag = resort.hot_take ? `<span class="chase-flag chase-flag--nicole">● Nicole's take →</span>` : "";
   const opening = state.chaseSeasonInfo && state.chaseSeasonInfo.state !== "off-season" ? resortOpening(resort) : { open: true };
-  const statusHtml = opening.open ? "" : ` · <span class="chase-row__status">${escapeHtml(opening.label)}</span>`;
+  const statusHtml = opening.open ? "" : openingStatusHtml(opening);
   return `
     <li>
       <div class="chase-row" data-rid="${resort.id}" role="link" tabindex="0" aria-label="${escapeHtml(resort.name)}, ${escapeHtml(region)}.${opening.open ? "" : " " + escapeHtml(opening.label) + "."} Typical season average ${resort.avg_annual_snowfall_in ?? "unpublished"} inches a year. Not a live forecast.">
         <span class="chase-row__avatar" aria-hidden="true">${badgeSvg(resort, "chase-row")}<span class="chase-row__rank">${rank}</span></span>
         <span class="chase-row__main">
           <span class="chase-row__name display-h3">${escapeHtml(resort.name)}</span>
-          <span class="chase-row__region body-sm">${escapeHtml(region)}${statusHtml}</span>
+          <span class="chase-row__region body-sm">${escapeHtml(region)}</span>
+          ${statusHtml}
           <span class="chase-row__flags">${nicoleFlag}</span>
         </span>
         <span class="chase-row__badge">

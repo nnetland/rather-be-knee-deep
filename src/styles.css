@@ -768,7 +768,10 @@ ul { margin: 0; padding: 0; list-style: none; }
   border-radius: var(--radius-sm);
   transition: background-color var(--dur-fast) var(--ease-standard);
 }
-.chase-row:hover, .chase-row:focus-visible { background: var(--bg-tint); }
+.chase-row:focus-visible { background: var(--bg-tint); }
+/* Hover tint only on devices that really hover: on a phone, the tap that
+   opened Chase leaves a sticky :hover on whichever row lands under it. */
+@media (hover: hover) { .chase-row:hover { background: var(--bg-tint); } }
 /* Resort badge avatar, list-row scale (badge-system.md §8: 96px = "list
    row"). Replaces the plain numbered-circle rank indicator as the row's
    leading visual — the rank number itself moves into a small pill overlaid
@@ -1592,13 +1595,17 @@ ul { margin: 0; padding: 0; list-style: none; }
 .page-meta li { display: inline; }
 /* Separator trails each item, so a wrapped line ends on a dot instead of
    starting with one. Generated content, so it's not read aloud as text. */
-.page-meta li:not(:last-child)::after { content: "·"; margin: 0 var(--space-2); }
+.page-meta li:not(:last-child)::after { content: "·"; content: "·" / ""; margin: 0 var(--space-2); }
 .page-meta .nicoleslist-status { all: unset; }
-.page-meta .btn-text { padding: 0; min-height: 44px; }
-.page-meta .freshness-badge--fallback {
-  border: 0; display: inline; color: var(--text-secondary);
-}
-.page-meta .freshness-badge--fallback .freshness-badge__text { color: var(--accent-warm-text-tint); font-weight: 700; }
+/* Inline text button: 24px minimum target (2.5.8), not the 44px block a
+   standalone button gets — 44px here would blow the fact line up to 3 rows. */
+.page-meta .btn-text { padding: 0; min-height: 24px; vertical-align: baseline; }
+.page-meta .freshness-badge--fallback { border: 0; display: inline; }
+/* Strong neutral, not the warm token: warm-brown sits too close to Nicole's
+   gold, and the gold-means-Nicole rule wins. */
+.page-meta .freshness-badge--fallback .freshness-badge__text { color: var(--text-primary); font-weight: 700; }
+/* Facts may wrap internally — at 200% zoom on a 320px screen a single fact
+   is wider than the viewport, and reflow (1.4.10) beats tidiness. */
 
 .page-about {
   margin-top: var(--space-8); padding-top: var(--space-4);
@@ -1635,6 +1642,7 @@ ul { margin: 0; padding: 0; list-style: none; }
   font-family: 'Manrope', sans-serif; font-weight: 600; font-size: .875rem;
 }
 .select-chip__label { color: var(--text-secondary); font-weight: 600; flex: none; }
+.select-chip__label::after { content: ":"; }
 .select-chip select {
   appearance: none; -webkit-appearance: none; border: 0; background: transparent; color: inherit;
   font: inherit; min-height: 44px; padding: 0 var(--space-6) 0 0; min-width: 0; width: 100%; max-width: 100%;
@@ -1648,8 +1656,17 @@ ul { margin: 0; padding: 0; list-style: none; }
 /* Chase groups and per-row status */
 .chase-group-h { margin: var(--space-6) 0 var(--space-2); color: var(--text-secondary); }
 .chase-group-h:first-child { margin-top: var(--space-2); }
-.chase-row__status { color: var(--accent-coral-text); font-weight: 700; }
-.quiver-upcoming .chase-row__status { white-space: nowrap; }
+/* Opening status, by certainty. Colour marks the exception: only an opening
+   inside the next week is coral. An announced date is strong text; a typical
+   window is quiet. Never gold (Nicole's), never sentiment. */
+.chase-row__status { display: block; white-space: nowrap; font-weight: 700; color: var(--text-primary); }
+/* Darker than --accent-coral-text in light mode: rows tint on hover/focus, and
+   coral-600 on --bg-tint is 3.98:1. */
+.chase-row__status--soon { color: #B42318; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .chase-row__status--soon { color: var(--accent-coral-text); } }
+:root[data-theme="dark"] .chase-row__status--soon { color: var(--accent-coral-text); }
+.chase-row__status--estimate { font-weight: 500; color: var(--text-secondary); }
+.page-meta .chase-row__status, .quiver-resort__meta .chase-row__status, .quiver-upcoming .chase-row__status { display: inline; }
 .chase-list--upcoming { list-style: none; padding: 0; margin: 0; }
 
 /* Quiver: not-yet-open mountains, listed as facts rather than buttons */
@@ -1658,16 +1675,24 @@ ul { margin: 0; padding: 0; list-style: none; }
   display: flex; justify-content: space-between; gap: var(--space-3); align-items: baseline;
   padding: var(--space-3) var(--space-4); border-bottom: var(--border-hairline-w) solid var(--border-hairline);
 }
-.quiver-upcoming__name { font-weight: 600; color: var(--text-secondary); }
+.quiver-upcoming__name { font-weight: 600; color: var(--text-primary); }
 
 /* Picks: the region filter as one sideways-scrolling row instead of a
    five-row wall of chips. The row scrolls, the page never does. */
 .chip-row--scroll {
   flex-wrap: nowrap; overflow-x: auto; overscroll-behavior-x: contain;
   scrollbar-width: none; margin-left: calc(-1 * var(--space-4)); margin-right: calc(-1 * var(--space-4));
-  padding: 2px var(--space-4) var(--space-1); scroll-padding-inline: var(--space-4);
+  /* Vertical padding so the 5px focus ring isn't clipped by overflow; the
+     negative margin gives the space back. Inline scroll padding keeps a
+     focused chip clear of the edge fade. */
+  padding: var(--space-2) var(--space-4); margin-top: calc(-1 * var(--space-2));
+  scroll-padding-inline: var(--space-8);
   -webkit-mask-image: linear-gradient(to right, transparent 0, #000 var(--space-4), #000 calc(100% - var(--space-8)), transparent 100%);
           mask-image: linear-gradient(to right, transparent 0, #000 var(--space-4), #000 calc(100% - var(--space-8)), transparent 100%);
 }
 .chip-row--scroll::-webkit-scrollbar { display: none; }
+/* Wide screens have room, and a mouse wheel can't scroll sideways: wrap. */
+@media (min-width: 600px) {
+  .chip-row--scroll { flex-wrap: wrap; overflow: visible; -webkit-mask-image: none; mask-image: none; margin-left: 0; margin-right: 0; padding-left: 0; padding-right: 0; }
+}
 .chip-row--scroll .filter-chip { flex: none; white-space: nowrap; }

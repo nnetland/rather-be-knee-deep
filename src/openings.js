@@ -18,6 +18,7 @@
 // ---------------------------------------------------------------------------
 
 const OPENINGS_SEASON = "2026-27";
+const OPENINGS_CHECKED = "Oct 26, 2026";
 const OPENINGS = /*__OPENINGS_JSON__*/{};
 
 function parseIsoDay(iso) {
@@ -84,6 +85,19 @@ function openingSortKey(resort, now) {
   return t ? t.getTime() + 1 : Number.MAX_SAFE_INTEGER; // after any same-day published date
 }
 
+/**
+ * The status chip text, styled by how certain it is: an announced date reads
+ * strong, a typical-window estimate reads quiet, and only an opening inside
+ * the next week gets the coral accent — so colour marks the exception, not
+ * every row.
+ */
+function openingStatusHtml(o, now) {
+  now = now || appNow();
+  let tone = "estimate";
+  if (o.date) tone = (o.date.getTime() - now.getTime() < 7 * 864e5) ? "soon" : "announced";
+  return `<span class="chase-row__status chase-row__status--${tone} body-sm">${escapeHtml(o.label)}</span>`;
+}
+
 /** "9:42 PM" today, "Yesterday 9:42 PM", or "Oct 24, 9:42 PM". */
 function updatedStamp(ms, now) {
   if (!ms) return null;
@@ -91,7 +105,7 @@ function updatedStamp(ms, now) {
   const d = new Date(ms);
   const time = d.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
   const sameDay = (a, b) => a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
-  if (sameDay(d, now)) return time;
+  if (sameDay(d, now)) return `${time} today`;
   const y = new Date(now); y.setDate(y.getDate() - 1);
   if (sameDay(d, y)) return `Yesterday ${time}`;
   return `${shortDate(d)}, ${time}`;
@@ -107,7 +121,7 @@ function updatedStamp(ms, now) {
 function pageMetaHtml(items, id) {
   const parts = items.filter(Boolean);
   if (!parts.length) return "";
-  return `<ul class="page-meta body-sm"${id ? ` id="${id}"` : ""}>${parts.map((p) => `<li>${p}</li>`).join("")}</ul>`;
+  return `<ul class="page-meta body-sm" role="list"${id ? ` id="${id}"` : ""}>${parts.map((p) => `<li>${p}</li>`).join("")}</ul>`;
 }
 
 function pageAboutHtml(title, bodyHtml, id) {

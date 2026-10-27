@@ -104,7 +104,10 @@ function syncFilterChips() {
 // redundant with, not a replacement for, the real column headers.
 function renderNicolesTable(rows) {
   const wrap = document.getElementById("nicoles-table-wrap");
-  const filtered = state.nicolesFilters.region === "all" ? rows : rows.filter((r) => r.region === state.nicolesFilters.region);
+  // Places with a written take lead; the rest keep their order. Not a
+  // ranking — takes carry no weight anywhere — just content before blanks.
+  const scoped = state.nicolesFilters.region === "all" ? rows : rows.filter((r) => r.region === state.nicolesFilters.region);
+  const filtered = scoped.filter((r) => r.take).concat(scoped.filter((r) => !r.take));
 
   wrap.innerHTML = `
     <div class="nicoles-table-scroll">
