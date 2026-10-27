@@ -42,11 +42,20 @@ async function open(browser, isoNow, { noaa }) {
   page.on("pageerror", (e) => errors.push(String(e)));
   await page.clock.setFixedTime(new Date(isoNow));
   await page.route("**://fonts.g**/**", (r) => r.abort());
-  const hits = { n: 0 };
+  const hits = { n: 0, gridUrls: [] };
   if (noaa) {
     const body = JSON.stringify(grid(Date.parse(isoNow)));
-    await page.route("**://api.weather.gov/points/**", (r) => { hits.n++; r.fulfill({ contentType: "application/geo+json", body: JSON.stringify({ properties: { gridId: "BOU", gridX: 1, gridY: 1, timeZone: "America/Denver" } }) }); });
-    await page.route("**://api.weather.gov/gridpoints/**", (r) => r.fulfill({ contentType: "application/geo+json", body }));
+    // Shaped like the real API (verified 2026-10-27): /points hands back the
+    // grid URL in `forecastGridData`, and that URL has NO suffix. The old mock
+    // accepted any /gridpoints/ URL, which is how a path that 404s in
+    // production passed every test for months. This one 404s it too.
+    await page.route("**://api.weather.gov/points/**", (r) => { hits.n++; r.fulfill({ contentType: "application/geo+json", body: JSON.stringify({ properties: { gridId: "BOU", gridX: 1, gridY: 1, timeZone: "America/Denver", forecastGridData: "https://api.weather.gov/gridpoints/BOU/1,1" } }) }); });
+    await page.route("**://api.weather.gov/gridpoints/**", (r) => {
+      const url = r.request().url();
+      hits.gridUrls.push(url);
+      if (!/\/gridpoints\/[A-Z]{3}\/\d+,\d+$/.test(url)) return r.fulfill({ status: 404, contentType: "application/problem+json", body: "{}" });
+      r.fulfill({ contentType: "application/geo+json", body });
+    });
   } else {
     await page.route("**://api.weather.gov/**", (r) => r.abort());
   }
@@ -58,7 +67,7 @@ async function run() {
 
   console.log("\n1. Demo mode is gone");
   {
-    const { page, errors, ctx } = await open(browser, "2026-10-25T20:00:00", { noaa: true });
+    const { page, errors, ctx, hits } = await open(browser, "2026-10-25T20:00:00", { noaa: true });
     await page.goto(FILE_URL); await page.getByText("Chase the snow", { exact: true }).first().click();
     await page.waitForSelector("#freshness-badge, .center-state", { timeout: 20000 });
     check(await page.evaluate(() => typeof DEMO === "undefined" && typeof syncDemoChrome === "undefined"), "no DEMO global or demo chrome hook");
@@ -71,6 +80,8 @@ async function run() {
     check(await page.locator("#chase-upcoming-h").count() === 1, "an Opening soon group renders");
     const statuses = await page.locator("#chase-body .chase-row__status").allInnerTexts();
     check(statuses.some((t) => /^Opens [A-Z][a-z]{2} \d{1,2}$/.test(t)), "rows carry published opening dates", statuses.slice(0, 4));
+    check(hits.gridUrls.length > 0 && hits.gridUrls.every((u) => u === "https://api.weather.gov/gridpoints/BOU/1,1"),
+      "grid requests use the URL /points returned — no /forecastGridData suffix (the production 404)", hits.gridUrls.slice(0, 2));
     const badge = (await page.locator("#freshness-badge").innerText()).trim();
     check(/NWS 7-day forecast/.test(badge) && /Updated \d{1,2}:\d{2}\s?[AP]M/.test(badge), "fact line names the source and the NWS update time", badge);
     const cards = await page.locator("#chase-body [data-rid], #chase-body .resort-card, #chase-body article").count();

@@ -73,6 +73,33 @@ const assert = (l, ok, d) => { if (ok) { pass++; console.log('PASS', l); } else 
     assert('200% zoom: scrolled to the end, content clears the nav', c.last <= c.navTop, c);
     await p.close();
   }
+  // iOS Safari in the browser lifts icon + label 12px off Safari's toolbar
+  // (--nav-pad-b 22px via an iOS-only @supports). Chromium can't match that
+  // query, so apply the same value and check the geometry holds.
+  {
+    const p = await browser.newPage({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true });
+    await p.route('**://api.weather.gov/**', (r) => r.abort());
+    await p.goto(FILE_URL); await p.waitForTimeout(300);
+    await p.addStyleTag({ content: ':root{--nav-pad-b:22px}' });
+    await p.evaluate(() => navigate('nicoles')); await p.waitForTimeout(300);
+    const g = await p.evaluate(() => {
+      const it = document.querySelector('#bottom-nav .nav-item');
+      const r = it.getBoundingClientRect(); const lb = it.querySelector('span:last-child').getBoundingClientRect();
+      return { h: Math.round(r.height), labelGap: Math.round(r.bottom - lb.bottom) };
+    });
+    assert('iOS browser mode: label sits at least 20px above the bottom edge', g.labelGap >= 20, g);
+    assert('iOS browser mode: the button still fills the bar (no dead strip)', g.h >= 76, g);
+    await p.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight)); await p.waitForTimeout(150);
+    const c = await p.evaluate(() => {
+      const nav = document.getElementById('bottom-nav').getBoundingClientRect();
+      const kids = [...document.querySelectorAll('#app-main *')].filter((e) => e.children.length === 0 && e.getBoundingClientRect().height > 0 && !(e.closest('details:not([open])') && !e.closest('summary')) && !e.closest('.visually-hidden'));
+      return { last: Math.round(Math.max(...kids.map((e) => e.getBoundingClientRect().bottom))), navTop: Math.round(nav.top) };
+    });
+    assert('iOS browser mode: content still clears the taller nav', c.last <= c.navTop, c);
+    const css = await p.evaluate(() => [...document.styleSheets].some((sh) => { try { return [...sh.cssRules].some((r) => r.cssText.includes('-webkit-touch-callout: none') && r.cssText.includes('--nav-pad-b: 22px')); } catch (e) { return false; } }));
+    assert('the iOS-only rule is in the stylesheet', css);
+    await p.close();
+  }
   // Safe area: the viewport opts in, so env(safe-area-inset-bottom) is live in home-screen mode.
   {
     const p = await browser.newPage();

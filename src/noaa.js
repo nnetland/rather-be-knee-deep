@@ -7,8 +7,16 @@
 //
 // Flow (per scope-revision-1 / strategy.md §4): /points/{lat},{lon} resolves
 // a coordinate to a forecast office + grid cell, then
-// /gridpoints/{office}/{x},{y}/forecastGridData returns time-stamped periods
+// /gridpoints/{office}/{x},{y} (the URL /points hands back as
+// `forecastGridData`) returns time-stamped periods
 // including snowfallAmount (millimetres) and temperature. 7-day horizon.
+//
+// Fix, 2026-10-27 — the second reason it never worked: the grid URL was
+// built as /gridpoints/{office}/{x},{y}/forecastGridData. That path does not
+// exist (404 for every resort, confirmed from GitHub Actions against the live
+// API). `forecastGridData` is the NAME of the property on the /points
+// response whose value is the real URL. We now use that URL as given, and
+// only build /gridpoints/{office}/{x},{y} ourselves if it's missing.
 //
 // Fix round, 2026-08-04 — root-caused why the live path never worked in
 // production (Director-reported, confirmed by NWS maintainers:
@@ -32,6 +40,14 @@ const NOAA_BASE = "https://api.weather.gov";
 const NOAA_TIMEOUT_MS = 9000; // leaves headroom under the 10s hard fallback in the UI layer
 
 function mmToInches(mm) { return mm / 25.4; }
+
+/** The raw-grid URL for a /points response. See the 2026-10-27 note above. */
+function gridDataUrl(props) {
+  if (props && typeof props.forecastGridData === "string" && props.forecastGridData.startsWith(NOAA_BASE + "/")) {
+    return props.forecastGridData;
+  }
+  return `${NOAA_BASE}/gridpoints/${props.gridId}/${props.gridX},${props.gridY}`;
+}
 
 async function fetchWithTimeout(url, opts, timeoutMs) {
   const controller = new AbortController();
@@ -260,7 +276,7 @@ async function fetchLiveForecast(resort) {
   if (!gridId || gridX == null || gridY == null) throw new Error("NOAA /points missing grid info");
 
   const gridRes = await fetchWithTimeout(
-    `${NOAA_BASE}/gridpoints/${gridId}/${gridX},${gridY}/forecastGridData`,
+    gridDataUrl(points.properties),
     {}, NOAA_TIMEOUT_MS
   );
   if (!gridRes.ok) throw new Error(`NOAA /gridpoints failed: ${gridRes.status}`);
@@ -513,7 +529,7 @@ async function fetchLiveDailyForecast(resort) {
   if (!gridId || gridX == null || gridY == null) throw new Error("NOAA /points missing grid info");
 
   const gridRes = await fetchWithTimeout(
-    `${NOAA_BASE}/gridpoints/${gridId}/${gridX},${gridY}/forecastGridData`,
+    gridDataUrl(points.properties),
     {}, NOAA_TIMEOUT_MS
   );
   if (!gridRes.ok) throw new Error(`NOAA /gridpoints failed: ${gridRes.status}`);
