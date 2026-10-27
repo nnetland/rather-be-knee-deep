@@ -50,13 +50,15 @@ function renderNicolesList(main) {
   main.innerHTML = `
     <div class="page-column">
       <h1 class="display-h1">Nicole's picks</h1>
-      <p class="nicoleslist-voice body-md">Everywhere I've skied, and what I <strong>actually</strong> think. Not a ranked list, just my record — and some of these aren't flattering.</p>
-      <p class="nicoleslist-status data-label">${rows.filter((r) => r.take).length} of ${rows.length} written so far</p>
-      <div class="nicoleslist-filters" role="group" aria-label="Filter Nicole's list">
+      <p class="nicoleslist-voice body-md">Everywhere I've skied, and what I <strong>actually</strong> think.</p>
+      ${pageMetaHtml([`${rows.length} places`, `<span class="nicoleslist-status">${rows.filter((r) => r.take).length} takes written</span>`])}
+      <div class="nicoleslist-filters chip-row chip-row--scroll" role="group" aria-label="Filter Nicole's picks by region">
         ${regions.map((r) => `<button class="filter-chip ${state.nicolesFilters.region === r ? "filter-chip--selected" : ""}" data-region="${escapeHtml(r)}" type="button" aria-pressed="${state.nicolesFilters.region === r}">${r === "all" ? "All regions" : escapeHtml(r)}</button>`).join("")}
       </div>
-      ${rows.some((r) => r.scale === "day-trip" || (r.country && r.country !== "USA" && r.country !== "Canada")) ? `<p class="body-sm" style="color:var(--text-secondary);margin-bottom:var(--space-4)"><span class="info-badge">Day-trip hill</span> / <span class="info-badge">International</span> — not part of the trip-planner or snow-chase matches — just her record.</p>` : ""}
       <div id="nicoles-table-wrap"></div>
+      ${pageAboutHtml("About this list", `
+        <p>Not a ranked list — just Nicole's record, and some of these aren't flattering. Her takes never change what the trip planner recommends.</p>
+        <p><span class="info-badge">Day-trip hill</span> and <span class="info-badge">International</span> places are part of her record but aren't offered by the trip planner or Chase.</p>`)}
     </div>`;
 
   document.querySelectorAll(".filter-chip[data-region]").forEach((btn) => {

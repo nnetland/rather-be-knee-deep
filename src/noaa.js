@@ -296,6 +296,9 @@ async function fetchLiveForecast(resort) {
     avgTempF: tempCount ? Math.round(tempSum / tempCount) : null,
     isLive: true,
     sawSnowPeriod,
+    // When NWS last regenerated this grid — the honest "updated" time. Not
+    // when we fetched it: a forecast fetched a minute ago can be six hours old.
+    updatedAt: Date.parse(props.updateTime || "") || null,
   };
 }
 
@@ -549,7 +552,7 @@ async function fetchLiveDailyForecast(resort) {
   // fallback path instead of rendering a week of confident zeroes.
   if (!days.some((d) => d.hasData)) throw new Error("NOAA gridpoints returned no usable values");
 
-  return { days, timeZone: timeZone || null, isLive: true };
+  return { days, timeZone: timeZone || null, isLive: true, updatedAt: Date.parse(props.updateTime || "") || null };
 }
 
 // The frame of days the UI offers, independent of whether any data lands in

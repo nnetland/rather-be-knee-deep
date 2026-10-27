@@ -190,19 +190,33 @@ function rantsSetMeta(t) {
 // you did four screens ago is a frame whose presence depends on history rather
 // than on declaration.
 function rantsFrameHtml() {
+  // Short form only, as one line of facts. The five explained rows moved to
+  // the bottom-of-page disclosure (rantsAboutHtml) — still an ADDITION to the
+  // short form, never a replacement for it.
   return `
-    <section class="rants-frame" aria-labelledby="rants-frame-h">
-      <p class="rants-frame__short body-sm">${escapeHtml(RANTS_FRAME_SHORT)}</p>
-      <details class="rants-frame__more">
-        <summary id="rants-frame-h" class="data-label">Where this comes from</summary>
-        <dl>${RANTS_FRAME_ROWS.map((row) => `
+    <section class="rants-frame" aria-label="Where this comes from">
+      <ul class="page-meta rants-frame__short body-sm">${RANTS_FRAME_FACTS.map((f) => `<li>${escapeHtml(f)}</li>`).join("")}</ul>
+    </section>`;
+}
+
+// Bottom of every Buzz view: the five rows, what the two tabs mean, and how
+// the current sort works. Lives inside .rants-frame so provenance — the one
+// place Nicole is named on this surface — stays one element class.
+function rantsAboutHtml() {
+  return `
+    <details class="page-about rants-frame rants-frame--about">
+      <summary id="rants-frame-h" class="body-sm">Where this comes from</summary>
+      <div class="page-about__body body-sm">
+        <dl class="rants-frame__more">${RANTS_FRAME_ROWS.map((row) => `
           <div class="rants-frame__row">
-            <dt class="data-label">${escapeHtml(row[0])}</dt>
-            <dd class="body-sm">${escapeHtml(row[1])}</dd>
+            <dt>${escapeHtml(row[0])}</dt>
+            <dd>${escapeHtml(row[1])}</dd>
           </div>`).join("")}
         </dl>
-      </details>
-    </section>`;
+        <p>Rants are complaints; raves are praise.</p>
+        <p class="rants-help" id="rants-sort-help">${escapeHtml(RANTS_SORT_HELP[state.rants.sort] || RANTS_SORT_HELP.unusual)}</p>
+      </div>
+    </details>`;
 }
 
 // --- TABS ------------------------------------------------------------------
@@ -255,15 +269,15 @@ function rantsControlsHtml() {
 // vertical space before any content. aria-describedby does not care about DOM
 // order.
 function rantsSortHelpHtml() {
-  return `<p class="rants-help body-sm" id="rants-sort-help">${escapeHtml(RANTS_SORT_HELP[state.rants.sort] || RANTS_SORT_HELP.unusual)}</p>`;
+  return rantsAboutHtml();
 }
 
 // The three exits, used by every state that is a dead end without them.
 const RANTS_APP_EXITS = `
   <div class="rants-exits">
-    <a href="#rants-exit-plan" data-rants-go="plan">Plan a trip</a>
     <a href="#rants-exit-chase" data-rants-go="chase">Chase the snow</a>
-    <a href="#rants-exit-nicoles" data-rants-go="nicoles">Nicole's list</a>
+    <a href="#rants-exit-plan" data-rants-go="plan">Plan a trip</a>
+    <a href="#rants-exit-nicoles" data-rants-go="nicoles">Nicole's picks</a>
   </div>`;
 
 // The ONE permitted crossing from this surface into Nicole's, allowed only in a
@@ -432,7 +446,6 @@ function rantsFeedHtml() {
   // coin toss for a non-native reader.
   const head =
     '<h1 class="display-h1">Buzz</h1>' +
-    '<p class="rants-sub body-md">Complaints and praise from skiers on Reddit.</p>' +
     rantsFrameHtml() + rantsTabsHtml() + rantsControlsHtml();
 
   // UNKNOWN SCOPE SLUG, checked FIRST, before anything reads a name table. This
@@ -478,8 +491,8 @@ function rantsFeedHtml() {
   if (list.length === 0 && otherCount === 0) {
     return head +
       '<section class="rants-empty">' +
-        rantsEmptyH2("Nothing in the last 14 days") +
-        "<p class=\"body-md\">No topic anywhere had enough posts and comments to show. That's common in the off-season. Nothing gets held over &mdash; when Reddit is quiet, this page is empty.</p>" +
+        rantsEmptyH2("Quiet on Reddit") +
+        "<p class=\"body-md\">Nothing in the last 14 days. Check back once the lifts are turning.</p>" +
         RANTS_APP_EXITS +
       "</section>" + rantsSortHelpHtml();
   }
@@ -571,7 +584,8 @@ function rantsDetailHtml(t) {
         <p class="rants-help body-sm" id="rants-share-note">A shared link stops working when this topic drops off, 14 days from the dates above.</p>
       </div>
       ${hasHistory ? `<div class="rants-exits"><a href="${escapeHtml(rantsHref(r.tab, null, null))}">See all ${tabName.toLowerCase()}</a></div>` : ""}
-    </section>`;
+    </section>
+    ${rantsAboutHtml()}`;
 }
 
 // --- EXPIRED SHARED LINK ---------------------------------------------------
@@ -599,7 +613,7 @@ function rantsExpiredHtml(t) {
         rantsFrameHtml() +
         '<p class="body-md">This link is from an older version of the page. The topic it pointed to is gone.</p>' +
         `<div class="rants-exits"><a href="${rantsHref(r.tab, null, null)}">See all resorts</a></div>` +
-      "</section>";
+      "</section>" + rantsAboutHtml();
   }
 
   const name = rantsScopeLabel(t);
@@ -638,7 +652,7 @@ function rantsExpiredHtml(t) {
         (t.scope_type === "resort" ? rantsNicoleExit(t.scope_id, shortName) : "") +
       "</div>";
   }
-  return out + "</section>";
+  return out + "</section>" + rantsAboutHtml();
 }
 
 // --- EVENTS ----------------------------------------------------------------

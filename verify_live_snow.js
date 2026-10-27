@@ -32,7 +32,7 @@ function grid(fromMs) {
     snow.push({ validTime: `${at}/PT6H`, value: 25.4 }); // 1" per block
     temp.push({ validTime: `${at}/PT6H`, value: -6 });
   }
-  return { properties: { snowfallAmount: { values: snow }, quantitativePrecipitation: { values: snow.map((s) => ({ ...s, value: s.value / 12 })) }, temperature: { values: temp } } };
+  return { properties: { updateTime: new Date(fromMs - 2 * 3600000).toISOString(), snowfallAmount: { values: snow }, quantitativePrecipitation: { values: snow.map((s) => ({ ...s, value: s.value / 12 })) }, temperature: { values: temp } } };
 }
 
 async function open(browser, isoNow, { noaa }) {
@@ -66,10 +66,13 @@ async function run() {
     check(!(await page.content()).includes("Demo snow"), "no 'Demo snow' copy anywhere in the page");
     check(await page.evaluate(() => Math.abs(appNow().getTime() - Date.now()) < 1000), "appNow() is the real clock");
 
-    console.log("\n2. Late October: shoulder list on live data");
-    check(await page.locator("#season-shoulder-notice").count() === 1, "shoulder notice shows");
+    console.log("\n2. Late October: opening dates on live data (no explainer)");
+    check(await page.locator("#season-shoulder-notice").count() === 0, "no shoulder explainer paragraph");
+    check(await page.locator("#chase-upcoming-h").count() === 1, "an Opening soon group renders");
+    const statuses = await page.locator("#chase-body .chase-row__status").allInnerTexts();
+    check(statuses.some((t) => /^Opens [A-Z][a-z]{2} \d{1,2}$/.test(t)), "rows carry published opening dates", statuses.slice(0, 4));
     const badge = (await page.locator("#freshness-badge").innerText()).trim();
-    check(/Live forecast/.test(badge), "freshness badge says Live forecast", badge);
+    check(/NWS 7-day forecast/.test(badge) && /Updated \d{1,2}:\d{2}\s?[AP]M/.test(badge), "fact line names the source and the NWS update time", badge);
     const cards = await page.locator("#chase-body [data-rid], #chase-body .resort-card, #chase-body article").count();
     check(cards >= 1, "at least one ranked resort renders", cards);
     check(errors.length === 0, "no page errors", errors);

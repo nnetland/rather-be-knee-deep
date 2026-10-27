@@ -131,11 +131,12 @@ async function run() {
       const s = getComputedStyle(el);
       return ['Top', 'Right', 'Bottom', 'Left'].filter((d) => parseFloat(s['border' + d + 'Width']) > 0).length <= 1;
     }));
-  assert('the standing frame is rules, not a box',
+  // 2026-10-26 (Director: content first): the short form is a plain line of
+  // facts now — no rules, and still never a box or a tint.
+  assert('the standing frame is not a box and carries no tint',
     await page.$eval('.rants-frame', (el) => {
       const s = getComputedStyle(el);
-      return parseFloat(s.borderTopWidth) > 0 && parseFloat(s.borderBottomWidth) > 0 &&
-             parseFloat(s.borderLeftWidth) === 0 && parseFloat(s.borderRightWidth) === 0 &&
+      return parseFloat(s.borderLeftWidth) === 0 && parseFloat(s.borderRightWidth) === 0 &&
              (s.backgroundColor === 'rgba(0, 0, 0, 0)' || s.backgroundColor === 'transparent');
     }));
   assert('corroboration is not boxed',
@@ -384,14 +385,16 @@ async function run() {
       const el = document.querySelector('.rants-frame');
       if (!el) return null;
       const short = el.querySelector('.rants-frame__short');
-      const det = el.querySelector('details');
-      const sum = el.querySelector('summary');
+      // The five explained rows moved to the bottom-of-page disclosure.
+      const about = document.querySelector('.rants-frame--about');
+      const det = about;
+      const sum = about ? about.querySelector('summary') : null;
       const h1 = document.querySelector('h1');
       return {
         shortText: short ? short.textContent.trim() : '',
         shortVisible: short ? getComputedStyle(short).position !== 'absolute' && short.getBoundingClientRect().height > 1 : false,
         open: det ? det.hasAttribute('open') : null,
-        rows: el.querySelectorAll('.rants-frame__row').length,
+        rows: about ? about.querySelectorAll('.rants-frame__row').length : 0,
         summaryLabel: sum ? sum.getAttribute('aria-label') : 'no-summary',
         summaryH: sum ? sum.getBoundingClientRect().height : 0,
         afterH1: h1 ? (h1.compareDocumentPosition(el) & Node.DOCUMENT_POSITION_FOLLOWING) > 0 : false,
@@ -404,7 +407,7 @@ async function run() {
     assert(`the frame is declared on ${label}`, !!f, { hash });
     if (!f) continue;
     assert(`${label}: the short form is visible, not hidden behind a tap`, f.shortVisible, f);
-    assert(`${label}: the short form names writer, picker, fact-checker, "not a rating" and the 14-day ceiling`,
+    assert(`${label}: the short form names writer, picker, fact-checker, "not a rating" and the 14-day window`,
       /Written by skiers on Reddit/.test(f.shortText) && /Picked by Nicole/.test(f.shortText) &&
       /Fact-checked by no one/.test(f.shortText) && /Not a rating/.test(f.shortText) &&
       /14 days/.test(f.shortText), f.shortText);
@@ -482,8 +485,8 @@ async function run() {
     render();
     return out;
   });
-  assert('both-empty is reachable and says nothing is held over',
-    bothEmpty.heading === 'Nothing in the last 14 days', bothEmpty);
+  assert('both-empty is reachable and names the 14-day window',
+    bothEmpty.heading === 'Quiet on Reddit', bothEmpty);
   assert('both-empty renders zero cards', bothEmpty.cards === 0, bothEmpty);
   assert('both-empty is not a dead end — it names all three exits',
     bothEmpty.exits.length === 3, bothEmpty.exits);
@@ -1193,8 +1196,7 @@ async function run() {
       const clone = v.cloneNode(true);
       // The frame names her as the picker on purpose — that is the attribution
       // doing its job, not Nicole speaking.
-      const fc = clone.querySelector('.rants-frame');
-      if (fc) fc.remove();
+      clone.querySelectorAll('.rants-frame').forEach((fc) => fc.remove());
       return { outsideFrame: (clone.textContent.match(/Nicole/g) || []).length, inFrame: !!frame };
     });
     assert(`${label}: Nicole appears nowhere outside the provenance frame`, mentions.outsideFrame === 0, mentions);

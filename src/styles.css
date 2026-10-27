@@ -1180,23 +1180,16 @@ ul { margin: 0; padding: 0; list-style: none; }
    sources. --border-interactive, not --border-hairline: this is the one
    element whose entire visual identity is "rules, not a box", and at
    --border-hairline's 1.41:1 there would be no box AND no rules. */
-.rants-frame {
-  border-block: var(--border-hairline-w) solid var(--border-interactive);
-  padding-block: var(--space-3);
-  margin: 0 0 var(--space-4);
-}
-.rants-frame__short { color: var(--text-primary); margin: 0; }
+/* 2026-10-26, content first: the short form is now one line of facts with
+   no rules — provenance, read at a glance, not a block to get past. The
+   explained rows live in the bottom "Where this comes from" disclosure. */
+.rants-frame { margin: 0 0 var(--space-3); }
+.rants-frame.page-about { margin: var(--space-8) 0 0; }
+.rants-frame__short { margin: var(--space-1) 0 0; }
 /* A 44px target, keyboard-operable natively, and its own accessible name — no
    aria-label replacement. NOT display:flex: WebKit drops the ::marker on a flex
    summary, and the disclosure triangle is the only affordance saying this thing
    opens. Without it the control looks exactly like the heading it replaced. */
-.rants-frame__more > summary {
-  min-height: 44px;
-  padding-block: var(--space-3);
-  letter-spacing: .1em;
-  cursor: pointer;
-}
-.rants-frame__more[open] > summary { margin-block-end: var(--space-1); }
 .rants-frame dl { margin: 0; }
 .rants-frame__row { margin: 0 0 var(--space-2); }
 .rants-frame__row:last-child { margin-bottom: 0; }
@@ -1584,3 +1577,97 @@ ul { margin: 0; padding: 0; list-style: none; }
      filled control needs an edge or it is not a control at all. */
   .rants-btn, .rants-select { border: 1px solid CanvasText; }
 }
+
+/* =========================================================================
+   Content-first page chrome (Director, 2026-10-26)
+   title → one line of facts → content → "About this data" at the bottom.
+   Facts, not sentences. Explanations go in the disclosure, never above the
+   content. Shared by every surface.
+   ========================================================================= */
+.page-meta {
+  list-style: none; margin: var(--space-1) 0 var(--space-4); padding: 0;
+  display: flex; flex-wrap: wrap; align-items: center; row-gap: var(--space-1);
+  color: var(--text-secondary);
+}
+.page-meta li { display: inline; }
+/* Separator trails each item, so a wrapped line ends on a dot instead of
+   starting with one. Generated content, so it's not read aloud as text. */
+.page-meta li:not(:last-child)::after { content: "·"; margin: 0 var(--space-2); }
+.page-meta .nicoleslist-status { all: unset; }
+.page-meta .btn-text { padding: 0; min-height: 44px; }
+.page-meta .freshness-badge--fallback {
+  border: 0; display: inline; color: var(--text-secondary);
+}
+.page-meta .freshness-badge--fallback .freshness-badge__text { color: var(--accent-warm-text-tint); font-weight: 700; }
+
+.page-about {
+  margin-top: var(--space-8); padding-top: var(--space-4);
+  border-top: var(--border-hairline-w) solid var(--border-hairline);
+  color: var(--text-secondary);
+}
+/* Not display:flex — WebKit drops the disclosure marker on a flex summary,
+   and the triangle is the only "this opens" affordance. */
+.page-about > summary {
+  cursor: pointer; min-height: 44px; padding: var(--space-3) 0;
+  font-weight: 600; color: var(--text-secondary);
+}
+.page-about__body { display: flex; flex-direction: column; gap: var(--space-3); padding-bottom: var(--space-4); }
+.page-about__body p { margin: 0; }
+.page-about__body dl { margin: 0; display: flex; flex-direction: column; gap: var(--space-2); }
+.page-about__body dt { font-weight: 700; color: var(--text-primary); }
+.page-about__body dd { margin: 0; }
+
+/* One row of compact filters. Wraps rather than scrolls on Chase (two
+   controls); Picks' long region list scrolls sideways — see below. */
+.chip-row { display: flex; flex-wrap: wrap; gap: var(--space-2); align-items: center; margin: 0 0 var(--space-4); }
+.chip-row .filter-chip { min-height: 44px; padding: var(--space-2) var(--space-4); display: inline-flex; align-items: center; gap: var(--space-2); }
+.filter-chip__check { display: none; width: 16px; height: 16px; }
+.filter-chip__check svg { width: 16px; height: 16px; }
+.filter-chip--selected .filter-chip__check { display: inline-flex; }
+
+.chase-controls .select-chip { flex: 1 1 10rem; min-width: 0; }
+.chase-controls .filter-chip { flex: 0 0 auto; }
+.select-chip {
+  position: relative; display: inline-flex; align-items: center; gap: var(--space-1);
+  min-height: 44px; max-width: 100%; padding: 0 var(--space-3) 0 var(--space-4);
+  border: var(--border-default-w) solid var(--border-interactive); border-radius: var(--radius-pill);
+  background: var(--bg-surface); color: var(--text-primary);
+  font-family: 'Manrope', sans-serif; font-weight: 600; font-size: .875rem;
+}
+.select-chip__label { color: var(--text-secondary); font-weight: 600; flex: none; }
+.select-chip select {
+  appearance: none; -webkit-appearance: none; border: 0; background: transparent; color: inherit;
+  font: inherit; min-height: 44px; padding: 0 var(--space-6) 0 0; min-width: 0; width: 100%; max-width: 100%;
+  text-overflow: ellipsis; cursor: pointer;
+}
+.select-chip select:focus-visible { outline: none; }
+.select-chip:focus-within { outline: var(--border-focus-w) solid var(--border-selected); outline-offset: 2px; }
+.select-chip__chev { position: absolute; right: var(--space-3); width: 16px; height: 16px; pointer-events: none; color: var(--text-secondary); }
+.select-chip__chev svg { width: 16px; height: 16px; }
+
+/* Chase groups and per-row status */
+.chase-group-h { margin: var(--space-6) 0 var(--space-2); color: var(--text-secondary); }
+.chase-group-h:first-child { margin-top: var(--space-2); }
+.chase-row__status { color: var(--accent-coral-text); font-weight: 700; }
+.quiver-upcoming .chase-row__status { white-space: nowrap; }
+.chase-list--upcoming { list-style: none; padding: 0; margin: 0; }
+
+/* Quiver: not-yet-open mountains, listed as facts rather than buttons */
+.quiver-upcoming { list-style: none; margin: 0; padding: 0; }
+.quiver-upcoming li {
+  display: flex; justify-content: space-between; gap: var(--space-3); align-items: baseline;
+  padding: var(--space-3) var(--space-4); border-bottom: var(--border-hairline-w) solid var(--border-hairline);
+}
+.quiver-upcoming__name { font-weight: 600; color: var(--text-secondary); }
+
+/* Picks: the region filter as one sideways-scrolling row instead of a
+   five-row wall of chips. The row scrolls, the page never does. */
+.chip-row--scroll {
+  flex-wrap: nowrap; overflow-x: auto; overscroll-behavior-x: contain;
+  scrollbar-width: none; margin-left: calc(-1 * var(--space-4)); margin-right: calc(-1 * var(--space-4));
+  padding: 2px var(--space-4) var(--space-1); scroll-padding-inline: var(--space-4);
+  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 var(--space-4), #000 calc(100% - var(--space-8)), transparent 100%);
+          mask-image: linear-gradient(to right, transparent 0, #000 var(--space-4), #000 calc(100% - var(--space-8)), transparent 100%);
+}
+.chip-row--scroll::-webkit-scrollbar { display: none; }
+.chip-row--scroll .filter-chip { flex: none; white-space: nowrap; }
