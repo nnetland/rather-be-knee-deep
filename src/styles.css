@@ -228,28 +228,57 @@ ul { margin: 0; padding: 0; list-style: none; }
    rem-based and grow at 200% zoom, so a fixed 72px undershot the nav's real
    height and content overlapped it. 4.5rem tracks the same root font-size
    the nav itself scales from. */
-.app-main { flex: 1; width: 100%; padding-bottom: calc(4.5rem + var(--space-6)); }
+.app-main { flex: 1; width: 100%; padding-bottom: calc(var(--nav-h) + env(safe-area-inset-bottom, 0px) + var(--space-6)); }
 .app-main.no-bottom-nav { padding-bottom: var(--space-6); }
 .page-column { max-width: 40rem; margin: 0 auto; padding: var(--space-6) var(--space-4); }
 @media (min-width: 768px) { .page-column { padding: var(--space-8) var(--space-6); } }
 
+:root {
+  /* Bottom nav height, rem so it scales with zoom (C1). 4rem = 64px: the
+     2026-10-27 tap-target round raised it from 56px to 66px — WCAG's 44px floor was
+     met, but platform norms aren't (iOS tab bar 49pt + home indicator, M3
+     80dp), and in mobile Safari the bottom strip of a 56px bar sits right
+     against the browser toolbar, where near-miss taps open the toolbar. */
+  /* Fixed parts in px (padding, icon pill), the label line in rem — so at
+     200% zoom only the text grows and the bar doesn't eat 40% of the screen.
+     50px = 8 top + 28 pill + 4 gap + 10 bottom; 1rem covers the label line. */
+  --nav-h: calc(50px + 1rem);
+}
 .top-nav {
   display: none;
 }
 .bottom-nav {
   position: fixed; left: 0; right: 0; bottom: 0; z-index: 50;
   display: flex; background: var(--bg-surface); border-top: 1.5px solid var(--border-hairline);
-  padding-bottom: env(safe-area-inset-bottom, 0);
+  /* Home-screen (standalone) mode: clears the iPhone home indicator. Needs
+     viewport-fit=cover in shell.html, without which env() is always 0. */
+  padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 .bottom-nav[hidden] { display: none; }
 .nav-item {
   flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: 2px; min-height: 56px; padding: var(--space-2) var(--space-1);
+  gap: 4px; min-height: var(--nav-h); padding: 8px var(--space-1) 10px;
   background: none; border: none; cursor: pointer; color: var(--text-secondary);
-  font-family: 'Manrope', sans-serif; font-weight: 600; font-size: .6875rem;
+  font-family: 'Manrope', sans-serif; font-weight: 600; font-size: .75rem;
+  -webkit-tap-highlight-color: transparent; touch-action: manipulation;
 }
 .nav-item[aria-current="page"] { color: var(--brand-primary-text); }
-.nav-item svg { width: 22px; height: 22px; }
+.nav-item svg { width: 24px; height: 24px; }
+/* The icon sits in a pill. On the current page the pill fills, so "you are
+   here" isn't carried by colour alone (1.4.1); on press it flashes, so a tap
+   visibly lands. Bottom nav only — the desktop top nav keeps its own style. */
+.bottom-nav .nav-item > span:first-child {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 56px; height: 28px; border-radius: var(--radius-pill);
+  transition: background-color var(--dur-fast) var(--ease-standard);
+}
+.bottom-nav .nav-item[aria-current="page"] > span:first-child { background: color-mix(in srgb, var(--brand-primary) 18%, transparent); }
+.bottom-nav .nav-item:active > span:first-child { background: color-mix(in srgb, var(--brand-primary) 30%, transparent); }
+/* viewport-fit=cover lets the page run under a landscape notch; keep content
+   and the nav inside the safe area. */
+.app-shell { padding-left: env(safe-area-inset-left, 0px); padding-right: env(safe-area-inset-right, 0px); }
+.bottom-nav { padding-left: env(safe-area-inset-left, 0px); padding-right: env(safe-area-inset-right, 0px); }
+@media (prefers-reduced-motion: reduce) { .bottom-nav .nav-item > span:first-child { transition: none; } }
 
 @media (min-width: 768px) {
   .bottom-nav { display: none; }
@@ -1012,7 +1041,7 @@ ul { margin: 0; padding: 0; list-style: none; }
    Toast
    ========================================================================= */
 .toast {
-  position: fixed; left: 50%; bottom: calc(4.5rem + var(--space-4)); transform: translate(-50%, 8px) ; z-index: 100;
+  position: fixed; left: 50%; bottom: calc(var(--nav-h) + env(safe-area-inset-bottom, 0px) + var(--space-4)); transform: translate(-50%, 8px) ; z-index: 100;
   background: var(--text-primary); color: var(--bg-page); padding: var(--space-3) var(--space-5); border-radius: var(--radius-md);
   opacity: 0; box-shadow: var(--shadow-md); max-width: calc(100vw - 2rem); text-align: center;
   transition: opacity 220ms var(--ease-entrance), transform 220ms var(--ease-entrance);
