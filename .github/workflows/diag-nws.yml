@@ -1,0 +1,38 @@
+name: Diagnose NWS from a real network (temporary)
+on:
+  push:
+    branches: [claude/diag-nws]
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.11' }
+      - uses: actions/setup-node@v4
+        with: { node-version: '20' }
+      - run: python build.py
+      - run: npm i playwright@1 && npx playwright install --with-deps chromium
+      - name: Load Chase against the REAL api.weather.gov
+        run: |
+          cat > e2e.js <<'JS'
+          const { chromium } = require('playwright');
+          (async () => {
+            const b = await chromium.launch();
+            const p = await b.newPage({ viewport: { width: 390, height: 844 } });
+            let ok = 0, bad = 0; const codes = {};
+            p.on('response', (r) => { if (r.url().includes('api.weather.gov/gridpoints')) { codes[r.status()] = (codes[r.status()] || 0) + 1; r.ok() ? ok++ : bad++; } });
+            await p.goto('file://' + process.cwd() + '/public/index.html');
+            await p.click('#mode-chase');
+            await p.waitForSelector('#freshness-badge', { timeout: 30000 });
+            const line = (await p.locator('#freshness-badge').innerText()).replace(/\s+/g, ' ');
+            const rows = await p.locator('#chase-body .chase-row').count();
+            const typical = await p.locator('#chase-body .typical-season-tag').count();
+            const top = await p.locator('#chase-body .chase-row').first().getAttribute('aria-label');
+            console.log(`::notice title=fact line::${line}`);
+            console.log(`::notice title=grid responses::ok ${ok} bad ${bad} ${JSON.stringify(codes)}`);
+            console.log(`::notice title=rows::${rows} rows, ${typical} tagged typical; first: ${top}`);
+            await b.close();
+          })();
+          JS
+          node e2e.js
