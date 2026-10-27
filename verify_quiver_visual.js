@@ -149,7 +149,7 @@ async function run() {
         check(["Pow Boats", "The Fatties"].includes(call), `a 21-inch cold storm calls for a powder ski (got "${call}")`);
         const bodyText = await page.locator("#quiver-card").innerText();
         check(bodyText.includes(":1"), "the card shows the measured snow-to-water ratio");
-        check(bodyText.includes("Live forecast"), "the card is labelled as a live forecast");
+        check(bodyText.includes("NWS forecast") && /Updated/.test(bodyText), "the card names the live source and its update time");
         check(/If you don't own a pair/i.test(bodyText), "the card answers the don't-own-them case");
         check(/snow report/i.test(bodyText), "the card states what the forecast cannot see");
       }

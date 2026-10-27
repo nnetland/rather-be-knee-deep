@@ -546,9 +546,17 @@ const RANTS_FRAME_ROWS = [
 ];
 // The short form is the floor. It is never shortened, never truncated, never
 // made a tooltip; it wraps.
-const RANTS_FRAME_SHORT =
-  "Written by skiers on Reddit. Picked by Nicole. Fact-checked by no one. " +
-  "Not a rating. Nothing older than 14 days.";
+// The visible short form, as separate facts (Director, 2026-10-26: "less
+// explaining"). Five list items, not one sentence — a reader still can't
+// fuse "Nicole picks it" and "nobody fact-checks it" into one claim.
+const RANTS_FRAME_FACTS = [
+  "Written by skiers on Reddit",
+  "Picked by Nicole",
+  "Fact-checked by no one",
+  "Not a rating",
+  "Last 14 days",
+];
+const RANTS_FRAME_SHORT = RANTS_FRAME_FACTS.join(". ") + ".";
 
 // --- THE FLOOR -------------------------------------------------------------
 // SHIPS AS A RULE, WITH NO FIGURE. A published floor figure is calibrated

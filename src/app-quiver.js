@@ -65,47 +65,68 @@ function renderQuiverStep() {
   return renderQuiverResortStep(body);
 }
 
+// Which mountains can be picked. Open now, or opening inside the 7-day
+// forecast window (the day step then starts on opening day). A mountain
+// further out than that can't get a ski call — the forecast doesn't reach
+// its first day — so it lists under "Opening soon" with its date instead of
+// a paragraph explaining why it's missing. Q4 stands: no call for a
+// mountain that isn't spinning lifts on the day you pick.
+function quiverPickable(r, now) {
+  const o = resortOpening(r, now);
+  if (o.open) return true;
+  return !!(o.date && o.date.getTime() - now.getTime() < QUIVER_HORIZON_DAYS * 864e5);
+}
+
 function quiverPool() {
-  // Same per-resort season-window filter Chase the Snow applies in shoulder
-  // season: a resort still weeks from its published open date isn't made open
-  // by a forecast existing for its coordinates. Canada stays in — it has no
-  // NOAA coverage, so it resolves to the typical-season path with the label
-  // that comes with it, exactly as it does in Chase.
   const now = appNow();
-  const shoulder = state.chaseSeasonInfo && state.chaseSeasonInfo.state === "shoulder";
-  return RESORTS.filter((r) => {
-    if (r.lat == null) return false;
-    if (shoulder && seasonFraction(r, now) < SEASON_OPEN_FRACTION) return false;
-    return true;
-  });
+  return RESORTS.filter((r) => r.lat != null && quiverPickable(r, now));
+}
+
+// The one fact a user needs when nothing can be picked yet: when the first
+// ski call becomes possible. Calls open a week before opening day, when the
+// 7-day forecast first reaches it.
+function quiverFirstUnlockText() {
+  const now = appNow();
+  const first = RESORTS
+    .map((r) => ({ r, o: resortOpening(r, now) }))
+    .filter((x) => x.o.date && !x.o.open)
+    .sort((a, b) => a.o.date - b.o.date)[0];
+  if (!first) return "Ski calls start a week before opening day";
+  const unlock = new Date(first.o.date.getTime() - (QUIVER_HORIZON_DAYS - 1) * 864e5);
+  return `Ski calls start ${escapeHtml(shortDate(unlock))}, a week before ${escapeHtml(first.r.name)} opens`;
+}
+
+function quiverUpcoming() {
+  const now = appNow();
+  const horizon = now.getTime() + CHASE_UPCOMING_WINDOW_DAYS * 864e5;
+  return RESORTS
+    .filter((r) => r.lat != null && !quiverPickable(r, now))
+    .filter((r) => { const k = openingSortKey(r, now); return k > now.getTime() && k <= horizon; })
+    .sort((a, b) => openingSortKey(a, now) - openingSortKey(b, now));
 }
 
 // ---------------------------------------------------------------------------
 // Step 1 — which mountain
 // ---------------------------------------------------------------------------
 function renderQuiverResortStep(body) {
-  const shoulder = state.chaseSeasonInfo && state.chaseSeasonInfo.state === "shoulder";
   body.innerHTML = `
-    <p class="quiver-step label">Step 1 of 2</p>
     <h1 class="display-h1 quiz-title">Where are you skiing?</h1>
-    <p class="quiz-helper body-md">Pick the mountain and we'll read its forecast.</p>
-    ${shoulder ? `
-      <div class="canada-divider" style="margin-top:var(--space-4)">
-        <span class="canada-divider__icon" aria-hidden="true">${ICONS.snow}</span>
-        <div class="canada-divider__body">
-          <p class="body-sm">Not every resort is open yet this time of year. This list only includes places that are typically running by now.</p>
-        </div>
-      </div>` : ""}
+    ${quiverPool().length
+      ? pageMetaHtml(["Step 1 of 2"])
+      : pageMetaHtml(["Nothing's open yet", quiverFirstUnlockText()], "quiver-unlock")}
     <div class="quiver-search">
-      <label class="body-sm" for="quiver-search-input">Search by name or state</label>
+      <label class="visually-hidden" for="quiver-search-input">Search by name or state</label>
       <div class="quiver-search__field">
         <span class="quiver-search__icon" aria-hidden="true">${ICONS.search}</span>
         <input type="search" id="quiver-search-input" class="quiver-search__input" autocomplete="off"
-               placeholder="Alta, Vermont, Jackson…" value="${escapeHtml(state.quiver.search || "")}">
+               placeholder="Search: Alta, Vermont, Jackson…" value="${escapeHtml(state.quiver.search || "")}">
       </div>
     </div>
     <p class="visually-hidden" aria-live="polite" id="quiver-search-count"></p>
-    <div id="quiver-resort-list"></div>`;
+    <div id="quiver-resort-list"></div>
+    ${pageAboutHtml("About this data", `
+      <p>Reads the National Weather Service's 7-day forecast for the mountain you pick, then works out which skis suit that day. Canadian resorts aren't covered by that forecast, so they use typical snowfall for the time of year.</p>
+      <p>Only mountains open on or before the day you pick can get a call. Opening days are each resort's published ${OPENINGS_SEASON} date.</p>`)}`;
 
   renderQuiverResortList();
   const input = document.getElementById("quiver-search-input");
@@ -117,24 +138,23 @@ function renderQuiverResortStep(body) {
 
 function renderQuiverResortList() {
   const wrap = document.getElementById("quiver-resort-list");
+  const now = appNow();
   const q = (state.quiver.search || "").trim().toLowerCase();
-  const pool = quiverPool().filter((r) => {
-    if (!q) return true;
-    return `${r.name} ${r.state_province} ${r.country}`.toLowerCase().includes(q);
-  });
+  const match = (r) => !q || `${r.name} ${r.state_province} ${r.country}`.toLowerCase().includes(q);
+  const pool = quiverPool().filter(match);
+  const upcoming = quiverUpcoming().filter(match);
 
   const countEl = document.getElementById("quiver-search-count");
   if (countEl) countEl.textContent = `${pluralize(pool.length, "resort")} listed.`;
 
-  if (!pool.length) {
+  if (!pool.length && !upcoming.length) {
     wrap.innerHTML = `<div class="center-state">${ICONS.warning}<p class="body-md">Nothing matches “${escapeHtml(state.quiver.search)}”. Try a state, or part of the mountain's name.</p></div>`;
     return;
   }
 
   // Grouped by state/province, which is how people actually narrow a ski
   // list — "somewhere in Utah" is a far more common starting point than a
-  // specific mountain, and it keeps 71 buttons navigable by heading rather
-  // than by scrolling past all of them.
+  // specific mountain.
   const groups = {};
   for (const r of pool) {
     const key = r.country === "Canada" ? `${r.state_province}, Canada` : r.state_province;
@@ -142,18 +162,40 @@ function renderQuiverResortList() {
   }
   const orderedKeys = Object.keys(groups).sort();
 
-  wrap.innerHTML = orderedKeys.map((key) => `
+  const metaFor = (r) => {
+    const o = resortOpening(r, now);
+    const bits = [];
+    if (!o.open) bits.push(openingStatusHtml(o, now));
+    if (r.country !== "USA") bits.push("Typical season");
+    if (r.scale === "day-trip") bits.push("Day-trip hill");
+    return bits.join(" · ");
+  };
+
+  const pickHtml = orderedKeys.map((key) => `
     <section class="quiver-group">
       <h2 class="data-label quiver-group__heading">${escapeHtml(key)}</h2>
       <div class="quiver-group__items">
-        ${groups[key].map((r) => `
+        ${groups[key].map((r) => {
+          const meta = metaFor(r);
+          return `
           <button class="quiver-resort" type="button" data-rid="${r.id}">
             <span class="quiver-resort__name">${escapeHtml(r.name)}</span>
-            <span class="quiver-resort__meta body-sm">${r.country === "USA" ? "Live forecast" : "Typical season only"}${r.scale === "day-trip" ? " · Day-trip hill" : ""}</span>
+            ${meta ? `<span class="quiver-resort__meta body-sm">${meta}</span>` : ""}
             <span class="quiver-resort__chev" aria-hidden="true">${ICONS.arrowRight}</span>
-          </button>`).join("")}
+          </button>`;
+        }).join("")}
       </div>
     </section>`).join("");
+
+  const upcomingHtml = upcoming.length ? `
+    <section class="quiver-group" aria-labelledby="quiver-upcoming-h">
+      <h2 class="data-label quiver-group__heading" id="quiver-upcoming-h">Opening soon</h2>
+      <ul class="quiver-upcoming">
+        ${upcoming.map((r) => `<li><span class="quiver-upcoming__name">${escapeHtml(r.name)}</span>${openingStatusHtml(resortOpening(r, now), now)}</li>`).join("")}
+      </ul>
+    </section>` : "";
+
+  wrap.innerHTML = pickHtml + upcomingHtml;
 
   wrap.querySelectorAll(".quiver-resort").forEach((btn) => {
     btn.addEventListener("click", () => selectQuiverResort(btn.dataset.rid));
@@ -204,15 +246,20 @@ function renderQuiverDayStep(body) {
 
   const now = appNow();
   const tz = (state.quiverForecast && state.quiverForecast.timeZone) || null;
-  const frame = buildDayFrame(now, tz, true);
+  const opening = resortOpening(resort, now);
+  const fullFrame = buildDayFrame(now, tz, true);
+  // A mountain opening inside the window: the picker starts on opening day.
+  const frame = (!opening.open && opening.date)
+    ? fullFrame.filter((d) => parseDayKey(d.dateKey) >= opening.date)
+    : fullFrame;
+  const firstIndex = fullFrame.length - frame.length;
 
   body.innerHTML = `
-    <p class="quiver-step label">Step 2 of 2</p>
     <h1 class="display-h1 quiz-title">Which day?</h1>
-    <p class="quiz-helper body-md">${escapeHtml(resort.name)}, ${escapeHtml(resort.country === "Canada" ? `${resort.state_province}, Canada` : resort.state_province)}. The forecast runs seven days out.</p>
+    ${pageMetaHtml(["Step 2 of 2", escapeHtml(resort.name), opening.open ? null : openingStatusHtml(opening, now)])}
     <div class="quiver-day-list" role="radiogroup" aria-label="Which day are you skiing?">
       ${frame.map((d, i) => {
-        const label = quiverDayLabel(d.dateKey, i);
+        const label = quiverDayLabel(d.dateKey, i + firstIndex);
         // "Try a different day" returns here with a day already chosen, so
         // the previous answer has to render as chosen — both visually and to
         // AT — rather than resetting to a blank group. Same defect class as
@@ -437,17 +484,15 @@ function renderQuiverResult(body) {
 
 function quiverFreshnessHtml(fc) {
   if (fc.isLive) {
-    return `<div class="freshness-badge"><span>${ICONS.live}</span><span class="freshness-badge__text body-sm">Live forecast · updated moments ago</span></div>`;
+    const stamp = updatedStamp(fc.updatedAt);
+    return pageMetaHtml(["NWS forecast", stamp ? `Updated ${escapeHtml(stamp)}` : "Updated today"]);
   }
-  return `<div class="freshness-badge freshness-badge--fallback">
-      <span>${ICONS.signalSlash}</span>
-      <span class="freshness-badge__text body-sm">Not a live forecast</span>
-    </div>
-    <p class="body-sm" style="color:var(--text-secondary);margin:0 0 var(--space-4)">${
-      fc.fallbackReason === "outside NOAA coverage"
-        ? "The live forecast service only covers the US, so this is built from typical snowfall for this time of year rather than this week's weather."
-        : `We couldn't reach the live forecast right now, so this is typical snowfall for this time of year rather than this week's. <button class="btn-text" id="quiver-retry-forecast" type="button" style="padding:0">Try again</button>`
-    }</p>`;
+  const canada = fc.fallbackReason === "outside NOAA coverage";
+  return pageMetaHtml([
+    `<span class="freshness-badge--fallback"><span class="freshness-badge__text">Not a live forecast</span></span>`,
+    canada ? "typical snowfall, no US forecast for Canada" : "typical snowfall for the time of year",
+    canada ? null : `<button class="btn-text" id="quiver-retry-forecast" type="button">Try again</button>`,
+  ]);
 }
 
 // Snow depths render through the same rounding rule the reason sentences use

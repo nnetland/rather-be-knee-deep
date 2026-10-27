@@ -1,0 +1,499 @@
+[
+ {
+  "id": "afton-alps-mn",
+  "date": null,
+  "status": "unknown",
+  "source_url": "https://investors.vailresorts.com/news-releases/news-release-details/winter-about-show-vail-resorts-announces-202627-opening-dates",
+  "source_note": "Not in Vail Resorts' 2026-27 opening date release; only OnTheSnow projection (Dec 4)"
+ },
+ {
+  "id": "alta-ut",
+  "date": "2026-11-20",
+  "status": "scheduled",
+  "source_url": "https://www.deseret.com/lifestyle/2026/10/07/utah-ski-resorts-opening-dates-new-terrain-upgraded-chairlifts/",
+  "source_note": "Alta opening date: Nov. 20 (Deseret News; also Freeskier)"
+ },
+ {
+  "id": "alyeska-ak",
+  "date": null,
+  "status": "unknown",
+  "source_url": "https://anchoragehomesearch.com/blog/girdwoods-fall-calendar-runs-on-the-trams-maintenance-clock",
+  "source_note": "Alyeska has not posted an official 2026-27 opening day; only third-party projections (OnTheSnow Nov 28)"
+ },
+ {
+  "id": "andes-tower-hills-mn",
+  "date": null,
+  "status": "unknown",
+  "source_url": "https://www.onthesnow.com/minnesota/projected-openings",
+  "source_note": "No resort-published date found; OnTheSnow Nov 27 is a projection only"
+ },
+ {
+  "id": "arapahoe-basin-co",
+  "date": null,
+  "status": "unknown",
+  "source_url": "https://unofficialnetworks.com/2026/10/26/arapahoe-basin-resumes-snowmaking/",
+  "source_note": "Oct 26 headline: A-Basin resumes snowmaking, opening day still TBD"
+ },
+ {
+  "id": "aspen-snowmass-co",
+  "date": "2026-11-26",
+  "status": "scheduled",
+  "source_url": "https://www.denvergazette.com/2026/09/09/aspen-lift-tickets-priced-at-3-75-for-early-season-date-but-why/",
+  "source_note": "Aspen Mountain & Snowmass planning Nov 26 opening; Highlands/Buttermilk Dec 12 (CPR, Denver7, Freeskier). KUNC listed Aspen Mtn Nov 25 (outlier)"
+ },
+ {
+  "id": "banff-sunshine-ab",
+  "date": "2026-11-06",
+  "status": "scheduled",
+  "source_url": "https://curiocity.com/alberta-ski-resorts-opening-dates-2026/amp/",
+  "source_note": "'Sunshine is planning to open on Friday, Nov. 6, 2026' (Curiocity, Oct 23; Family Fun Canada agrees)"
+ },
+ {
+  "id": "beaver-creek-co",
+  "date": "2026-11-25",
+  "status": "scheduled",
+  "source_url": "https://coloradobiz.com/vail-resorts-2026-27-ski-season-opening-dates-colorado/",
+  "source_note": "Vail Resorts announced Beaver Creek opening Nov 25, 2026 (also Denver Gazette, KUNC)"
+ },
+ {
+  "id": "big-powderhorn-mi",
+  "date": null,
+  "status": "unknown",
+  "source_url": "https://www.onthesnow.com/michigan/projected-openings",
+  "source_note": "No resort-published date; only OnTheSnow projection (Dec 26)"
+ },
+ {
+  "id": "big-sky-mt",
+  "date": "2026-11-25",
+  "status": "scheduled",
+  "source_url": "https://visitmt.com/events/opening-day-winter-2026-27-big-sky-resort-56092",
+  "source_note": "Opening Day Winter 2026-27: Wed Nov 25, 2026; Ikon agrees"
+ },
+ {
+  "id": "big-white-bc",
+  "date": "2026-11-26",
+  "status": "scheduled",
+  "source_url": "https://www.bigwhite.com/explore/mountain-info/winter-hours-operation",
+  "source_note": "Resort site: 'OPENING DAY THURS, NOVEMBER 26, 2026' (snow permitting)"
+ },
+ {
+  "id": "blackjack-mi",
+  "date": null,
+  "status": "unknown",
+  "source_url": "https://www.snowriver.com/mountain-info/hours-weather",
+  "source_note": "Blackjack is now Snowriver's Black River Basin; no 2026-27 opening date posted"
+ },
+ {
+  "id": "breckenridge-co",
+  "date": "2026-11-06",
+  "status": "scheduled",
+  "source_url": "https://snowbrains.com/vail-resorts-announces-2026-27-opening-dates-for-11-resorts/",
+  "source_note": "Vail Resorts target opening Nov 6, 2026; Springsmag (Oct 22) still lists as scheduled"
+ },
+ {
+  "id": "bridger-bowl-mt",
+  "date": "2026-12-11",
+  "status": "scheduled",
+  "source_url": "https://bridgerbowl.com/events",
+  "source_note": "Resort events page: Projected Opening Day Friday, December 11, 2026 (conditions permitting)"
+ },
+ {
+  "id": "buck-hill-mn",
+  "date": null,
+  "status": "unknown",
+  "source_url": "https://www.onthesnow.com/minnesota/projected-openings",
+  "source_note": "No resort-published date found; OnTheSnow Dec 4 is a projection only"
+ },
+ {
+  "id": "copper-mountain-co",
+  "date": "2026-11-06",
+  "status": "scheduled",
+  "source_url": "https://www.denvergazette.com/outtherecolorado/2026/10/15/race-to-open-snowmaking-underway-at-four-colorado-ski-areas/",
+  "source_note": "Copper 'expected opening day is November 6' (Denver Gazette; also Denver7, Freeskier)"
+ },
+ {
+  "id": "crested-butte-co",
+  "date": "2026-11-25",
+  "status": "scheduled",
+  "source_url": "https://coloradobiz.com/vail-resorts-2026-27-ski-season-opening-dates-colorado/",
+  "source_note": "Vail Resorts announced Crested Butte opening Nov 25, 2026"
+ },
+ {
+  "id": "crystal-mountain-wa",
+  "date": "2026-11-27",
+  "status": "scheduled",
+  "source_url": "https://www.ikonpass.com/en/opening-closing-dates",
+  "source_note": "Ikon 26/27 tentative opening Nov 27 (updated Sep 29)"
+ },
+ {
+  "id": "deer-valley-ut",
+  "date": "2026-12-05",
+  "status": "scheduled",
+  "source_url": "https://www.kpcw.org/ski-resorts/2026-09-16/deer-valley-announces-dec-5-opening-day-for-26-27-ski-season",
+  "source_note": "Deer Valley announces Dec 5 opening day for 26-27 (KPCW, Deseret News)"
+ },
+ {
+  "id": "fernie-bc",
+  "date": "2026-12-05",
+  "status": "scheduled",
+  "source_url": "https://skifernie.com/blog/eventara/winter-opening-day-dec-2026/",
+  "source_note": "Resort site: 'opening day for the Winter 2026-27 season will be on Saturday, December 5th' (conditions permitting)"
+ },
+ {
+  "id": "giants-ridge-mn",
+  "date": null,
+  "status": "unknown",
+  "source_url": "https://www.giantsridge.com/winter-season-passes/",
+  "source_note": "No 2026-27 opening date on resort site; OnTheSnow 'projected' Nov 28 is unofficial"
+ },
+ {
+  "id": "grand-targhee-wy",
+  "date": "2026-11-20",
+  "status": "scheduled",
+  "source_url": "https://www.grandtarghee.com/tickets-passes/winter-lift-tickets/",
+  "source_note": "Resort site: 'We will open for the winter 26/27 season on Friday, November 20th'"
+ },
+ {
+  "id": "heavenly-ca",
+  "date": "2026-11-20",
+  "status": "scheduled",
+  "source_url": "https://investors.vailresorts.com/news-releases/news-release-details/winter-about-show-vail-resorts-announces-202627-opening-dates",
+  "source_note": "Vail Resorts release: Heavenly opens Nov 20"
+ },
+ {
+  "id": "indianhead-mi",
+  "date": null,
+  "status": "unknown",
+  "source_url": "https://www.onthesnow.com/michigan/indianhead-mountain/ski-resort",
+  "source_note": "No published 2026-27 opening date found"
+ },
+ {
+  "id": "jackson-hole-wy",
+  "date": "2026-11-27",
+  "status": "scheduled",
+  "source_url": "https://www.tetongravity.com/jackson-hole-mountain-resort-drops-opening-day-date/",
+  "source_note": "Friday, Nov 27 opening day for 2026/27 (TGR)"
+ },
+ {
+  "id": "jay-peak-vt",
+  "date": null,
+  "status": "unknown",
+  "source_url": "https://jaypeakresort.com/press-releases",
+  "source_note": "No 2026-27 opening date in resort press releases; not on Ikon list; OnTheSnow 'projected' Nov 22 is unofficial"
+ },
+ {
+  "id": "keystone-co",
+  "date": null,
+  "status": "unknown",
+  "source_url": "https://www.travelerstoday.com/articles/61184/20261026/massachusetts-ski-area-beats-colorado-open-2026-27-season-third-straight-year.htm",
+  "source_note": "Vail Resorts says 'as soon as possible in October'; lift tickets were sold for Oct 24 but no opening confirmed as of Oct 26"
+ },
+ {
+  "id": "kicking-horse-bc",
+  "date": null,
+  "status": "unknown",
+  "source_url": "https://kickinghorseresort.com/blog/category/press-release/",
+  "source_note": "No 2026-27 winter opening date found on resort site or news"
+ },
+ {
+  "id": "killington-vt",
+  "date": null,
+  "status": "unknown",
+  "source_url": "https://skivermont.com/opening-dates",
+  "source_note": "Ski Vermont lists Killington as TBD; resort targets 'early to mid-November' with no date"
+ },
+ {
+  "id": "kirkwood-ca",
+  "date": "2026-12-04",
+  "status": "scheduled",
+  "source_url": "https://snowbrains.com/vail-resorts-announces-2026-27-opening-dates-for-11-resorts/",
+  "source_note": "Vail Resorts target opening Dec 4, 2026; ABC7 agrees"
+ },
+ {
+  "id": "lake-louise-ab",
+  "date": "2026-11-06",
+  "status": "scheduled",
+  "source_url": "https://www.skibig3.com/events/lake-louise-opening-day",
+  "source_note": "SkiBig3: Sunshine & Lake Louise Nov 6 (tentative); Curiocity agrees"
+ },
+ {
+  "id": "loon-mountain-nh",
+  "date": null,
+  "status": "unknown",
+  "source_url": "https://www.loonmtn.com/latest-news",
+  "source_note": "Resort site banner: 'Opening Day TBD' (OnTheSnow Nov 20 is a projection only)"
+ },
+ {
+  "id": "loveland-co",
+  "date": null,
+  "status": "unknown",
+  "source_url": "https://www.denver7.com/loveland-ski-area-begins-snowmaking-operations-for-2026-27-season",
+  "source_note": "Loveland targeting 'late October and early November' (Oct 15); CPR: has not officially announced opening day. Nov 6 in KUNC/OnTheSnow is a projection"
+ },
+ {
+  "id": "lutsen-mn",
+  "date": "2026-11-26",
+  "status": "scheduled",
+  "source_url": "https://www.lutsen.com/mountain-info/daily-snow-report",
+  "source_note": "Resort mountain report (Oct 24): 'Opening Weekend kicks off Thanksgiving week on November 26!' OnTheSnow projects Nov 21"
+ },
+ {
+  "id": "mammoth-mountain-ca",
+  "date": "2026-11-13",
+  "status": "scheduled",
+  "source_url": "https://snowbrains.com/mammoth-mountain-ca-announces-november-13-opening-day-for-2026-27-winter/",
+  "source_note": "Resort spokesperson confirmed opening Friday Nov 13, 2026 (SnowBrains, Freeskier, Powder)"
+ },
+ {
+  "id": "mont-tremblant-qc",
+  "date": "2026-11-26",
+  "status": "scheduled",
+  "source_url": "https://www.ikonpass.com/en/opening-closing-dates",
+  "source_note": "Ikon 26/27 tentative opening Nov 26"
+ },
+ {
+  "id": "mount-bohemia-mi",
+  "date": null,
+  "status": "unknown",
+  "source_url": "https://www.mtbohemia.com/season-passes/",
+  "source_note": "No 2026-27 opening date on resort site; OnTheSnow 'projected' Dec 5 is unofficial"
+ },
+ {
+  "id": "mt-bachelor-or",
+  "date": "2026-12-04",
+  "status": "scheduled",
+  "source_url": "https://ktvz.com/news/2026/09/24/december-date-targeted-for-mt-bachelor-to-open-for-the-2026-2027-ski-season/",
+  "source_note": "Mt. Bachelor targets Dec 4 opening for 2026/27 (KTVZ, Redmond Spokesman)"
+ },
+ {
+  "id": "mt-baker-wa",
+  "date": null,
+  "status": "unknown",
+  "source_url": "https://www.mtbaker.us/tickets-and-passes/season-passes/swag-benefits/",
+  "source_note": "Resort: 'Stay tuned to our Snow Report as we get closer to Opening Day'; no date published (OnTheSnow Dec 18 is a projection)"
+ },
+ {
+  "id": "okemo-vt",
+  "date": "2026-11-21",
+  "status": "scheduled",
+  "source_url": "https://vermontbiz.com/news/2026/october/26/stowe-okemo-and-mount-snow-target-opening-day-november-21",
+  "source_note": "Vail Resorts (Oct 26, 2026): Okemo targets Saturday Nov 21 opening. OnTheSnow lists Nov 20; Ski Vermont still TBD"
+ },
+ {
+  "id": "palisades-tahoe-ca",
+  "date": "2026-11-25",
+  "status": "scheduled",
+  "source_url": "https://abc7news.com/post/list-tahoe-ski-resorts-2026-27-opening-dates/19704870/",
+  "source_note": "Palisades Tahoe opening Nov 25 (ABC7); Ikon agrees"
+ },
+ {
+  "id": "panorama-bc",
+  "date": "2026-12-04",
+  "status": "scheduled",
+  "source_url": "https://www.panoramaresort.com/public/explore/opening-day-winter",
+  "source_note": "Resort site: 'Winter starts Friday December 4, 2026!'"
+ },
+ {
+  "id": "park-city-ut",
+  "date": "2026-11-20",
+  "status": "scheduled",
+  "source_url": "https://snowbrains.com/vail-resorts-announces-2026-27-opening-dates-for-11-resorts/",
+  "source_note": "Vail Resorts target opening Nov 20, 2026; Deseret News agrees"
+ },
+ {
+  "id": "powder-mountain-ut",
+  "date": "2026-12-11",
+  "status": "scheduled",
+  "source_url": "https://www.freeskier.com/powder-mountain-utah-announces-2026-opening-date",
+  "source_note": "'Powder Mountain will be opening for the 2026/27 winter on December 11' (Freeskier; Deseret agrees)"
+ },
+ {
+  "id": "powder-ridge-ct",
+  "date": null,
+  "status": "unknown",
+  "source_url": "https://www.onthesnow.com/connecticut/powder-ridge-park/ski-resort.html",
+  "source_note": "No published 2026-27 opening date found"
+ },
+ {
+  "id": "red-lodge-mt",
+  "date": null,
+  "status": "unknown",
+  "source_url": "https://www.onthesnow.com/montana/red-lodge-mountain/ski-resort",
+  "source_note": "No resort-published 2026-27 date found; third-party projections conflict (Nov 27, Nov 28, Dec 4)"
+ },
+ {
+  "id": "revelstoke-bc",
+  "date": "2026-12-05",
+  "status": "scheduled",
+  "source_url": "https://seerevelstoke.com/events/revelstoke-mountain-resort-events/opening-day-26-27",
+  "source_note": "Opening Day 26/27: Dec 5 (Tourism Revelstoke; Freeskier also lists Dec 5)"
+ },
+ {
+  "id": "schweitzer-id",
+  "date": "2026-11-27",
+  "status": "scheduled",
+  "source_url": "https://www.schweitzer.com/things-to-do/events/winter-opening-day",
+  "source_note": "Resort events page: Winter Opening Day Nov 27, 2026 (26/27 season, tentative)"
+ },
+ {
+  "id": "snowbasin-ut",
+  "date": "2026-11-27",
+  "status": "scheduled",
+  "source_url": "https://www.deseret.com/lifestyle/2026/10/07/utah-ski-resorts-opening-dates-new-terrain-upgraded-chairlifts/",
+  "source_note": "Opening date Nov 27 (Deseret News, Oct 7); Ikon agrees"
+ },
+ {
+  "id": "snowbird-ut",
+  "date": "2026-11-27",
+  "status": "scheduled",
+  "source_url": "https://www.deseret.com/lifestyle/2026/10/07/utah-ski-resorts-opening-dates-new-terrain-upgraded-chairlifts/",
+  "source_note": "Opening date Nov 27 (Deseret News, Oct 7); Ikon agrees"
+ },
+ {
+  "id": "solitude-ut",
+  "date": "2026-11-20",
+  "status": "scheduled",
+  "source_url": "https://www.deseret.com/lifestyle/2026/10/07/utah-ski-resorts-opening-dates-new-terrain-upgraded-chairlifts/",
+  "source_note": "Deseret News: Solitude opens Nov 20"
+ },
+ {
+  "id": "steamboat-co",
+  "date": "2026-11-21",
+  "status": "scheduled",
+  "source_url": "https://www.ikonpass.com/en/opening-closing-dates",
+  "source_note": "Ikon 26/27 tentative opening Nov 21; Denver7 (Oct 6) agrees"
+ },
+ {
+  "id": "stevens-pass-wa",
+  "date": "2026-12-04",
+  "status": "scheduled",
+  "source_url": "https://investors.vailresorts.com/news-releases/news-release-details/winter-about-show-vail-resorts-announces-202627-opening-dates",
+  "source_note": "Vail Resorts release: Stevens Pass opens Dec 4"
+ },
+ {
+  "id": "stowe-vt",
+  "date": "2026-11-21",
+  "status": "scheduled",
+  "source_url": "https://vermontbiz.com/news/2026/october/26/stowe-okemo-and-mount-snow-target-opening-day-november-21",
+  "source_note": "'targeting Saturday, November 21 to begin the 2026/27 season' (Vail Resorts release via VermontBiz, Oct 26)"
+ },
+ {
+  "id": "stratton-vt",
+  "date": "2026-11-25",
+  "status": "scheduled",
+  "source_url": "https://www.stratton.com/things-to-do/events/opening-day",
+  "source_note": "Resort site: 'Projected opening day ... Wednesday, November 25, 2026'"
+ },
+ {
+  "id": "sugarbush-vt",
+  "date": "2026-11-21",
+  "status": "scheduled",
+  "source_url": "https://skivermont.com/opening-dates",
+  "source_note": "Ski Vermont: Sugarbush (Lincoln Peak) projected to open Nov 21, 2026; Mt. Ellen Dec 18"
+ },
+ {
+  "id": "sugarloaf-me",
+  "date": null,
+  "status": "unknown",
+  "source_url": "https://www.sugarloaf.com/winter-activities",
+  "source_note": "Resort site says only 'late November'; no specific date"
+ },
+ {
+  "id": "sun-peaks-bc",
+  "date": "2026-11-21",
+  "status": "scheduled",
+  "source_url": "https://www.sunpeaksresort.com/ski-ride/the-mountain/winter-hours-of-operation",
+  "source_note": "Resort site: 2026-27 season scheduled Nov 21, 2026 to Apr 4, 2027"
+ },
+ {
+  "id": "sun-valley-id",
+  "date": "2026-11-26",
+  "status": "scheduled",
+  "source_url": "https://snowbrains.com/sun-valley-91st-season-opening-november-26-2026/",
+  "source_note": "'scheduled to open on November 26, 2026 \u2014 Thanksgiving Weekend' (SnowBrains, Sep 17); Ikon agrees"
+ },
+ {
+  "id": "sunday-river-me",
+  "date": "2026-11-15",
+  "status": "scheduled",
+  "source_url": "https://www.ikonpass.com/en/opening-closing-dates",
+  "source_note": "Ikon 26/27 tentative opening Nov 15"
+ },
+ {
+  "id": "taos-nm",
+  "date": "2026-11-26",
+  "status": "scheduled",
+  "source_url": "https://digital-release.wowktv.com/business/press-releases/cision/20260909LA44155/taos-ski-valley-announces-2027-opening-date-and-winter-season-updates",
+  "source_note": "Press release: winter 2026-27 opening date November 26, 2026"
+ },
+ {
+  "id": "telluride-co",
+  "date": "2026-11-26",
+  "status": "scheduled",
+  "source_url": "https://tellurideskiresort.com/?faqs=how-can-i-submit-a-photo-for-my-pass-prior-to-arrival",
+  "source_note": "Resort FAQ: 'Targeted Opening Day November 26, 2026'"
+ },
+ {
+  "id": "timberline-or",
+  "date": null,
+  "status": "unknown",
+  "source_url": "https://www.freeskier.com/north-american-ski-resort-202627-opening-dates",
+  "source_note": "Not operating continuously (summer season ended July 2026). No specific winter date; Freeskier lists 'Early to Mid November' window; resort pass page says only 'opening day'"
+ },
+ {
+  "id": "vail-co",
+  "date": "2026-11-13",
+  "status": "scheduled",
+  "source_url": "https://investors.vailresorts.com/news-releases/news-release-details/winter-about-show-vail-resorts-announces-202627-opening-dates",
+  "source_note": "Vail Resorts release: Vail Mountain opens Nov 13"
+ },
+ {
+  "id": "welch-village-mn",
+  "date": null,
+  "status": "unknown",
+  "source_url": "https://www.onthesnow.com/midwest/open-resorts",
+  "source_note": "No published 2026-27 date found; OnTheSnow 'projected' Dec 4 is unofficial"
+ },
+ {
+  "id": "whistler-blackcomb-bc",
+  "date": "2026-11-20",
+  "status": "scheduled",
+  "source_url": "https://www.placera.se/pressmeddelanden/vail-resorts-whistler-blackcomb-kicks-off-the-countdown-to-winter-with-november-20-opening-date-20260818",
+  "source_note": "Vail Resorts press release Aug 18: 'November 20 as its target opening date for the 2026.27 season'"
+ },
+ {
+  "id": "whitecap-mountains-wi",
+  "date": null,
+  "status": "unknown",
+  "source_url": "https://www.onthesnow.com/wisconsin/projected-openings",
+  "source_note": "No resort-published date found; OnTheSnow Dec 19 is a projection only"
+ },
+ {
+  "id": "whitefish-mt",
+  "date": "2026-12-04",
+  "status": "scheduled",
+  "source_url": "https://skiwhitefish.com/whats-new-for-the-2026-27-ski-season/",
+  "source_note": "Resort site: 'Opening day is scheduled for Friday, Dec. 4!'"
+ },
+ {
+  "id": "wild-mountain-mn",
+  "date": null,
+  "status": "unknown",
+  "source_url": "https://www.powder.com/news/first-ski-resort-open-winter-26-27",
+  "source_note": "Resort target is 'November 2026' with no specific date (POWDER, Sep 28)"
+ },
+ {
+  "id": "winter-park-co",
+  "date": null,
+  "status": "unknown",
+  "source_url": "https://www.winterparkresort.com/the-mountain/hours-of-operation.aspx",
+  "source_note": "Resort site: opening 'As Soon As Possible'; no date published; Ikon lists TBA"
+ },
+ {
+  "id": "wolf-creek-co",
+  "date": null,
+  "status": "unknown",
+  "source_url": "https://wolfcreekski.com/tickets-passes/",
+  "source_note": "Resort: opening date dependent on natural snowfall, will be announced on homepage; Powder.com lists TBD. OnTheSnow 'Nov 7' is a projection only"
+ }
+]

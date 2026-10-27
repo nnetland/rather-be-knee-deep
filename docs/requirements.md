@@ -1,6 +1,6 @@
 # Rather Be Knee Deep — Requirements
 
-_Living document. Director: Nicole. Last updated 2026-08-05._
+_Living document. Director: Nicole. Last updated 2026-10-26._
 
 This is the single record of what this app should do — shipped, agreed, and still wanted.
 
@@ -26,11 +26,11 @@ These came from the original brief and are non-negotiable unless Nicole changes 
 
 **R3 · Shareable via text and Instagram DM. SHIPPED.** The result encodes into the URL, so a shared link reproduces the sender's exact recommendation, badge, and reasoning. Link previews carry a share image.
 
-**R4 · Nicole's ski history is browsable. SHIPPED.** 45 places, sourced from her Google Sheet, filterable.
+**R4 · Nicole's ski history is browsable. SHIPPED.** 44 places, sourced from her Google Sheet, filterable. Renamed **Nicole's picks** (nav: *Picks*) 2026-10-26.
 
 **R5 · "Nicole's Hot Take" is an explicit labelled section, not an ambient voice. SHIPPED.** The app speaks in a neutral register; her opinions sit in an attributed block. A resort with no take shows no take block — never a fabricated or placeholder one.
 
-**R5a · Nicole's List is a documented exception to R5. SHIPPED 2026-08-05.** On that one surface the per-row label is gone at the Director's call — repeated 45 times it was noise, and it ate the space the verdict line needs. Attribution moved to page level instead, and is carried by three things, not one: a first-person standing line ("Everywhere I've skied, and what I *actually* think"), an honest coverage count ("9 of 44 written so far") in place of 38 per-row apologies, and a visually-hidden per-row prefix so a screen-reader user landing mid-list still hears whose opinion it is. The exception is scoped: the recommendation screen and the quiver keep the labelled, quarantined block, and `RESORTS[].hot_take.text` there still carries the whole opinion (verdict + take) as one string. Known gap: a single row screenshotted into a group chat loses the attribution, since the page header doesn't travel with it.
+**R5a · Nicole's List is a documented exception to R5. SHIPPED 2026-08-05.** On that one surface the per-row label is gone at the Director's call — repeated 45 times it was noise, and it ate the space the verdict line needs. Attribution moved to page level instead, and is carried by three things, not one: a first-person standing line ("Everywhere I've skied, and what I *actually* think"), an honest coverage count (since 2026-10-26: "44 places · 9 takes written") in place of 38 per-row apologies, and a visually-hidden per-row prefix so a screen-reader user landing mid-list still hears whose opinion it is. The exception is scoped: the recommendation screen and the quiver keep the labelled, quarantined block, and `RESORTS[].hot_take.text` there still carries the whole opinion (verdict + take) as one string. Known gap: a single row screenshotted into a group chat loses the attribution, since the page header doesn't travel with it.
 
 **R5b · A take is never truncated at runtime. SHIPPED 2026-08-05.** No ellipsis, no `line-clamp`, no `max-height`, no expand control. The previous 58-character preview was not merely tedious — it was *biased*: six of the nine written takes are structured praise-then-caveat, so a left-edge clip deleted the caveat every time, and Breckenridge's pan rendered as "For the bros. BUSY. Cute downt…", which reads as a compliment. Length is an authoring constraint enforced when the take is written — verdict 18–40 characters, take 45–95, combined ≤ 130 — never a rendering one. `verify_responsive.js` asserts this at 320px and 390px.
 
@@ -41,6 +41,8 @@ These came from the original brief and are non-negotiable unless Nicole changes 
 **R7 · The recommendation carries a generated illustration. SHIPPED.** Circular sticker-style badge — heavy outline, flat saturated fills, curved type. Characters, not landscapes: a cowboy for Jackson, a cigar-smoking penguin for Vail, a marmot with a beer for A-Basin. 52 motifs across 71 resorts, no motif repeating within a region.
 
 **R8 · Data honesty is a hard constraint. SHIPPED.** Historical averages are never presented as live forecasts. Missing data says "not published" rather than being estimated. Editorial judgments are marked as judgment. Canada has no NOAA coverage, so those resorts sit in a separate labelled tier.
+
+**R8a · Honesty is shown with facts, not explained in paragraphs. SHIPPED 2026-10-26, Director's call.** *"Instead of explaining 'not a live forecast' simply indicate opening dates for resorts and the last time the forecast was updated."* R8 still holds in full; what changed is how it's met. A live forecast says its source and NWS's own update time ("NWS 7-day forecast · Updated 8:41 PM today"). A resort that isn't open says when it opens. The fallback still says "Not a live forecast", in one line with a retry. Longer explanations live in one closed "About this data" disclosure at the bottom of the page. See *Content-first headers* below.
 
 **R9 · Recommendations explain themselves in the user's own words. SHIPPED.** "You said your crew ranges from never skied to expert" beats "87% match."
 
@@ -88,13 +90,15 @@ These came from the original brief and are non-negotiable unless Nicole changes 
 
 ## Outstanding — data
 
-**T1 · Verify the live NOAA forecast actually works. AGREED, blocked until winter.** A custom `User-Agent` header was triggering a CORS preflight api.weather.gov rejects; removed 2026-08-04. The fix follows NWS maintainers' own guidance but has never been confirmed against the live API, because the build environment can't reach it and the off-season screen now prevents the app from trying. Settle it with the browser-console one-liner, or wait for November.
+**T1 · Verify the live NOAA forecast actually works. AGREED, still open 2026-10-26.** The content-first headers assume it does — the live fact line is what replaces the disclaimers. The fallback path is unchanged and still honest if it doesn't. A custom `User-Agent` header was triggering a CORS preflight api.weather.gov rejects; removed 2026-08-04. The fix follows NWS maintainers' own guidance but has never been confirmed against the live API, because the build environment can't reach it and the off-season screen now prevents the app from trying. Settle it with the browser-console one-liner, or wait for November.
 
 **T2 · `timberline-or` remains low-confidence. AGREED.** The operator publishes irreconcilable vertical-drop figures and its site 404s. Needs a direct call.
 
 **T3 · Reconfirm pass affiliations before each season. AGREED, recurring.** Epic/Ikon/Indy rosters shift annually — 13 of 54 were wrong when first checked. Wolf Creek's Indy status specifically needs a direct call.
 
 **T4 · Deer Valley acreage is a moving target. AGREED, recurring.** The multi-year Mayflower buildout means this needs rechecking every season, not once.
+
+**T6 · Refresh opening dates before each season. AGREED, recurring.** `research/openings-2026-27.json` holds each resort's published 2026–27 opening day with its source, researched 2026-10-26: 45 of 71 published, 26 not yet announced, none confirmed open. Several dates came from Ikon/Vail press lists or local news because resort sites blocked fetching; conflicts are noted per row. A scheduled date flips the resort to Open on that day automatically. A slipped opening isn't modelled yet (see H5).
 
 **T5 · `terrain_pct` is null for 17 resorts. ACCEPTED, not a gap to close.** The matching model falls back to editorial fields rather than treating this as required input. Documented as permanent partial coverage.
 
@@ -108,6 +112,22 @@ These came from the original brief and are non-negotiable unless Nicole changes 
 
 ---
 
+## Content-first headers
+
+Added 2026-10-26, Director's call: *"The app has way too much explaining at the top of each page. Don't take yourself that seriously, we aren't representing medical data… Less explaining, more letting the content tell the story. Find a pattern, test it, and deploy it."* Reference: OpenSnow's favourites list.
+
+**N1 · Nav order by expected use. SHIPPED.** Chase · Quiver · Buzz · Plan · Picks. "Rants & Raves" became **Buzz** (the two tabs keep the names Rants and Raves); "Nicole's List" became **Nicole's picks** (nav: *Picks*). Screen-reader names start with the visible word (SC 2.5.3).
+
+**H1 · One pattern on every surface. SHIPPED.** Title → one line of facts → compact filters → content → one closed "About this data" disclosure at the bottom. Facts, not sentences. Nothing explanatory sits above the content. `verify_content_first.js` measures it: the first resort, mountain, tab or place starts in the top third of a 390×844 screen (Picks: top half). Before → after, first content: Chase 521px → 224px, Quiver 366 → 195, Buzz 226 → 116, Picks 574 → 215.
+
+**H2 · Opening status on every resort row. SHIPPED.** "Opens Nov 6" (announced), "Usually mid-Nov" (no announcement; typical window), "Opening TBA" (past its typical date, still unannounced). Colour marks the exception: only an opening inside the next week is coral; announced dates are strong text; estimates are quiet. When nothing is open, Chase lists what's opening soon, most forecast snow first (by opening day when there's no live forecast).
+
+**H3 · Buzz keeps its provenance visible. SHIPPED.** The legal frame is unchanged in substance: the five facts stay visible under the h1 on every view, now as one line, not a ruled block. The five explained rows moved to the bottom disclosure. Cutting the visible line further was considered and rejected — it's what keeps strangers' words from reading as Nicole's.
+
+**H4 · Debt from review, logged not fixed.** Buzz's filled-purple filter controls don't match the outlined chips elsewhere. Buzz has no "updated" stamp (the Reddit pipeline isn't live, so there's nothing to stamp). Plan's result card could show the resort's opening status.
+
+**H5 · A slipped opening isn't modelled. PROPOSED.** A resort that misses its published date still flips to Open that day. Fix: an optional `delayed`/`confirmed_open` field in the openings file.
+
 ## Quiver Check
 
 Added 2026-08-05. The 2.0 draft's third item, and the first of that list to be built. Its question is different from the other two modes': Plan a Trip asks *where should I go*, Chase the Snow asks *where is it dumping*, Quiver Check asks *I already know where and when — what do I put on my feet?*
@@ -118,7 +138,7 @@ Added 2026-08-05. The 2.0 draft's third item, and the first of that list to be b
 
 **Q3 · Single day, not a week-at-a-glance. SHIPPED, Director's call.** One day in, one answer out. A day-by-day strip was considered and scoped out: it would answer the question before it's asked and turn a shareable call into a dashboard. The known cost is that the mode won't tell you Thursday is the day unless you ask about Thursday.
 
-**Q4 · Off-season behaviour matches Chase the Snow exactly. SHIPPED, Director's call.** When nothing in the pool is realistically open, the mode does not render a picker, does not fetch, and does not recommend a ski for a mountain that isn't spinning lifts. The same per-resort shoulder-season filter applies in October and May. Consequence: the feature is invisible from roughly May to November, including right now — `verify_quiver_visual.js` exists to make it reviewable anyway.
+**Q4 · Off-season behaviour matches Chase the Snow exactly. SHIPPED, Director's call. AMENDED 2026-10-26:** in the shoulder season, mountains that aren't open now list under "Opening soon" with their dates instead of disappearing behind an explainer. A mountain opening inside the 7-day forecast window can be picked, and the day picker starts on opening day. The rule itself stands: no ski call for a day the lifts aren't turning. Original entry: When nothing in the pool is realistically open, the mode does not render a picker, does not fetch, and does not recommend a ski for a mountain that isn't spinning lifts. The same per-resort shoulder-season filter applies in October and May. Consequence: the feature is invisible from roughly May to November, including right now — `verify_quiver_visual.js` exists to make it reviewable anyway.
 
 **Q5 · No new illustration. SHIPPED, Director's call.** No sticker per ski type; the call is typographic. Deferred deliberately, not skipped — see D9 below.
 
