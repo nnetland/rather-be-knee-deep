@@ -242,7 +242,8 @@ ul { margin: 0; padding: 0; list-style: none; }
   /* Fixed parts in px (padding, icon pill), the label line in rem — so at
      200% zoom only the text grows and the bar doesn't eat 40% of the screen.
      50px = 8 top + 28 pill + 4 gap + 10 bottom; 1rem covers the label line. */
-  --nav-h: calc(50px + 1rem);
+  --nav-pad-b: 10px;
+  --nav-h: calc(40px + var(--nav-pad-b) + 1rem);
 }
 .top-nav {
   display: none;
@@ -257,13 +258,25 @@ ul { margin: 0; padding: 0; list-style: none; }
 .bottom-nav[hidden] { display: none; }
 .nav-item {
   flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: 4px; min-height: var(--nav-h); padding: 8px var(--space-1) 10px;
+  gap: 4px; min-height: var(--nav-h); padding: 8px var(--space-1) var(--nav-pad-b);
   background: none; border: none; cursor: pointer; color: var(--text-secondary);
   font-family: 'Manrope', sans-serif; font-weight: 600; font-size: .75rem;
   -webkit-tap-highlight-color: transparent; touch-action: manipulation;
 }
 .nav-item[aria-current="page"] { color: var(--brand-primary-text); }
 .nav-item svg { width: 24px; height: 24px; }
+/* iOS Safari in the browser (not saved to the home screen): Safari's own
+   toolbar sits directly under the nav, and taps that land near that edge get
+   taken by Safari instead of the button (Director, 2026-10-27, on device).
+   Safari 26 gives no bottom safe-area inset in portrait (WebKit bug 306465),
+   so env() can't fix it. Lift the icon and label 12px further from the edge;
+   the button still fills the full height, so the hit area doesn't shrink.
+   -webkit-touch-callout is iOS-only, which scopes this to iPhone/iPad. */
+@supports (-webkit-touch-callout: none) {
+  @media (display-mode: browser) {
+    :root { --nav-pad-b: 22px; }
+  }
+}
 /* The icon sits in a pill. On the current page the pill fills, so "you are
    here" isn't carried by colour alone (1.4.1); on press it flashes, so a tap
    visibly lands. Bottom nav only — the desktop top nav keeps its own style. */
