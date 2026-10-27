@@ -124,6 +124,8 @@ Added 2026-10-26, Director's call: *"The app has way too much explaining at the 
 
 **H3 · Buzz keeps its provenance visible. SHIPPED.** The legal frame is unchanged in substance: the five facts stay visible under the h1 on every view, now as one line, not a ruled block. The five explained rows moved to the bottom disclosure. Cutting the visible line further was considered and rejected — it's what keeps strangers' words from reading as Nicole's.
 
+**N2 · Bottom-nav tap targets: 56px → 66px. SHIPPED 2026-10-27, Director's call.** *"The tap targets on the bottom main nav are tight from a vertical height POV."* 56px cleared WCAG's 44px floor but not platform norms (iOS tab bar 49pt plus home indicator; Material 3, 80dp), and in mobile Safari the bottom strip sits against the browser toolbar. Now 66px: fixed parts in px, the label line in rem, so 200% zoom grows the bar to 106px rather than eating the screen. The icon sits in a 56×28 pill that fills on the current page (a non-colour "you are here", SC 1.4.1) and flashes on press. Labels 11px → 12px, icons 22px → 24px. `viewport-fit=cover` turns on `env(safe-area-inset-bottom)`, so home-screen mode clears the iPhone home indicator. `verify_nav_targets.js` (40 checks) measures it at 320/390/430px, light and dark, and at 200%.
+
 **H4 · Debt from review, logged not fixed.** Buzz's filled-purple filter controls don't match the outlined chips elsewhere. Buzz has no "updated" stamp (the Reddit pipeline isn't live, so there's nothing to stamp). Plan's result card could show the resort's opening status.
 
 **H5 · A slipped opening isn't modelled. PROPOSED.** A resort that misses its published date still flips to Open that day. Fix: an optional `delayed`/`confirmed_open` field in the openings file.
