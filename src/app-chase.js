@@ -17,33 +17,20 @@ function renderChase(main) {
 
   main.innerHTML = `
     <div class="page-column">
-      <h1 class="display-h1">Where's it dumping?</h1>
+      ${pageHeaderHtml("Chase", "See where it's dumping this week.")}
       <div id="chase-freshness"></div>
       ${showControls ? `
-        <div class="chip-row chase-controls" role="group" aria-label="Filter the list">
-          <label class="select-chip">
-            <span class="select-chip__label">Near</span>
-            <select id="chase-region-select">
-              <option value="">Anywhere</option>
-              ${REGIONS.filter((r) => r.id !== "elsewhere").map((r) => `<option value="${r.id}" ${state.chaseAnswers.region === r.id ? "selected" : ""}>${r.label}</option>`).join("")}
-            </select>
-            <span class="select-chip__chev" aria-hidden="true">${ICONS.chevronDown}</span>
-          </label>
-          <button class="filter-chip" type="button" id="chase-beginner-toggle-wrap" aria-pressed="false">
-            <span class="filter-chip__check" aria-hidden="true">${ICONS.check}</span>Beginner-friendly
-          </button>
-        </div>` : ""}
+        ${areaChipsHtml("chase", state.chaseAnswers.area, new Set(RESORTS.filter((r) => r.scale !== "day-trip").map((r) => (areaOfResort(r) || {}).id).filter(Boolean)))}` : ""}
       <div id="chase-body"></div>
       <div id="chase-about"></div>
     </div>`;
 
   if (showControls) {
-    document.getElementById("chase-region-select").addEventListener("change", (e) => {
-      state.chaseAnswers.region = e.target.value || null;
-      renderChaseList(); // re-rank with new feasibility discount, no reload of forecasts needed
+    wireAreaChips("chase", (id) => {
+      state.chaseAnswers.area = id;
+      renderChaseList(true);
       announceChaseCount();
     });
-    wireBeginnerToggle();
   }
   document.title = "Where it's dumping this week";
   setOgMeta({
@@ -53,21 +40,6 @@ function renderChase(main) {
 
   loadAndRenderChase();
   focusHeading(main);
-}
-
-function wireBeginnerToggle() {
-  const btn = document.getElementById("chase-beginner-toggle-wrap");
-  const sync = () => {
-    btn.classList.toggle("filter-chip--selected", !!state.chaseAnswers.includeBeginnerFriendly);
-    btn.setAttribute("aria-pressed", String(!!state.chaseAnswers.includeBeginnerFriendly));
-  };
-  sync();
-  btn.addEventListener("click", () => {
-    state.chaseAnswers.includeBeginnerFriendly = !state.chaseAnswers.includeBeginnerFriendly;
-    sync();
-    renderChaseList(true);
-    announceChaseCount();
-  });
 }
 
 // Filters re-render the list silently otherwise (SC 4.1.3).
@@ -166,7 +138,6 @@ function chaseFreshnessHtml(forecasts, now) {
     return `<div class="page-meta-wrap" id="freshness-badge">
       <ul class="page-meta body-sm" role="list">
         <li class="freshness-badge--fallback"><span class="freshness-badge__text">Not a live forecast</span></li>
-        <li>Forecast unavailable</li>
         <li><button class="btn-text" id="retry-forecast" type="button">Try again</button></li>
       </ul>
     </div>`;
@@ -174,9 +145,8 @@ function chaseFreshnessHtml(forecasts, now) {
   const latest = Math.max.apply(null, live.map((f) => f.updatedAt || 0));
   const stamp = updatedStamp(latest, now);
   return `<div class="page-meta-wrap" id="freshness-badge">${pageMetaHtml([
-    "NWS 7-day forecast",
+    "NWS forecast",
     stamp ? `Updated ${escapeHtml(stamp)}` : "Updated today",
-    `${Object.keys(forecasts).filter((id) => RESORTS_BY_ID[id] && resortOpening(RESORTS_BY_ID[id], now).open).length} open`,
   ])}</div>`;
 }
 
@@ -186,6 +156,7 @@ function chaseAboutHtml(anyCanada) {
     <p>Opening days are each resort's published ${OPENINGS_SEASON} date, checked ${OPENINGS_CHECKED}. Resorts sometimes slip a few days. "Usually mid-Nov" means the resort hasn't announced a date and that's its typical opening; "Opening TBA" means it's past that and still unannounced.</p>
     <p>When nothing is open, the list shows what's opening soon, most forecast snow first.</p>
     ${anyCanada ? "<p>The forecast service only covers the US, so Canadian resorts show typical season snowfall instead. Check the resort's own snow report for real-time numbers.</p>" : ""}
+    <p>Day-trip hills aren't listed here; they're in Nicole's picks.</p>
     <p>A weather forecast, not a snow report: it can't see base depth, grooming, or what's already tracked out.</p>`, "chase-about-details");
 }
 
@@ -222,13 +193,14 @@ function renderChaseList(isRefresh) {
     return openingSortKey(a, now) - openingSortKey(b, now);
   });
 
-  const ranked = rankChaseTheSnow(openFc, state.chaseAnswers, RESORTS);
-  const canada = rankCanadaTypicalSeason(RESORTS);
+  const area = state.chaseAnswers.area;
+  const ranked = rankChaseTheSnow(openFc, state.chaseAnswers, RESORTS).filter((row) => inArea(row.resort, area));
+  const canada = rankCanadaTypicalSeason(RESORTS).filter((r) => inArea(r, area));
   const about = document.getElementById("chase-about");
   if (about) about.innerHTML = chaseAboutHtml(canada.length > 0);
 
   const upcomingRows = upcoming
-    .filter((r) => state.chaseAnswers.includeBeginnerFriendly || r.scale !== "day-trip")
+    .filter((r) => r.scale !== "day-trip" && inArea(r, state.chaseAnswers.area))
     .map((r) => ({ resort: r, totalInches: forecasts[r.id].totalInches,
       snowQuality: forecasts[r.id].avgTempF != null ? Math.max(0, Math.min(1, 1 - (forecasts[r.id].avgTempF - 10) / 45)) : 0.6,
       feasibility: null }));
@@ -248,7 +220,7 @@ function renderChaseList(isRefresh) {
   if (ranked.length) {
     openHtml = `<ol class="chase-list" id="chase-us-list"${openHeading ? ' aria-labelledby="chase-open-h"' : ""}>` + ranked.map((row, i) => chaseRowHtml(row, i + 1, anyLive)).join("") + `</ol>`;
   } else if (!nothingOpen || !upcomingRows.length) {
-    openHtml = `<div class="center-state">${ICONS.warning}<p class="body-md">Nothing open matches right now — try Beginner-friendly.</p></div>`;
+    openHtml = `<div class="center-state">${ICONS.warning}<p class="body-md">${area && area !== "all" ? `Nothing open in ${escapeHtml(AREAS_BY_ID[area].name)} right now.` : "Nothing open right now."}</p></div>`;
   }
 
   body.innerHTML = openHeading + openHtml + upcomingHtml + canadaSectionHtml(canada);
@@ -281,11 +253,9 @@ function chaseRowHtml(row, rank, anyLive) {
   const showTile = isLive || opening.open;
   const tagTypical = !isLive && anyLive;
 
-  let feasibilityChip = "";
-  if (state.chaseAnswers.region && feasibility && feasibility.distanceMiles != null) {
-    const hrs = Math.max(1, Math.round(feasibility.distanceMiles / 55));
-    feasibilityChip = `<span class="chase-flag body-sm">${pluralize(hrs, "hour")} drive from ${(regionById(state.chaseAnswers.region) || {}).label || "your area"}</span>`;
-  }
+  // The "Traveling from" control and its drive-time line were removed
+  // 2026-11-07 (Director's call); region chips answer "what can I get to".
+  const feasibilityChip = "";
   const crowdFlag = (resort.crowd_level === "brutal" || resort.crowd_level === "high")
     ? `<span class="chase-flag chase-flag--crowd">${ICONS.crowd} Crowded on powder days</span>` : "";
   const nicoleFlag = resort.hot_take ? `<span class="chase-flag chase-flag--nicole">● Nicole's take →</span>` : "";

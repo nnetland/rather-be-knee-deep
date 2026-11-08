@@ -101,7 +101,7 @@ async function checkAboveHeading(page, id, headingSel, where) {
   // and /* */ blocks only, never a trailing comment after code on the same
   // line. That can hide nothing — a line with a real call followed by a
   // comment still keeps the call — while letting both this file and
-  // app-rants.js go on explaining IN PROSE why history.back() is wrong here,
+  // app-rants.js (now removed) go on explaining IN PROSE why history.back() is wrong here,
   // which is the most useful thing either of them says about it.
   const stripComments = (s) => s.replace(/\/\*[\s\S]*?\*\//g, "").replace(/^[ \t]*\/\/.*$/gm, "");
   const offenders = fs.readdirSync(SRC).filter((f) => f.endsWith(".js"))
@@ -110,11 +110,11 @@ async function checkAboveHeading(page, id, headingSel, where) {
     `no source file calls history.back()${offenders.length ? " — " + offenders.join(", ") : ""}`);
 
   // This commit adds no global history handling: replaceState only, and no
-  // popstate/hashchange outside the Rants surface, which owns its own routes.
-  const strayHistory = fs.readdirSync(SRC).filter((f) => f.endsWith(".js") && f !== "app-rants.js")
+  // popstate/hashchange anywhere (the Rants surface that had its own routes is gone).
+  const strayHistory = fs.readdirSync(SRC).filter((f) => f.endsWith(".js"))
     .filter((f) => /addEventListener\(\s*["'](?:popstate|hashchange)["']/.test(fs.readFileSync(path.join(SRC, f), "utf8")));
   assert(strayHistory.length === 0,
-    `no popstate/hashchange handling added outside the Rants surface${strayHistory.length ? " — " + strayHistory.join(", ") : ""}`);
+    `no popstate/hashchange handling anywhere${strayHistory.length ? " — " + strayHistory.join(", ") : ""}`);
 
   const browser = await chromium.launch();
   const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } });
@@ -133,7 +133,7 @@ async function checkAboveHeading(page, id, headingSel, where) {
     await page.waitForTimeout(800);
 
     assert(await page.locator(".quiver-call").count() === 1, "the call renders");
-    await checkControl(page, "quiver-leaf-back", "Back to Quiver Check", true, "Quiver call (in-app)");
+    await checkControl(page, "quiver-leaf-back", "Back to Quiver", true, "Quiver call (in-app)");
     await checkAboveHeading(page, "quiver-leaf-back", ".quiver-call", "Quiver call (in-app)");
 
     // The lateral exits are additive, not replaced — they were explicitly kept.
@@ -149,7 +149,7 @@ async function checkAboveHeading(page, id, headingSel, where) {
       selectedDays: document.querySelectorAll(".tap-chip--selected").length,
     }));
     assert(landed.step === "day", `back lands on the day picker, the step it came from (${landed.step})`);
-    assert(landed.h1 === "Which day?", `the destination is the day picker (${landed.h1})`);
+    assert(landed.h1 === "Quiver", `the destination is the day picker (${landed.h1})`);
     assert(landed.focused === landed.h1, "focus moves to the destination's heading, matching house behaviour");
     assert(landed.selectedDays === 1,
       `the chosen day is still selected — a step back, not a reset (${landed.selectedDays})`);
@@ -182,7 +182,7 @@ async function checkAboveHeading(page, id, headingSel, where) {
 
     // The label must not say "back" to someone who has not been anywhere, and
     // must still say where it goes.
-    await checkControl(page, "quiver-leaf-back", "Start a Quiver Check", false, "Quiver call (cold)");
+    await checkControl(page, "quiver-leaf-back", "Open Quiver", false, "Quiver call (cold)");
     await checkAboveHeading(page, "quiver-leaf-back", ".quiver-call", "Quiver call (cold)");
 
     const before = await page.evaluate(() => ({ href: location.href, len: history.length }));
@@ -196,7 +196,7 @@ async function checkAboveHeading(page, id, headingSel, where) {
     }));
     assert(after.route === "quiver" && after.step === "resort",
       `it navigates into the surface's own entry point rather than backwards out of the app (${after.route}/${after.step})`);
-    assert(after.h1 === "Where are you skiing?", `the destination is the mountain picker (${after.h1})`);
+    assert(after.h1 === "Quiver", `the destination is the mountain picker (${after.h1})`);
     assert(after.focused === after.h1, "focus moves to the destination's heading");
     assert(before.len >= 1, "and it did so without depending on a history entry that isn't there");
     await page.close();
@@ -216,7 +216,7 @@ async function checkAboveHeading(page, id, headingSel, where) {
 
     assert(await page.evaluate(() => state.route) === "result",
       "a Chase row opens the shared result-card route");
-    await checkControl(page, "result-leaf-back", "Back to Chase the snow", true, "Chase detail");
+    await checkControl(page, "result-leaf-back", "Back to Chase", true, "Chase detail");
     await checkAboveHeading(page, "result-leaf-back", ".result-headline", "Chase detail");
 
     await page.click("#result-leaf-back");

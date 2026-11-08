@@ -8,7 +8,6 @@
 //      the shoulder list, fed by the live NOAA path, labelled "Live forecast".
 //   3. A NOAA failure still falls back to the honest typical-season badge.
 //   4. Mid-August is still the off-season screen.
-//   5. Rants & Raves never shows posts dated after today.
 //
 //     node verify_live_snow.js
 // ---------------------------------------------------------------------------
@@ -68,7 +67,7 @@ async function run() {
   console.log("\n1. Demo mode is gone");
   {
     const { page, errors, ctx, hits } = await open(browser, "2026-10-25T20:00:00", { noaa: true });
-    await page.goto(FILE_URL); await page.getByText("Chase the snow", { exact: true }).first().click();
+    await page.goto(FILE_URL); await page.locator("#mode-chase").first().click();
     await page.waitForSelector("#freshness-badge, .center-state", { timeout: 20000 });
     check(await page.evaluate(() => typeof DEMO === "undefined" && typeof syncDemoChrome === "undefined"), "no DEMO global or demo chrome hook");
     check(await page.locator("#demo-banner").count() === 0, "no demo banner element");
@@ -83,7 +82,7 @@ async function run() {
     check(hits.gridUrls.length > 0 && hits.gridUrls.every((u) => u === "https://api.weather.gov/gridpoints/BOU/1,1"),
       "grid requests use the URL /points returned — no /forecastGridData suffix (the production 404)", hits.gridUrls.slice(0, 2));
     const badge = (await page.locator("#freshness-badge").innerText()).trim();
-    check(/NWS 7-day forecast/.test(badge) && /Updated \d{1,2}:\d{2}\s?[AP]M/.test(badge), "fact line names the source and the NWS update time", badge);
+    check(/NWS forecast/.test(badge) && /Updated \d{1,2}:\d{2}\s?[AP]M/.test(badge), "fact line names the source and the NWS update time", badge);
     const cards = await page.locator("#chase-body [data-rid], #chase-body .resort-card, #chase-body article").count();
     check(cards >= 1, "at least one ranked resort renders", cards);
     check(errors.length === 0, "no page errors", errors);
@@ -93,7 +92,7 @@ async function run() {
   console.log("\n3. NOAA unreachable: honest fallback");
   {
     const { page, ctx } = await open(browser, "2026-10-25T20:00:00", { noaa: false });
-    await page.goto(FILE_URL); await page.getByText("Chase the snow", { exact: true }).first().click();
+    await page.goto(FILE_URL); await page.locator("#mode-chase").first().click();
     await page.waitForSelector("#freshness-badge", { timeout: 30000 });
     const badge = (await page.locator("#freshness-badge").innerText()).trim();
     check(/Not a live forecast/.test(badge), "fallback badge says Not a live forecast", badge);
@@ -103,23 +102,11 @@ async function run() {
   console.log("\n4. Mid-August: still off-season");
   {
     const { page, hits, ctx } = await open(browser, "2026-08-15T20:00:00", { noaa: true });
-    await page.goto(FILE_URL); await page.getByText("Chase the snow", { exact: true }).first().click();
+    await page.goto(FILE_URL); await page.locator("#mode-chase").first().click();
     await page.waitForSelector(".center-state", { timeout: 20000 });
     check(await page.locator("#freshness-badge").count() === 0, "no freshness badge off-season");
     await page.waitForTimeout(500);
     check(hits.n === 0, "no NOAA request off-season", hits.n);
-    await ctx.close();
-  }
-
-  console.log("\n5. Rants & Raves refuses future-dated posts");
-  {
-    const { page, ctx } = await open(browser, "2026-10-25T20:00:00", { noaa: false });
-    await page.goto(FILE_URL); await page.click("#mode-rants");
-    await page.waitForTimeout(600);
-    const n = await page.evaluate(() => rantsLiveTopics().length);
-    check(n === 0, "no topics live on Oct 25 (sample corpus is dated Dec–Jan)", n);
-    check(await page.evaluate(() => rantsWithinCeiling("2026-12-20") === false), "a post dated after today is outside the ceiling");
-    check(await page.evaluate(() => rantsWithinCeiling("2026-10-20") === true), "a post 5 days old is inside it");
     await ctx.close();
   }
 

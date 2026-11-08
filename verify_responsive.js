@@ -90,14 +90,13 @@ async function run() {
       return {
         takes: takes.length,
         attributed: takes.filter((c) => /nicole/i.test((c.querySelector('.visually-hidden') || {}).textContent || '')).length,
-        pageVoice: !!document.querySelector('.nicoleslist-voice'),
-        coverage: !!document.querySelector('.nicoleslist-status'),
+        pageVoice: !!document.querySelector('.page-intro') && /I've skied/.test(document.querySelector('.page-intro').textContent),
       };
     });
     assert(`Nicole's List at ${width}px: every take carries screen-reader attribution (R5)`,
       attribution && attribution.takes > 0 && attribution.attributed === attribution.takes, attribution);
-    assert(`Nicole's List at ${width}px: page-level attribution and coverage count present (R5)`,
-      attribution && attribution.pageVoice && attribution.coverage, attribution);
+    assert(`Nicole's List at ${width}px: page-level first-person attribution present (R5a, amended 2026-11-07: no count)`,
+      attribution && attribution.pageVoice, attribution);
 
     // Touch targets (M7): filter chips >= 44px with >= 12px gutter.
     const targets = await page.evaluate(() => {

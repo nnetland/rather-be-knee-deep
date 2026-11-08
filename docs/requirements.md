@@ -1,6 +1,6 @@
 # Rather Be Knee Deep — Requirements
 
-_Living document. Director: Nicole. Last updated 2026-10-26._
+_Living document. Director: Nicole. Last updated 2026-11-07._
 
 This is the single record of what this app should do — shipped, agreed, and still wanted.
 
@@ -209,3 +209,19 @@ Booking, live pricing, or inventory. Accounts, saved trips, or cross-session per
 **Lane 3 — a net-new feature.** The full pipeline, but with discovery scoped to just the new thing, since personas, principles, the visual system, tokens, badges and the copy register already exist.
 
 Deploy is the same in all three: commit and push in GitHub Desktop, GitHub Actions rebuilds and deploys, live in about 90 seconds.
+
+---
+
+## Round of 2026-11-07 (branch `claude/buzz-subreddit-directory`)
+
+**B1 · Buzz is a subreddit directory, not a feed. SHIPPED on branch, Director's call.** Rants & Raves needed a Reddit Data API pipeline that was never built, and Reddit now requires explicit approval for that access. Buzz now lists plain links to public subreddits, by region, then resort, then general. Nothing is read from Reddit. A resort with no verified subreddit is listed under "No subreddit of its own" rather than linked to a guess; town subreddits stand in only where the town is the ski destination, labelled "the town's". Evidence per row: `research/resort-links.json`. Old `#rants=` links land on Buzz. Supersedes the Rants & Raves entries and their open items (takedown route, pipeline, floor figure).
+
+**B2 · Resort result screen links out. SHIPPED on branch.** A Links block with the official site and the resort's subreddit, falling back to the region's subreddit, then r/skiing, each labelled so it isn't mistaken for the resort's own.
+
+**A1 · One region picker across the app. SHIPPED on branch, Director's call.** Chase, Quiver, Buzz and Picks use the same scrolling chip row and the same ten areas (`src/regions.js`), "All regions" first, in a fixed geographic order. Quiver groups its list by area and shows the state on each row. Chase's old "Near" select was a home-metro re-ranker that looked like a region filter. It was briefly kept as "Traveling from", then removed at the Director's call: the region chips answer "what can I get to", and only Plan asks where you're coming from. The Beginner-friendly toggle is removed; day-trip hills stay out of Chase.
+
+**H6 · One page header. SHIPPED on branch, Director's call.** *"Page titles should match bottom nav… every word should earn its spot."* Every tab page: h1 = the nav word exactly (Chase, Quiver, Buzz, Plan, Picks), one line saying what to do, then a status line only when needed, then controls. Splash cards and back links use the same words. Counts were cut ("44 places · 9 takes written", "29 subreddits", "4 open", "Step 1 of 2"). Plan gained its h1 and intro; its in-card step counter stays, the progress dot is gone. Chase status is "NWS forecast · Updated …" live, "Not a live forecast · Try again" otherwise (R8a still met). Picks' intro has no gold rule (removed at the Director's call; the first person does the work). Allowed deviation: drill-down screens (result, Quiver call) use the resort as their heading.
+
+**R5a amended 2026-11-07.** The coverage count is gone at the Director's call. Page-level attribution on Picks is now carried by the first-person intro line alone plus the visually-hidden per-row prefix.
+
+**H7 · New home page. SHIPPED on branch, Director's call (option A of three from a competitive audit and design exploration).** The app's own sticker (new: the app-icon mountain as a wry character, goggles up, knee deep in powder, `BRAND_STICKER_SVG` in `src/icons.js`), the headline "Where should we ski?", then one tile per section in the same style: Chase, Quiver, Buzz, Picks, and Plan last at full width so no tile reads as the one main action. Picks finally has a tile. The bottom nav now shows on home too, with nothing marked current. Options considered and not taken: a sticker wall (browse-first, no clear start) and a "this week's call" editorial card (needs weekly upkeep and a reliable live forecast; a candidate to add later).

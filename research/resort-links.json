@@ -1,0 +1,645 @@
+{
+ "checked": "2026-11-07",
+ "method": "Web search plus subreddit-stats sites and Reddit mirrors; reddit.com itself was not reachable from the build environment. A resort subreddit counts only if public with posts in the past 12 months. Town subreddits are used only where the town is the ski destination (sub_kind: town).",
+ "resorts": [
+  {
+   "id": "vail-co",
+   "website": "https://www.vail.com/",
+   "sub": "vail",
+   "sub_kind": "resort",
+   "rejected_town_sub": null,
+   "confidence": "high",
+   "evidence": "posts 20m-18h old; mostly resort"
+  },
+  {
+   "id": "beaver-creek-co",
+   "website": "https://www.beavercreek.com/",
+   "sub": null,
+   "sub_kind": null,
+   "rejected_town_sub": null,
+   "confidence": null,
+   "evidence": "r/BeaverCreek dead since 2020"
+  },
+  {
+   "id": "breckenridge-co",
+   "website": "https://www.breckenridge.com/",
+   "sub": "Breckenridge",
+   "sub_kind": "resort",
+   "rejected_town_sub": null,
+   "confidence": "high",
+   "evidence": "posts 3h old"
+  },
+  {
+   "id": "keystone-co",
+   "website": "https://www.keystoneresort.com/",
+   "sub": null,
+   "sub_kind": null,
+   "rejected_town_sub": null,
+   "confidence": null,
+   "evidence": null
+  },
+  {
+   "id": "aspen-snowmass-co",
+   "website": "https://www.aspensnowmass.com/",
+   "sub": "Aspen",
+   "sub_kind": "town",
+   "rejected_town_sub": null,
+   "confidence": null,
+   "evidence": "town/valley sub ~10k"
+  },
+  {
+   "id": "steamboat-co",
+   "website": "https://www.steamboat.com/",
+   "sub": "steamboat",
+   "sub_kind": "resort",
+   "rejected_town_sub": null,
+   "confidence": "medium",
+   "evidence": "town+resort; post 1h old"
+  },
+  {
+   "id": "telluride-co",
+   "website": "https://tellurideskiresort.com/",
+   "sub": "TellurideColorado",
+   "sub_kind": "town",
+   "rejected_town_sub": null,
+   "confidence": null,
+   "evidence": "town+Mountain Village; post 2d old"
+  },
+  {
+   "id": "crested-butte-co",
+   "website": "https://www.skicb.com/",
+   "sub": null,
+   "sub_kind": null,
+   "rejected_town_sub": "gunnison",
+   "confidence": null,
+   "evidence": null
+  },
+  {
+   "id": "winter-park-co",
+   "website": "https://www.winterparkresort.com/",
+   "sub": null,
+   "sub_kind": null,
+   "rejected_town_sub": null,
+   "confidence": null,
+   "evidence": "r/WinterPark is Florida"
+  },
+  {
+   "id": "arapahoe-basin-co",
+   "website": "https://www.arapahoebasin.com/",
+   "sub": null,
+   "sub_kind": null,
+   "rejected_town_sub": null,
+   "confidence": null,
+   "evidence": null
+  },
+  {
+   "id": "wolf-creek-co",
+   "website": "https://wolfcreekski.com/",
+   "sub": null,
+   "sub_kind": null,
+   "rejected_town_sub": null,
+   "confidence": null,
+   "evidence": null
+  },
+  {
+   "id": "park-city-ut",
+   "website": "https://www.parkcitymountain.com/",
+   "sub": "ParkCity",
+   "sub_kind": "town",
+   "rejected_town_sub": null,
+   "confidence": null,
+   "evidence": "town sub ~26k"
+  },
+  {
+   "id": "deer-valley-ut",
+   "website": "https://www.deervalley.com/",
+   "sub": "ParkCity",
+   "sub_kind": "town",
+   "rejected_town_sub": null,
+   "confidence": null,
+   "evidence": "r/DeerValley inactive past year"
+  },
+  {
+   "id": "alta-ut",
+   "website": "https://www.alta.com/",
+   "sub": null,
+   "sub_kind": null,
+   "rejected_town_sub": null,
+   "confidence": null,
+   "evidence": "r/UTsnow flair"
+  },
+  {
+   "id": "snowbird-ut",
+   "website": "https://www.snowbird.com/",
+   "sub": null,
+   "sub_kind": null,
+   "rejected_town_sub": null,
+   "confidence": null,
+   "evidence": null
+  },
+  {
+   "id": "solitude-ut",
+   "website": "https://www.solitudemountain.com/",
+   "sub": null,
+   "sub_kind": null,
+   "rejected_town_sub": null,
+   "confidence": null,
+   "evidence": null
+  },
+  {
+   "id": "powder-mountain-ut",
+   "website": "https://powdermountain.com/",
+   "sub": null,
+   "sub_kind": null,
+   "rejected_town_sub": null,
+   "confidence": null,
+   "evidence": null
+  },
+  {
+   "id": "snowbasin-ut",
+   "website": "https://www.snowbasin.com/",
+   "sub": null,
+   "sub_kind": null,
+   "rejected_town_sub": null,
+   "confidence": null,
+   "evidence": null
+  },
+  {
+   "id": "jackson-hole-wy",
+   "website": "https://www.jacksonhole.com",
+   "sub": "JacksonHole",
+   "sub_kind": "resort",
+   "rejected_town_sub": null,
+   "confidence": "medium",
+   "evidence": "GummySearch ~13k; valley sub incl. resort village; recent posts"
+  },
+  {
+   "id": "grand-targhee-wy",
+   "website": "https://www.grandtarghee.com",
+   "sub": null,
+   "sub_kind": null,
+   "rejected_town_sub": null,
+   "confidence": "medium",
+   "evidence": "none found"
+  },
+  {
+   "id": "big-sky-mt",
+   "website": "https://www.bigskyresort.com",
+   "sub": "bigsky",
+   "sub_kind": "resort",
+   "rejected_town_sub": null,
+   "confidence": "high",
+   "evidence": "recent posts on Lone Peak/Madison Base"
+  },
+  {
+   "id": "whitefish-mt",
+   "website": "https://skiwhitefish.com",
+   "sub": null,
+   "sub_kind": null,
+   "rejected_town_sub": "whitefish",
+   "confidence": "medium",
+   "evidence": "town sub only"
+  },
+  {
+   "id": "bridger-bowl-mt",
+   "website": "https://bridgerbowl.com",
+   "sub": "bridgerbowl",
+   "sub_kind": "resort",
+   "rejected_town_sub": null,
+   "confidence": "high",
+   "evidence": "recent posts"
+  },
+  {
+   "id": "sun-valley-id",
+   "website": "https://www.sunvalley.com",
+   "sub": null,
+   "sub_kind": null,
+   "rejected_town_sub": null,
+   "confidence": "medium",
+   "evidence": "none found"
+  },
+  {
+   "id": "schweitzer-id",
+   "website": "https://www.schweitzer.com",
+   "sub": null,
+   "sub_kind": null,
+   "rejected_town_sub": null,
+   "confidence": "medium",
+   "evidence": "none found"
+  },
+  {
+   "id": "taos-nm",
+   "website": "https://www.skitaos.com/",
+   "sub": null,
+   "sub_kind": null,
+   "rejected_town_sub": "taos",
+   "confidence": null,
+   "evidence": "town sub, few ski posts"
+  },
+  {
+   "id": "palisades-tahoe-ca",
+   "website": "https://www.palisadestahoe.com",
+   "sub": "palisadestahoe",
+   "sub_kind": "resort",
+   "rejected_town_sub": null,
+   "confidence": "medium",
+   "evidence": "GummySearch ~4k, growing"
+  },
+  {
+   "id": "heavenly-ca",
+   "website": "https://www.skiheavenly.com",
+   "sub": null,
+   "sub_kind": null,
+   "rejected_town_sub": null,
+   "confidence": "medium",
+   "evidence": "none; r/southlaketahoe dead since 2022"
+  },
+  {
+   "id": "mammoth-mountain-ca",
+   "website": "https://www.mammothmountain.com",
+   "sub": "Mammoth",
+   "sub_kind": "resort",
+   "rejected_town_sub": null,
+   "confidence": "high",
+   "evidence": "GummySearch ~27k, recent posts"
+  },
+  {
+   "id": "kirkwood-ca",
+   "website": "https://www.kirkwood.com",
+   "sub": null,
+   "sub_kind": null,
+   "rejected_town_sub": null,
+   "confidence": "medium",
+   "evidence": "none found"
+  },
+  {
+   "id": "mt-bachelor-or",
+   "website": "https://www.mtbachelor.com",
+   "sub": null,
+   "sub_kind": null,
+   "rejected_town_sub": "Bend",
+   "confidence": "medium",
+   "evidence": "town sub only"
+  },
+  {
+   "id": "timberline-or",
+   "website": "https://www.timberlinelodge.com",
+   "sub": null,
+   "sub_kind": null,
+   "rejected_town_sub": null,
+   "confidence": "medium",
+   "evidence": "none found"
+  },
+  {
+   "id": "crystal-mountain-wa",
+   "website": "https://www.crystalmountainresort.com",
+   "sub": "CrystalMountain",
+   "sub_kind": "resort",
+   "rejected_town_sub": null,
+   "confidence": "high",
+   "evidence": "~9k, recent post"
+  },
+  {
+   "id": "stevens-pass-wa",
+   "website": "https://www.stevenspass.com",
+   "sub": "stevenspass",
+   "sub_kind": "resort",
+   "rejected_town_sub": null,
+   "confidence": "high",
+   "evidence": "~27k, recent posts"
+  },
+  {
+   "id": "mt-baker-wa",
+   "website": "https://www.mtbaker.us",
+   "sub": null,
+   "sub_kind": null,
+   "rejected_town_sub": null,
+   "confidence": "medium",
+   "evidence": "condition posts; newest seen Mar 2025"
+  },
+  {
+   "id": "stowe-vt",
+   "website": "https://www.stowe.com/",
+   "sub": "Stowe",
+   "sub_kind": "resort",
+   "rejected_town_sub": null,
+   "confidence": "medium",
+   "evidence": "mostly resort/ski posts, partly town; dates not visible"
+  },
+  {
+   "id": "killington-vt",
+   "website": "https://www.killington.com/",
+   "sub": "Killington",
+   "sub_kind": "resort",
+   "rejected_town_sub": null,
+   "confidence": "high",
+   "evidence": "posts 15h-4d ago"
+  },
+  {
+   "id": "sugarbush-vt",
+   "website": "https://www.sugarbush.com/",
+   "sub": null,
+   "sub_kind": null,
+   "rejected_town_sub": null,
+   "confidence": null,
+   "evidence": null
+  },
+  {
+   "id": "jay-peak-vt",
+   "website": "https://jaypeakresort.com/",
+   "sub": null,
+   "sub_kind": null,
+   "rejected_town_sub": null,
+   "confidence": null,
+   "evidence": null
+  },
+  {
+   "id": "stratton-vt",
+   "website": "https://www.stratton.com/",
+   "sub": null,
+   "sub_kind": null,
+   "rejected_town_sub": null,
+   "confidence": null,
+   "evidence": null
+  },
+  {
+   "id": "okemo-vt",
+   "website": "https://www.okemo.com/",
+   "sub": null,
+   "sub_kind": null,
+   "rejected_town_sub": null,
+   "confidence": null,
+   "evidence": null
+  },
+  {
+   "id": "sunday-river-me",
+   "website": "https://www.sundayriver.com/",
+   "sub": null,
+   "sub_kind": null,
+   "rejected_town_sub": null,
+   "confidence": null,
+   "evidence": null
+  },
+  {
+   "id": "sugarloaf-me",
+   "website": "https://www.sugarloaf.com/",
+   "sub": null,
+   "sub_kind": null,
+   "rejected_town_sub": null,
+   "confidence": null,
+   "evidence": null
+  },
+  {
+   "id": "loon-mountain-nh",
+   "website": "https://www.loonmtn.com/",
+   "sub": null,
+   "sub_kind": null,
+   "rejected_town_sub": null,
+   "confidence": null,
+   "evidence": null
+  },
+  {
+   "id": "whistler-blackcomb-bc",
+   "website": "https://www.whistlerblackcomb.com/",
+   "sub": "Whistler",
+   "sub_kind": "town",
+   "rejected_town_sub": null,
+   "confidence": "high",
+   "evidence": "r/Whistler ~35k, town+resort"
+  },
+  {
+   "id": "revelstoke-bc",
+   "website": "https://www.revelstokemountainresort.com/",
+   "sub": "Revelstoke",
+   "sub_kind": "town",
+   "rejected_town_sub": null,
+   "confidence": "high",
+   "evidence": "town sub, mostly ski posts"
+  },
+  {
+   "id": "big-white-bc",
+   "website": "https://www.bigwhite.com/",
+   "sub": null,
+   "sub_kind": null,
+   "rejected_town_sub": null,
+   "confidence": "medium",
+   "evidence": "none"
+  },
+  {
+   "id": "sun-peaks-bc",
+   "website": "https://www.sunpeaksresort.com/",
+   "sub": null,
+   "sub_kind": null,
+   "rejected_town_sub": null,
+   "confidence": "medium",
+   "evidence": "none"
+  },
+  {
+   "id": "fernie-bc",
+   "website": "https://www.skifernie.com/",
+   "sub": null,
+   "sub_kind": null,
+   "rejected_town_sub": null,
+   "confidence": "medium",
+   "evidence": "unconfirmed"
+  },
+  {
+   "id": "lake-louise-ab",
+   "website": "https://www.skilouise.com/",
+   "sub": "Banff",
+   "sub_kind": "town",
+   "rejected_town_sub": null,
+   "confidence": "high",
+   "evidence": "r/Banff ~69k covers park incl. ski resorts"
+  },
+  {
+   "id": "banff-sunshine-ab",
+   "website": "https://www.skibanff.com/",
+   "sub": "Banff",
+   "sub_kind": "town",
+   "rejected_town_sub": null,
+   "confidence": "high",
+   "evidence": "r/Banff covers ski resorts"
+  },
+  {
+   "id": "kicking-horse-bc",
+   "website": "https://kickinghorseresort.com/",
+   "sub": null,
+   "sub_kind": null,
+   "rejected_town_sub": null,
+   "confidence": "medium",
+   "evidence": "none"
+  },
+  {
+   "id": "panorama-bc",
+   "website": "https://www.panoramaresort.com/",
+   "sub": null,
+   "sub_kind": null,
+   "rejected_town_sub": null,
+   "confidence": "medium",
+   "evidence": "none"
+  },
+  {
+   "id": "mont-tremblant-qc",
+   "website": "https://www.tremblant.ca/",
+   "sub": "MontTremblant",
+   "sub_kind": "resort",
+   "rejected_town_sub": null,
+   "confidence": "high",
+   "evidence": "post 2 days ago, mostly resort"
+  },
+  {
+   "id": "alyeska-ak",
+   "website": "https://www.alyeskaresort.com",
+   "sub": null,
+   "sub_kind": null,
+   "rejected_town_sub": null,
+   "confidence": "medium",
+   "evidence": "none found"
+  },
+  {
+   "id": "lutsen-mn",
+   "website": "https://www.lutsen.com/",
+   "sub": null,
+   "sub_kind": null,
+   "rejected_town_sub": null,
+   "confidence": null,
+   "evidence": null
+  },
+  {
+   "id": "giants-ridge-mn",
+   "website": "https://www.giantsridge.com/",
+   "sub": null,
+   "sub_kind": null,
+   "rejected_town_sub": null,
+   "confidence": null,
+   "evidence": null
+  },
+  {
+   "id": "afton-alps-mn",
+   "website": "https://www.aftonalps.com/",
+   "sub": null,
+   "sub_kind": null,
+   "rejected_town_sub": null,
+   "confidence": null,
+   "evidence": null
+  },
+  {
+   "id": "buck-hill-mn",
+   "website": "https://www.buckhill.com/",
+   "sub": null,
+   "sub_kind": null,
+   "rejected_town_sub": null,
+   "confidence": null,
+   "evidence": null
+  },
+  {
+   "id": "welch-village-mn",
+   "website": "https://www.welchvillage.com/",
+   "sub": null,
+   "sub_kind": null,
+   "rejected_town_sub": null,
+   "confidence": null,
+   "evidence": null
+  },
+  {
+   "id": "wild-mountain-mn",
+   "website": "https://www.wildmountain.com/",
+   "sub": null,
+   "sub_kind": null,
+   "rejected_town_sub": null,
+   "confidence": null,
+   "evidence": null
+  },
+  {
+   "id": "andes-tower-hills-mn",
+   "website": "https://www.andestowerhills.com/",
+   "sub": null,
+   "sub_kind": null,
+   "rejected_town_sub": null,
+   "confidence": null,
+   "evidence": null
+  },
+  {
+   "id": "mount-bohemia-mi",
+   "website": "https://www.mtbohemia.com/",
+   "sub": null,
+   "sub_kind": null,
+   "rejected_town_sub": null,
+   "confidence": null,
+   "evidence": null
+  },
+  {
+   "id": "big-powderhorn-mi",
+   "website": "https://bigpowderhorn.net/",
+   "sub": null,
+   "sub_kind": null,
+   "rejected_town_sub": null,
+   "confidence": null,
+   "evidence": null
+  },
+  {
+   "id": "whitecap-mountains-wi",
+   "website": "https://whitecapresort.com/",
+   "sub": null,
+   "sub_kind": null,
+   "rejected_town_sub": null,
+   "confidence": null,
+   "evidence": null
+  },
+  {
+   "id": "powder-ridge-ct",
+   "website": "https://powderridgepark.com/",
+   "sub": null,
+   "sub_kind": null,
+   "rejected_town_sub": null,
+   "confidence": null,
+   "evidence": null
+  },
+  {
+   "id": "red-lodge-mt",
+   "website": "https://www.redlodgemountain.com",
+   "sub": null,
+   "sub_kind": null,
+   "rejected_town_sub": null,
+   "confidence": "medium",
+   "evidence": "none found"
+  },
+  {
+   "id": "loveland-co",
+   "website": "https://skiloveland.com/",
+   "sub": null,
+   "sub_kind": null,
+   "rejected_town_sub": null,
+   "confidence": null,
+   "evidence": null
+  },
+  {
+   "id": "indianhead-mi",
+   "website": "https://www.snowriver.com/",
+   "sub": null,
+   "sub_kind": null,
+   "rejected_town_sub": null,
+   "confidence": null,
+   "evidence": null
+  },
+  {
+   "id": "blackjack-mi",
+   "website": "https://www.snowriver.com/",
+   "sub": null,
+   "sub_kind": null,
+   "rejected_town_sub": null,
+   "confidence": null,
+   "evidence": null
+  },
+  {
+   "id": "copper-mountain-co",
+   "website": "https://www.coppercolorado.com/",
+   "sub": null,
+   "sub_kind": null,
+   "rejected_town_sub": null,
+   "confidence": null,
+   "evidence": null
+  }
+ ]
+}

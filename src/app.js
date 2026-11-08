@@ -16,7 +16,11 @@ const state = {
   routeParams: {},
   quizAnswers: {},          // persists across nav within this page session
   quizStepIdx: 0,
-  chaseAnswers: { region: null, includeBeginnerFriendly: false },
+  // area = where the resort is (regions.js). region (a home metro) stays null:
+  // Chase's "Traveling from" control was removed 2026-11-07, so nothing re-ranks
+  // by distance. includeBeginnerFriendly stays false: that toggle went too, so
+  // Chase never lists day-trip hills.
+  chaseAnswers: { region: null, area: "all", includeBeginnerFriendly: false },
   chaseCache: null,         // { forecasts, anyFallback } once resolved
   chaseLoadHandle: null,    // { skip() } while a forecast fetch is in flight
   nicolesFilters: { region: "all", sort: "region" },
@@ -24,22 +28,15 @@ const state = {
   // cache, kept separate from chaseCache because the two modes want
   // different shapes of the same data — Chase needs one 7-day total for
   // every US resort, Quiver needs seven per-day rows for exactly one.
-  // `hadPrev` mirrors the Rants surface's flag of the same name: it records
+  // `hadPrev` records
   // that the call was reached by picking a day, rather than by landing cold on
   // a shared #quiver= link. The result page's back control branches its
   // wording AND its destination on it, because on a cold landing there is no
   // picker behind you to go back to.
-  quiver: { step: "resort", resortId: null, dateKey: null, search: "", hadPrev: false },
+  quiver: { step: "resort", resortId: null, dateKey: null, search: "", area: "all", hadPrev: false },
   quiverForecast: null,     // { resortId, status, days, timeZone, isLive }
-  // Rants & Raves. `tab`, `scope` and `topic` are DERIVED FROM THE URL and
-  // never held independently of it — two sources of truth for "what is this
-  // feed showing" is how a filter and a URL drift apart, and this feed's URLs
-  // are its entire distribution model. `sort` is deliberately NOT in the URL:
-  // it is a reading preference, not a thing worth sending to somebody else.
-  // `hadPrev` records that a detail view was reached by tapping a card rather
-  // than by landing cold on a shared link, which is what the back control's
-  // wording and destination both branch on.
-  rants: { tab: "rants", scope: null, topic: null, sort: "unusual", hadPrev: false, focusPanel: false },
+  // Buzz: the region filter only. Not in the URL; entering from the nav resets it.
+  buzz: { region: "all" },
 };
 
 const COST_LABEL = { "$": "budget-conscious", "$$": "mid-range", "$$$": "splurge-friendly", "$$$$": "money's no object" };
@@ -107,7 +104,7 @@ function b64urlDecode(str) {
 /**
  * The back control for a leaf page — a view the app can leave you standing on
  * with nothing above it. Two use it: the Quiver call and the trip-planner
- * result card. Modelled on .rants-back (app-rants.js), the first place this
+ * result card. Modelled on the old Rants & Raves back link, the first place this
  * problem was solved here.
  *
  * `label` always names the destination. A bare chevron gives a screen-reader
@@ -146,17 +143,8 @@ function navigate(route, params) {
       state.quiver.step = state.quiver.resortId ? "day" : "resort";
     }
   }
-  if (route === "rants") {
-    // Rants is the default tab, every time the surface is entered from the
-    // nav. The resort filter and the topic are cleared with it: arriving from
-    // Chase holding a filter you set ten minutes ago is a feed that looks
-    // empty for a reason nothing on screen explains. `sort` survives, because
-    // it is a reading preference rather than a claim about what is shown.
-    state.rants.tab = "rants";
-    state.rants.scope = null;
-    state.rants.topic = null;
-    state.rants.hadPrev = false;
-  }
+  if (route === "buzz") state.buzz.region = "all";
+
   if (route === "plan") {
     // Only reset to the first step on a genuinely fresh entry (from the
     // splash screen, a completed result, etc). Jumping Chase/Nicole's List
@@ -210,12 +198,8 @@ function syncHash() {
     history.replaceState(null, "", "#result=" + state.routeParams.shareToken);
   } else if (state.route === "plan") {
     syncQuizHash();
-  } else if (state.route === "rants") {
-    // Every Rants & Raves view is a real, shareable, back-button-correct URL —
-    // the tabs and cards are links, and this keeps the hash correct for the
-    // entries the surface is arrived at rather than navigated to.
-    const next = rantsCurrentHref();
-    if (location.hash !== next) history.replaceState(null, "", next);
+  } else if (state.route === "buzz") {
+    if (location.hash) history.replaceState(null, "", location.pathname + location.search);
   } else if (state.route === "quiver") {
     // renderQuiverResult() writes #quiver= itself once it knows the resort
     // and day; the two picker steps have nothing shareable yet, so the URL
@@ -269,18 +253,10 @@ function parseInitialRoute() {
     } catch (e) { /* fall through to splash on any malformed quiver link */ }
   }
   if (hash.startsWith("#rants=")) {
-    // No try/catch and no token decode: this route is plain readable segments,
-    // not base64, precisely so that a link surviving a chat client's mangling
-    // still says what it was for. Every unknown value degrades — an unknown
-    // tab falls back to Rants, an unknown scope renders the "this link is from
-    // an older version" state, and an unknown topic renders the expired state.
-    // Nothing here can throw.
-    const parsed = parseRantsHash(hash);
-    state.route = "rants";
-    state.rants.tab = parsed.tab;
-    state.rants.scope = parsed.scope;
-    state.rants.topic = parsed.topic;
-    state.rants.hadPrev = false;   // a cold landing, by definition
+    // Rants & Raves became Buzz on 2026-11-07. An old shared link lands on the
+    // directory rather than on the splash screen, and the stale hash is dropped.
+    state.route = "buzz";
+    history.replaceState(null, "", location.pathname + location.search);
     return;
   }
   if (hash.startsWith("#quiz=")) {
@@ -310,7 +286,7 @@ const mainEl = () => document.getElementById("app-main");
 
 function render() {
   const main = mainEl();
-  const chromeRoutes = ["plan", "chase", "quiver", "nicoles", "rants"];
+  const chromeRoutes = ["splash", "plan", "chase", "quiver", "nicoles", "buzz"];
   const showNav = chromeRoutes.includes(state.route);
   document.getElementById("bottom-nav").hidden = !showNav;
   document.getElementById("top-nav").hidden = !showNav;
@@ -322,7 +298,7 @@ function render() {
   if (state.route === "chase") return renderChase(main);
   if (state.route === "quiver") return renderQuiver(main);
   if (state.route === "nicoles") return renderNicolesList(main);
-  if (state.route === "rants") return renderRants(main);
+  if (state.route === "buzz") return renderBuzzRoute(main);
   if (state.route === "result") return renderResult(main);
   renderSplash(main);
 }
@@ -343,46 +319,39 @@ function focusHeading(main) {
 // Splash
 // ---------------------------------------------------------------------------
 function renderSplash(main) {
+  // Home (Director, 2026-11-07, option A from the home-page exploration): the
+  // app's sticker, the question people text Nicole, then one tile per section
+  // in the same style, Plan last at full width so no tile reads as the one main
+  // action. The bottom nav shows here too, with nothing marked current.
+  const tile = (id, icon, label, support, wide) => `
+    <button class="mode-card${wide ? " mode-card--wide" : ""}" id="${id}" type="button">
+      <span class="mode-card__icon">${icon}</span>
+      <span class="mode-card__label">${label}</span>
+      <span class="mode-card__support body-sm">${support}</span>
+    </button>`;
   main.innerHTML = `
     <div class="page-column">
       <div class="splash">
-        <p class="splash-eyebrow body-md">Real ski recommendations from Nicole — pick a way in.</p>
+        <div class="splash-sticker" aria-hidden="true">${BRAND_STICKER_SVG}</div>
+        <h1 class="display-h1 splash-title">Where should we ski?</h1>
         <div class="splash-modes">
-          <button class="mode-card" id="mode-chase" type="button">
-            <span class="mode-card__icon">${ICONS.snow}</span>
-            <span class="mode-card__label">Chase the snow</span>
-            <span class="mode-card__support body-md">See where it's dumping this week.</span>
-          </button>
-          <button class="mode-card" id="mode-quiver" type="button">
-            <span class="mode-card__icon">${ICONS.skis}</span>
-            <span class="mode-card__label">Quiver Check</span>
-            <span class="mode-card__support body-md">Already know where you're going? Find out which skis to bring.</span>
-          </button>
-          <button class="mode-card" id="mode-rants" type="button">
-            <span class="mode-card__icon">${ICONS.speech}</span>
-            <span class="mode-card__label">Buzz</span>
-            <span class="mode-card__support body-md">See what skiers are saying on Reddit right now.</span>
-          </button>
-          <button class="mode-card" id="mode-plan" type="button">
-            <span class="mode-card__icon">${ICONS.mountain}</span>
-            <span class="mode-card__label">Plan a trip</span>
-            <span class="mode-card__support body-md">Answer 5 quick questions. Get one solid pick.</span>
-          </button>
+          ${tile("mode-chase", ICONS.snow, "Chase", "Where it's dumping")}
+          ${tile("mode-quiver", ICONS.skis, "Quiver", "Which skis to bring")}
+          ${tile("mode-buzz", ICONS.speech, "Buzz", "Chatter on Reddit")}
+          ${tile("mode-nicoles", ICONS.list, "Picks", "Resort hot takes")}
+          ${tile("mode-plan", ICONS.mountain, "Plan", "Find a resort in 5 quick questions", true)}
         </div>
-        <p class="splash-footer">
-          <button class="btn-text" id="mode-nicoles" type="button">See everywhere Nicole's actually skied</button>
-        </p>
       </div>
     </div>`;
   document.getElementById("mode-plan").addEventListener("click", () => navigate("plan"));
   document.getElementById("mode-chase").addEventListener("click", () => navigate("chase"));
   document.getElementById("mode-quiver").addEventListener("click", () => navigate("quiver"));
-  document.getElementById("mode-rants").addEventListener("click", () => navigate("rants"));
+  document.getElementById("mode-buzz").addEventListener("click", () => navigate("buzz"));
   document.getElementById("mode-nicoles").addEventListener("click", () => navigate("nicoles"));
-  document.title = "Find your next ski trip";
+  document.title = "Rather Be Knee Deep — where should we ski?";
   setOgMeta({
-    title: "Find your next ski trip",
-    description: "Answer a few quick questions, or see where it's dumping this week — plus everywhere Nicole's actually skied.",
+    title: "Where should we ski?",
+    description: "Nicole's ski picks, where it's dumping, which skis to bring, and a 5-question resort finder.",
   });
 }
 
@@ -442,7 +411,7 @@ const QUIZ_OPTIONS = {
 };
 
 function renderPlan(main) {
-  main.innerHTML = `<div class="page-column"><div id="quiz-step-container" class="quiz-step-container"></div></div>`;
+  main.innerHTML = `<div class="page-column">${pageHeaderHtml("Plan", "Answer 5 questions. Get one resort that fits.")}<div id="quiz-step-container" class="quiz-step-container"></div></div>`;
   renderQuizStep(null);
   // Focus fix (synthetic-user-testing.md Major finding): renderQuizStep(null)
   // is called with no `direction` on this very first render, so neither of
@@ -454,7 +423,12 @@ function renderPlan(main) {
   // the previous round only touched the in-place re-render-after-a-tap case,
   // not this one) — this is the one call site that still needed it, handled
   // the same way every other route's first render already does.
-  focusHeading(main);
+  //
+  // The page h1 ("Plan") sits above the card since 2026-11-07, so focus goes
+  // to the question itself, the thing there is to act on, rather than to
+  // whichever heading comes first. The h1 is still first in reading order.
+  const q = document.getElementById("quiz-step-heading");
+  if (q) { q.setAttribute("tabindex", "-1"); q.focus({ preventScroll: true }); } else focusHeading(main);
 }
 
 function currentQuizScreen() {
@@ -1056,7 +1030,7 @@ function renderResult(main) {
   // dishonest kind of affordance this whole change exists to remove.
   const origin = state.routeParams.origin;
   const backHtml =
-    origin === "chase" ? leafBackHtml("result-leaf-back", "Back to Chase the snow", true) :
+    origin === "chase" ? leafBackHtml("result-leaf-back", "Back to Chase", true) :
     origin === "plan" ? leafBackHtml("result-leaf-back", "Back to your answers", true) :
     "";
 
@@ -1094,6 +1068,7 @@ function renderResult(main) {
             <p class="hot-take__body">${escapeHtml(resort.hot_take.text)}</p>
             <span class="hot-take__attribution">— Nicole, on ${escapeHtml(resort.name)}</span>
           </div>` : ""}
+        ${resortLinksHtml(resort)}
         <div class="footer-cta reveal-hidden" id="footer-cta">
           <button class="btn btn-primary btn-block" id="share-btn" type="button">${ICONS.share} Share this pick</button>
           <p class="body-sm" style="text-align:center;color:var(--text-secondary);margin:0">Copies a link with the picture and the why.</p>
@@ -1235,6 +1210,7 @@ function revealResultCard(card, { hasRangeReadout, hasHotTake }) {
     nextBlockStart += 60;
   }
 
+  push("#resort-links", [{ opacity: 0 }, { opacity: 1 }], { duration: 160, delay: nextBlockStart, easing: "cubic-bezier(.2,0,0,1)", fill: "both" });
   push("#footer-cta", [{ opacity: 0 }, { opacity: 1 }], { duration: 160, delay: nextBlockStart, easing: "cubic-bezier(.2,0,0,1)", fill: "both" });
 
   announce("reveal-announcer", "Your pick is ready.");

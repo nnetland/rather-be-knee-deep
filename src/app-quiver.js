@@ -42,7 +42,7 @@ function renderQuiver(main) {
 // explaining why has to be about skis rather than about rankings.
 function renderQuiverOffSeason(body) {
   body.innerHTML = `
-    <h1 class="display-h1">Quiver Check</h1>
+    ${pageHeaderHtml("Quiver", "Pick a resort and a day. Get the right skis.")}
     <div class="center-state">
       ${ICONS.snow}
       <h2 class="display-h3">Nothing's open right now</h2>
@@ -110,18 +110,17 @@ function quiverUpcoming() {
 // ---------------------------------------------------------------------------
 function renderQuiverResortStep(body) {
   body.innerHTML = `
-    <h1 class="display-h1 quiz-title">Where are you skiing?</h1>
-    ${quiverPool().length
-      ? pageMetaHtml(["Step 1 of 2"])
-      : pageMetaHtml(["Nothing's open yet", quiverFirstUnlockText()], "quiver-unlock")}
+    ${pageHeaderHtml("Quiver", "Pick a resort and a day. Get the right skis.")}
+    ${quiverPool().length ? "" : pageMetaHtml(["Nothing's open yet", quiverFirstUnlockText()], "quiver-unlock")}
     <div class="quiver-search">
       <label class="visually-hidden" for="quiver-search-input">Search by name or state</label>
       <div class="quiver-search__field">
         <span class="quiver-search__icon" aria-hidden="true">${ICONS.search}</span>
         <input type="search" id="quiver-search-input" class="quiver-search__input" autocomplete="off"
-               placeholder="Search: Alta, Vermont, Jackson…" value="${escapeHtml(state.quiver.search || "")}">
+               placeholder="Alta, Vermont, Jackson…" value="${escapeHtml(state.quiver.search || "")}">
       </div>
     </div>
+    ${areaChipsHtml("quiver", state.quiver.area || "all", new Set(quiverPool().concat(quiverUpcoming()).map((r) => (areaOfResort(r) || {}).id).filter(Boolean)))}
     <p class="visually-hidden" aria-live="polite" id="quiver-search-count"></p>
     <div id="quiver-resort-list"></div>
     ${pageAboutHtml("About this data", `
@@ -129,6 +128,7 @@ function renderQuiverResortStep(body) {
       <p>Only mountains open on or before the day you pick can get a call. Opening days are each resort's published ${OPENINGS_SEASON} date.</p>`)}`;
 
   renderQuiverResortList();
+  wireAreaChips("quiver", (id) => { state.quiver.area = id; renderQuiverResortList(); });
   const input = document.getElementById("quiver-search-input");
   input.addEventListener("input", () => {
     state.quiver.search = input.value;
@@ -140,7 +140,8 @@ function renderQuiverResortList() {
   const wrap = document.getElementById("quiver-resort-list");
   const now = appNow();
   const q = (state.quiver.search || "").trim().toLowerCase();
-  const match = (r) => !q || `${r.name} ${r.state_province} ${r.country}`.toLowerCase().includes(q);
+  const match = (r) => inArea(r, state.quiver.area) &&
+    (!q || `${r.name} ${r.state_province} ${r.country}`.toLowerCase().includes(q));
   const pool = quiverPool().filter(match);
   const upcoming = quiverUpcoming().filter(match);
 
@@ -152,19 +153,19 @@ function renderQuiverResortList() {
     return;
   }
 
-  // Grouped by state/province, which is how people actually narrow a ski
-  // list — "somewhere in Utah" is a far more common starting point than a
-  // specific mountain.
+  // Grouped by area, in the same order and words as the region chips on every
+  // other surface. The state rides on each row, so "somewhere in Utah" and
+  // "Sun Valley, Idaho" both stay findable.
   const groups = {};
   for (const r of pool) {
-    const key = r.country === "Canada" ? `${r.state_province}, Canada` : r.state_province;
+    const key = (areaOfResort(r) || { name: "Elsewhere" }).name;
     (groups[key] = groups[key] || []).push(r);
   }
-  const orderedKeys = Object.keys(groups).sort();
+  const orderedKeys = AREAS.map((a) => a.name).filter((n) => groups[n]).concat(groups.Elsewhere ? ["Elsewhere"] : []);
 
   const metaFor = (r) => {
     const o = resortOpening(r, now);
-    const bits = [];
+    const bits = [escapeHtml(r.country === "Canada" ? `${r.state_province}, Canada` : r.state_province)];
     if (!o.open) bits.push(openingStatusHtml(o, now));
     if (r.country !== "USA") bits.push("Typical season");
     if (r.scale === "day-trip") bits.push("Day-trip hill");
@@ -255,8 +256,8 @@ function renderQuiverDayStep(body) {
   const firstIndex = fullFrame.length - frame.length;
 
   body.innerHTML = `
-    <h1 class="display-h1 quiz-title">Which day?</h1>
-    ${pageMetaHtml(["Step 2 of 2", escapeHtml(resort.name), opening.open ? null : openingStatusHtml(opening, now)])}
+    ${pageHeaderHtml("Quiver", `Which day at ${escapeHtml(resort.name)}?`)}
+    ${opening.open ? "" : pageMetaHtml([openingStatusHtml(opening, now)])}
     <div class="quiver-day-list" role="radiogroup" aria-label="Which day are you skiing?">
       ${frame.map((d, i) => {
         const label = quiverDayLabel(d.dateKey, i + firstIndex);
@@ -371,8 +372,8 @@ function renderQuiverResult(body) {
   // card, and a reader looking for the way out looks up, not down.
   const cameFromPicker = !!state.quiver.hadPrev;
   const backHtml = cameFromPicker
-    ? leafBackHtml("quiver-leaf-back", "Back to Quiver Check", true)
-    : leafBackHtml("quiver-leaf-back", "Start a Quiver Check", false);
+    ? leafBackHtml("quiver-leaf-back", "Back to Quiver", true)
+    : leafBackHtml("quiver-leaf-back", "Open Quiver", false);
 
   body.innerHTML = backHtml + `
     <article class="quiver-card" id="quiver-card">

@@ -32,6 +32,7 @@ function buildNicolesRows() {
     return {
       place: resort ? resort.name : row.resort_place,
       region: row.region_state,
+      areaId: (areaOfState(row.region_state) || {}).id || null,
       rating: row.overall_rating,
       verdict: row.nicoles_verdict,
       take: row.nicoles_take,
@@ -45,25 +46,18 @@ function buildNicolesRows() {
 
 function renderNicolesList(main) {
   const rows = buildNicolesRows();
-  const regions = ["all", ...Array.from(new Set(rows.map((r) => r.region))).sort()];
 
   main.innerHTML = `
     <div class="page-column">
-      <h1 class="display-h1">Nicole's picks</h1>
-      <p class="nicoleslist-voice body-md">Everywhere I've skied, and what I <strong>actually</strong> think.</p>
-      ${pageMetaHtml([`${rows.length} places`, `<span class="nicoleslist-status">${rows.filter((r) => r.take).length} takes written</span>`])}
-      <div class="nicoleslist-filters chip-row chip-row--scroll" role="group" aria-label="Filter Nicole's picks by region">
-        ${regions.map((r) => `<button class="filter-chip ${state.nicolesFilters.region === r ? "filter-chip--selected" : ""}" data-region="${escapeHtml(r)}" type="button" aria-pressed="${state.nicolesFilters.region === r}">${r === "all" ? "All regions" : escapeHtml(r)}</button>`).join("")}
-      </div>
+      ${pageHeaderHtml("Picks", "Everywhere I've skied, and what I <strong>actually</strong> think.")}
+      ${areaChipsHtml("nicoles", state.nicolesFilters.region, new Set(rows.map((r) => r.areaId).filter(Boolean)))}
       <div id="nicoles-table-wrap"></div>
       ${pageAboutHtml("About this list", `
         <p>Not a ranked list — just Nicole's record, and some of these aren't flattering. Her takes never change what the trip planner recommends.</p>
         <p><span class="info-badge">Day-trip hill</span> and <span class="info-badge">International</span> places are part of her record but aren't offered by the trip planner or Chase.</p>`)}
     </div>`;
 
-  document.querySelectorAll(".filter-chip[data-region]").forEach((btn) => {
-    btn.addEventListener("click", () => { state.nicolesFilters.region = btn.dataset.region; renderNicolesTable(rows); syncFilterChips(); });
-  });
+  wireAreaChips("nicoles", (id) => { state.nicolesFilters.region = id; renderNicolesTable(rows); });
 
   renderNicolesTable(rows);
 
@@ -83,14 +77,6 @@ function renderNicolesList(main) {
   focusHeading(main);
 }
 
-function syncFilterChips() {
-  document.querySelectorAll(".filter-chip[data-region]").forEach((btn) => {
-    const selected = btn.dataset.region === state.nicolesFilters.region;
-    btn.classList.toggle("filter-chip--selected", selected);
-    btn.setAttribute("aria-pressed", String(selected));
-  });
-}
-
 // Responsive treatment (design-critic.md finding 5/6, accessibility-review.md
 // M6/M8 fixes): this is a real <table> at every width — <caption>,
 // scope="col" headers, and explicit `role`s on every table element — so a
@@ -106,7 +92,7 @@ function renderNicolesTable(rows) {
   const wrap = document.getElementById("nicoles-table-wrap");
   // Places with a written take lead; the rest keep their order. Not a
   // ranking — takes carry no weight anywhere — just content before blanks.
-  const scoped = state.nicolesFilters.region === "all" ? rows : rows.filter((r) => r.region === state.nicolesFilters.region);
+  const scoped = state.nicolesFilters.region === "all" ? rows : rows.filter((r) => r.areaId === state.nicolesFilters.region);
   const filtered = scoped.filter((r) => r.take).concat(scoped.filter((r) => !r.take));
 
   wrap.innerHTML = `
