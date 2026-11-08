@@ -1,0 +1,72 @@
+filename,resort,region,motif,gag,props,palette,hex,meaning
+vail-co.png,Vail,"Rockies, CO",penguin,a penguin in a bow tie giving a jaunty wave with a cane,,coral,#FF4C34,après / party / high energy
+beaver-creek-co.png,Beaver Creek,"Rockies, CO",elk,"an elk in ski goggles with branching antlers, calm gaze",,indigo,#5B3DF0,big-vert / dramatic scale
+breckenridge-co.png,Breckenridge,"Rockies, CO",bro,a bro in a backwards cap giving a fist pump,,coral,#FF4C34,après / party / high energy
+keystone-co.png,Keystone,"Rockies, CO",retriever,"a golden retriever in ski goggles, tongue out",lamps,mint,#16A974,tree-skiing / family / quiet
+aspen-snowmass-co.png,Aspen Snowmass,"Rockies, CO",furcoatdiva,"a figure in a fur-collar coat and sunglasses, champagne flute raised, laughing",,coral,#FF4C34,après / party / high energy
+steamboat-co.png,Steamboat,"Rockies, CO",lassocowgirl,a cowgirl twirling a lasso overhead,,mint,#16A974,tree-skiing / family / quiet
+telluride-co.png,Telluride,"Rockies, CO",goat,"a mountain goat leaping onto a rock ledge, horns back",,cold,#1AA3DC,backcountry / remote / alpine
+crested-butte-co.png,Crested Butte,"Rockies, CO",bighorn,"a bighorn sheep with curled ram horns, mid-leap between rocks",pines,mint,#16A974,tree-skiing / family / quiet
+winter-park-co.png,Winter Park,"Rockies, CO",mammoth,"a woolly mammoth trumpeting, tusks raised",pines,amber,#F0982A,Western / budget / rustic / day-trip
+arapahoe-basin-co.png,Arapahoe Basin,"Rockies, CO",marmot,"a marmot in sunglasses on a tailgate, holding a beer",,cold,#1AA3DC,backcountry / remote / alpine
+wolf-creek-co.png,Wolf Creek,"Rockies, CO",wolf,"a wolf, head tilted back, howling with teeth bared",,teal,#00B39A,deep powder / cold / expert
+park-city-ut.png,Park City Mountain,"Wasatch, UT",selfieskier,a skier in sunglasses holding a phone up for a selfie,,indigo,#5B3DF0,big-vert / dramatic scale
+deer-valley-ut.png,Deer Valley,"Wasatch, UT",swan,an elegant swan preening with a hand mirror,noboard,coral,#FF4C34,après / party / high energy
+alta-ut.png,Alta,"Wasatch, UT",snorkel,a wide-eyed skier in ski goggles and a snorkel,noboard,teal,#00B39A,deep powder / cold / expert
+snowbird-ut.png,Snowbird,"Wasatch, UT",beast,a shaggy bison with a tough squint,pines + plume,amber,#F0982A,Western / budget / rustic / day-trip
+solitude-ut.png,Solitude,"Wasatch, UT",fox,a fox in a knit beanie,pines + plume,mint,#16A974,tree-skiing / family / quiet
+powder-mountain-ut.png,Powder Mountain,"Wasatch, UT",powderdiver,"a snowboard and boots sticking straight up out of a snowdrift, powder spraying",,cold,#1AA3DC,backcountry / remote / alpine
+snowbasin-ut.png,Snowbasin,"Wasatch, UT",coyote,"a coyote sitting with one ear up, glancing sideways",,coral,#FF4C34,après / party / high energy
+jackson-hole-wy.png,Jackson Hole,"Rockies, WY",cowboy,"a cowboy skier tipping his hat, leaning into a turn",,indigo,#5B3DF0,big-vert / dramatic scale
+grand-targhee-wy.png,Grand Targhee,"Rockies, WY",blackbearlift,"a black bear riding a chairlift alone, paws up, goggles on",,teal,#00B39A,deep powder / cold / expert
+big-sky-mt.png,Big Sky,"Rockies, MT",yeti,"a big friendly yeti striding with skis over one shoulder, waving",,indigo,#5B3DF0,big-vert / dramatic scale
+whitefish-mt.png,Whitefish Mountain Resort,"Rockies, MT",otter,"an otter belly-sliding across the snow, whiskers out",pines,cold,#1AA3DC,backcountry / remote / alpine
+bridger-bowl-mt.png,Bridger Bowl,"Rockies, MT",sunbear,a bear in sunglasses and flip-flops,,amber,#F0982A,Western / budget / rustic / day-trip
+sun-valley-id.png,Sun Valley,"Rockies, ID",silverfox,"a fox in round sunglasses pulled down its snout, old-Hollywood style",,cold,#1AA3DC,backcountry / remote / alpine
+schweitzer-id.png,Schweitzer,"Rockies, ID",stbernard,"a St. Bernard with a keg on its collar, tongue out",pines,mint,#16A974,tree-skiing / family / quiet
+taos-nm.png,Taos Ski Valley,"Rockies, NM",roadrunner,"a roadrunner sprinting, crest up, beak forward",,amber,#F0982A,Western / budget / rustic / day-trip
+palisades-tahoe-ca.png,Palisades Tahoe,"Sierra, CA",retriever,"a golden retriever in ski goggles, tongue out",medal,coral,#FF4C34,après / party / high energy
+heavenly-ca.png,Heavenly,"Sierra, CA",bro,a bro in a backwards cap giving a fist pump,,teal,#00B39A,deep powder / cold / expert
+mammoth-mountain-ca.png,Mammoth Mountain,"Sierra, CA",mammoth,"a woolly mammoth trumpeting, tusks raised",,amber,#F0982A,Western / budget / rustic / day-trip
+kirkwood-ca.png,Kirkwood,"Sierra, CA",snorkel,a wide-eyed skier in ski goggles and a snorkel,,teal,#00B39A,deep powder / cold / expert
+mt-bachelor-or.png,Mt. Bachelor,"Cascades, OR",sunbear,a bear in sunglasses and flip-flops,pines,amber,#F0982A,Western / budget / rustic / day-trip
+timberline-or.png,Timberline (Mt. Hood),"Cascades, OR",silverfox,"a fox in round sunglasses pulled down its snout, old-Hollywood style",,cold,#1AA3DC,backcountry / remote / alpine
+crystal-mountain-wa.png,Crystal Mountain,"Cascades, WA",blackbearlift,"a black bear riding a chairlift alone, paws up, goggles on",,teal,#00B39A,deep powder / cold / expert
+stevens-pass-wa.png,Stevens Pass,"Cascades, WA",snowball,a round snowball character in a tiny knit cap,lamps + pines,mint,#16A974,tree-skiing / family / quiet
+mt-baker-wa.png,Mt. Baker,"Cascades, WA",powderdiver,"a snowboard and boots sticking straight up out of a snowdrift, powder spraying",,cold,#1AA3DC,backcountry / remote / alpine
+stowe-vt.png,Stowe,"New England, VT",moose,a moose in a scarf,,mint,#16A974,tree-skiing / family / quiet
+killington-vt.png,Killington,"New England, VT",beast,a shaggy bison with a tough squint,,amber,#F0982A,Western / budget / rustic / day-trip
+sugarbush-vt.png,Sugarbush,"New England, VT",fox,a fox in a knit beanie,pines,mint,#16A974,tree-skiing / family / quiet
+jay-peak-vt.png,Jay Peak,"New England, VT",powderdiver,"a snowboard and boots sticking straight up out of a snowdrift, powder spraying",,teal,#00B39A,deep powder / cold / expert
+stratton-vt.png,Stratton,"New England, VT",bro,a bro in a backwards cap giving a fist pump,,coral,#FF4C34,après / party / high energy
+okemo-vt.png,Okemo,"New England, VT",retriever,"a golden retriever in ski goggles, tongue out",,mint,#16A974,tree-skiing / family / quiet
+sunday-river-me.png,Sunday River,"New England, ME",puffin,a puffin heroically wielding a snow gun,,cold,#1AA3DC,backcountry / remote / alpine
+sugarloaf-me.png,Sugarloaf,"New England, ME",lobster,a lobster in a scarf with both claws raised in a cheer,,indigo,#5B3DF0,big-vert / dramatic scale
+loon-mountain-nh.png,Loon Mountain,"New England, NH",loon,"a loon gliding across water, red eye, white neck band",,mint,#16A974,tree-skiing / family / quiet
+whistler-blackcomb-bc.png,Whistler Blackcomb,"BC, Canada",bro,a bro in a backwards cap giving a fist pump,medal,cold,#1AA3DC,backcountry / remote / alpine
+revelstoke-bc.png,Revelstoke Mountain Resort,"BC, Canada",goat,"a mountain goat leaping onto a rock ledge, horns back",,indigo,#5B3DF0,big-vert / dramatic scale
+big-white-bc.png,Big White,"BC, Canada",retriever,"a golden retriever in ski goggles, tongue out",,mint,#16A974,tree-skiing / family / quiet
+sun-peaks-bc.png,Sun Peaks,"BC, Canada",fox,a fox in a knit beanie,,amber,#F0982A,Western / budget / rustic / day-trip
+fernie-bc.png,Fernie Alpine Resort,"BC, Canada",bighorn,"a bighorn sheep with curled ram horns, mid-leap between rocks",,mint,#16A974,tree-skiing / family / quiet
+lake-louise-ab.png,Lake Louise,"Alberta, Canada",elk,"an elk in ski goggles with branching antlers, calm gaze",,indigo,#5B3DF0,big-vert / dramatic scale
+banff-sunshine-ab.png,Banff Sunshine,"Alberta, Canada",coyote,"a coyote sitting with one ear up, glancing sideways",,cold,#1AA3DC,backcountry / remote / alpine
+kicking-horse-bc.png,Kicking Horse,"BC, Canada",wolf,"a wolf, head tilted back, howling with teeth bared",,indigo,#5B3DF0,big-vert / dramatic scale
+panorama-bc.png,Panorama Mountain Resort,"BC, Canada",silverfox,"a fox in round sunglasses pulled down its snout, old-Hollywood style",,amber,#F0982A,Western / budget / rustic / day-trip
+mont-tremblant-qc.png,Mont Tremblant,"Quebec, Canada",selfieskier,a skier in sunglasses holding a phone up for a selfie,,indigo,#5B3DF0,big-vert / dramatic scale
+alyeska-ak.png,Alyeska Resort,Alaska,polarbear,a polar bear in a parka hood shielding its eyes,,cold,#1AA3DC,backcountry / remote / alpine
+lutsen-mn.png,Lutsen Mountains,"Midwest, MN",moose,a moose in a scarf,,amber,#F0982A,Western / budget / rustic / day-trip
+giants-ridge-mn.png,Giants Ridge,"Midwest, MN",otter,"an otter belly-sliding across the snow, whiskers out",,cold,#1AA3DC,backcountry / remote / alpine
+afton-alps-mn.png,Afton Alps,"Midwest, MN",raccoon,"a raccoon in a beanie, masked, mid-grin, raiding a snack bag",lamps,coral,#FF4C34,après / party / high energy
+buck-hill-mn.png,Buck Hill,"Midwest, MN",juniorracer,a kid ski racer in an aerodynamic tuck with a bib number,,amber,#F0982A,Western / budget / rustic / day-trip
+welch-village-mn.png,Welch Village,"Midwest, MN",stbernard,"a St. Bernard with a keg on its collar, tongue out",lamps,mint,#16A974,tree-skiing / family / quiet
+wild-mountain-mn.png,Wild Mountain,"Midwest, MN",magiccarpetkid,"a kid riding a magic-carpet lift, arms flung up",,cold,#1AA3DC,backcountry / remote / alpine
+andes-tower-hills-mn.png,Andes Tower Hills,"Midwest, MN",jackalope,"a jackalope mid-bound, winking",,amber,#F0982A,Western / budget / rustic / day-trip
+mount-bohemia-mi.png,Mount Bohemia,"Midwest, MI",snorkel,a wide-eyed skier in ski goggles and a snorkel,,teal,#00B39A,deep powder / cold / expert
+big-powderhorn-mi.png,Big Powderhorn Mountain,"Midwest, MI",loon,"a loon gliding across water, red eye, white neck band",,mint,#16A974,tree-skiing / family / quiet
+whitecap-mountains-wi.png,Whitecap Mountains,"Midwest, WI",beaver,a beaver in ski goggles with buck teeth and a paddle tail,,teal,#00B39A,deep powder / cold / expert
+powder-ridge-ct.png,Powder Ridge,"New England, CT",liftopshovel,"a lift operator in a beanie, mid-toss with a shovel, snow flying",,amber,#F0982A,Western / budget / rustic / day-trip
+red-lodge-mt.png,Red Lodge Mountain,"Rockies, MT",snowball,a round snowball character in a tiny knit cap,,teal,#00B39A,deep powder / cold / expert
+loveland-co.png,Loveland Ski Area,"Rockies, CO",patrollerdog,a ski patroller with a rescue dog,,mint,#16A974,tree-skiing / family / quiet
+indianhead-mi.png,Indianhead Mountain,"Midwest, MI",hockeyplayer,a hockey player skating with a stick,,cold,#1AA3DC,backcountry / remote / alpine
+blackjack-mi.png,Blackjack Mountain,"Midwest, MI",patrollerdog,a ski patroller with a rescue dog,plume,mint,#16A974,tree-skiing / family / quiet
+copper-mountain-co.png,Copper Mountain,"Rockies, CO",jackalope,"a jackalope mid-bound, winking",,amber,#F0982A,Western / budget / rustic / day-trip
