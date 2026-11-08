@@ -286,7 +286,7 @@ const mainEl = () => document.getElementById("app-main");
 
 function render() {
   const main = mainEl();
-  const chromeRoutes = ["plan", "chase", "quiver", "nicoles", "buzz"];
+  const chromeRoutes = ["splash", "plan", "chase", "quiver", "nicoles", "buzz"];
   const showNav = chromeRoutes.includes(state.route);
   document.getElementById("bottom-nav").hidden = !showNav;
   document.getElementById("top-nav").hidden = !showNav;
@@ -319,35 +319,28 @@ function focusHeading(main) {
 // Splash
 // ---------------------------------------------------------------------------
 function renderSplash(main) {
+  // Home (Director, 2026-11-07, option A from the home-page exploration): the
+  // app's sticker, the question people text Nicole, then one tile per section
+  // in the same style, Plan last at full width so no tile reads as the one main
+  // action. The bottom nav shows here too, with nothing marked current.
+  const tile = (id, icon, label, support, wide) => `
+    <button class="mode-card${wide ? " mode-card--wide" : ""}" id="${id}" type="button">
+      <span class="mode-card__icon">${icon}</span>
+      <span class="mode-card__label">${label}</span>
+      <span class="mode-card__support body-sm">${support}</span>
+    </button>`;
   main.innerHTML = `
     <div class="page-column">
       <div class="splash">
-        <p class="splash-eyebrow body-md">Real ski recommendations from Nicole — pick a way in.</p>
+        <div class="splash-sticker" aria-hidden="true">${BRAND_STICKER_SVG}</div>
+        <h1 class="display-h1 splash-title">Where should we ski?</h1>
         <div class="splash-modes">
-          <button class="mode-card" id="mode-chase" type="button">
-            <span class="mode-card__icon">${ICONS.snow}</span>
-            <span class="mode-card__label">Chase</span>
-            <span class="mode-card__support body-md">See where it's dumping this week.</span>
-          </button>
-          <button class="mode-card" id="mode-quiver" type="button">
-            <span class="mode-card__icon">${ICONS.skis}</span>
-            <span class="mode-card__label">Quiver</span>
-            <span class="mode-card__support body-md">Already know where you're going? Find out which skis to bring.</span>
-          </button>
-          <button class="mode-card" id="mode-buzz" type="button">
-            <span class="mode-card__icon">${ICONS.speech}</span>
-            <span class="mode-card__label">Buzz</span>
-            <span class="mode-card__support body-md">Find where skiers talk about each resort on Reddit.</span>
-          </button>
-          <button class="mode-card" id="mode-plan" type="button">
-            <span class="mode-card__icon">${ICONS.mountain}</span>
-            <span class="mode-card__label">Plan</span>
-            <span class="mode-card__support body-md">Answer 5 quick questions. Get one solid pick.</span>
-          </button>
+          ${tile("mode-chase", ICONS.snow, "Chase", "Where it's dumping")}
+          ${tile("mode-quiver", ICONS.skis, "Quiver", "Which skis to bring")}
+          ${tile("mode-buzz", ICONS.speech, "Buzz", "Chatter on Reddit")}
+          ${tile("mode-nicoles", ICONS.list, "Picks", "Resort hot takes")}
+          ${tile("mode-plan", ICONS.mountain, "Plan", "Find a resort in 5 quick questions", true)}
         </div>
-        <p class="splash-footer">
-          <button class="btn-text" id="mode-nicoles" type="button">See everywhere Nicole's actually skied</button>
-        </p>
       </div>
     </div>`;
   document.getElementById("mode-plan").addEventListener("click", () => navigate("plan"));
@@ -355,10 +348,10 @@ function renderSplash(main) {
   document.getElementById("mode-quiver").addEventListener("click", () => navigate("quiver"));
   document.getElementById("mode-buzz").addEventListener("click", () => navigate("buzz"));
   document.getElementById("mode-nicoles").addEventListener("click", () => navigate("nicoles"));
-  document.title = "Find your next ski trip";
+  document.title = "Rather Be Knee Deep — where should we ski?";
   setOgMeta({
-    title: "Find your next ski trip",
-    description: "Answer a few quick questions, or see where it's dumping this week — plus everywhere Nicole's actually skied.",
+    title: "Where should we ski?",
+    description: "Nicole's ski picks, where it's dumping, which skis to bring, and a 5-question resort finder.",
   });
 }
 

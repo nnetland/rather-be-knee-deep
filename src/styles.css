@@ -427,21 +427,26 @@ ul { margin: 0; padding: 0; list-style: none; }
 /* =========================================================================
    Splash
    ========================================================================= */
-.splash { display: flex; flex-direction: column; gap: var(--space-8); padding-top: var(--space-6); }
-.splash-eyebrow { color: var(--text-secondary); font-family: 'Manrope', sans-serif; font-size: 1.0625rem; max-width: 32rem; }
-.splash-modes { display: grid; grid-template-columns: 1fr; gap: var(--space-4); }
-@media (min-width: 560px) { .splash-modes { grid-template-columns: 1fr 1fr; } }
+/* Home (2026-11-07): sticker, question, one tile per section. */
+.splash { display: flex; flex-direction: column; align-items: stretch; padding-top: var(--space-5); }
+.splash-sticker { align-self: center; width: min(208px, 55vw); transform: rotate(-4deg); }
+.splash-sticker svg { display: block; width: 100%; height: auto; }
+.splash-title { margin-top: var(--space-4); text-align: center; font-weight: 800; font-size: clamp(2rem, 7vw, 2.5rem); line-height: 1.05; text-wrap: balance; }
+.splash-modes { margin-top: var(--space-5); display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-3); }
 .mode-card {
-  display: flex; flex-direction: column; gap: var(--space-3); text-align: left;
-  padding: var(--space-6); border-radius: var(--radius-lg); border: var(--border-default-w) solid var(--border-interactive);
-  background: var(--bg-surface); cursor: pointer; min-height: 160px;
-  transition: box-shadow var(--dur-fast) var(--ease-standard), border-color var(--dur-fast) var(--ease-standard), background-color var(--dur-fast) var(--ease-standard);
+  display: flex; flex-direction: column; gap: var(--space-1); text-align: left; min-width: 0;
+  padding: var(--space-4); border-radius: var(--radius-lg); border: var(--border-hairline-w) solid var(--border-hairline);
+  background: var(--bg-surface); color: var(--text-primary); cursor: pointer; min-height: 88px;
+  transition: border-color var(--dur-fast) var(--ease-standard), background-color var(--dur-fast) var(--ease-standard);
 }
-.mode-card:hover { border-color: var(--brand-primary); box-shadow: var(--shadow-md); background: var(--bg-tint); }
-.mode-card__icon { width: 40px; height: 40px; color: var(--brand-primary-text); }
-.mode-card__label { font-family: 'Baloo 2', sans-serif; font-weight: 700; font-size: 1.375rem; }
-.mode-card__support { color: var(--text-secondary); }
-.splash-footer { text-align: center; }
+.mode-card--wide { grid-column: 1 / -1; }
+.mode-card:hover { border-color: var(--brand-primary); background: var(--bg-tint); }
+.mode-card:focus-visible { outline: var(--border-focus-w) solid var(--border-selected); outline-offset: 2px; }
+.mode-card__icon { width: 24px; height: 24px; color: var(--brand-primary-text); }
+.mode-card__icon svg { width: 24px; height: 24px; }
+.mode-card__label { font-family: 'Baloo 2', sans-serif; font-weight: 700; font-size: 1.25rem; line-height: 1.1; }
+.mode-card__support { color: var(--text-secondary); overflow-wrap: anywhere; }
+@media (prefers-reduced-motion: reduce) { .mode-card { transition: none; } }
 
 /* =========================================================================
    Result card — the shareable product
