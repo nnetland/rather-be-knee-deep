@@ -90,7 +90,7 @@ async function run() {
       return {
         takes: takes.length,
         attributed: takes.filter((c) => /nicole/i.test((c.querySelector('.visually-hidden') || {}).textContent || '')).length,
-        pageVoice: !!document.querySelector('.page-intro--voice') && /I've skied/.test(document.querySelector('.page-intro--voice').textContent),
+        pageVoice: !!document.querySelector('.page-intro') && /I've skied/.test(document.querySelector('.page-intro').textContent),
       };
     });
     assert(`Nicole's List at ${width}px: every take carries screen-reader attribution (R5)`,
