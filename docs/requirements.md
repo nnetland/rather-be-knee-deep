@@ -209,3 +209,17 @@ Booking, live pricing, or inventory. Accounts, saved trips, or cross-session per
 **Lane 3 — a net-new feature.** The full pipeline, but with discovery scoped to just the new thing, since personas, principles, the visual system, tokens, badges and the copy register already exist.
 
 Deploy is the same in all three: commit and push in GitHub Desktop, GitHub Actions rebuilds and deploys, live in about 90 seconds.
+
+---
+
+## Round of 2026-11-07 (branch `claude/buzz-subreddit-directory`)
+
+**B1 · Buzz is a subreddit directory, not a feed. SHIPPED on branch, Director's call.** Rants & Raves needed a Reddit Data API pipeline that was never built, and Reddit now requires explicit approval for that access. Buzz now lists plain links to public subreddits, by region, then resort, then general. Nothing is read from Reddit. A resort with no verified subreddit is listed under "No subreddit of its own" rather than linked to a guess; town subreddits stand in only where the town is the ski destination, labelled "the town's". Evidence per row: `research/resort-links.json`. Old `#rants=` links land on Buzz. Supersedes the Rants & Raves entries and their open items (takedown route, pipeline, floor figure).
+
+**B2 · Resort result screen links out. SHIPPED on branch.** A Links block with the official site and the resort's subreddit, falling back to the region's subreddit, then r/skiing, each labelled so it isn't mistaken for the resort's own.
+
+**A1 · One region picker across the app. SHIPPED on branch, Director's call.** Chase, Quiver, Buzz and Picks use the same scrolling chip row and the same ten areas (`src/regions.js`), "All regions" first, in a fixed geographic order. Quiver groups its list by area and shows the state on each row. Chase's old "Near" select was a home-metro re-ranker that looked like a region filter; it stays as a plain-text "Traveling from" control under the chips and never says "Near". The Beginner-friendly toggle is removed; day-trip hills stay out of Chase.
+
+**H6 · One page header. SHIPPED on branch, Director's call.** *"Page titles should match bottom nav… every word should earn its spot."* Every tab page: h1 = the nav word exactly (Chase, Quiver, Buzz, Plan, Picks), one line saying what to do, then a status line only when needed, then controls. Splash cards and back links use the same words. Counts were cut ("44 places · 9 takes written", "29 subreddits", "4 open", "Step 1 of 2"). Plan gained its h1 and intro; its in-card step counter stays, the progress dot is gone. Chase status is "NWS forecast · Updated …" live, "Not a live forecast · Try again" otherwise (R8a still met). Allowed deviations: Picks' intro carries the gold rule; drill-down screens (result, Quiver call) use the resort as their heading.
+
+**R5a amended 2026-11-07.** The coverage count is gone at the Director's call. Page-level attribution on Picks is now carried by the first-person intro line alone (with the gold rule) plus the visually-hidden per-row prefix.

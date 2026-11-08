@@ -21,12 +21,10 @@ function renderBuzz(main) {
   const regions = BUZZ_REGIONS.filter((r) => buzzResortsIn(r).length || r.subs.length);
   const active = state.buzz.region;
   const shown = active === "all" ? regions : regions.filter((r) => r.id === active);
-  const subCount = buzzAllSubs().length;
 
   main.innerHTML = `
     <div class="page-column buzz-view">
-      <h1 class="display-h1">Buzz</h1>
-      ${pageMetaHtml([`${subCount} subreddits`, "Where skiers talk on Reddit"])}
+      ${pageHeaderHtml("Buzz", "Where skiers talk about each resort on Reddit.")}
       ${areaChipsHtml("buzz", active, new Set(regions.map((r) => r.id)), { id: "general", label: "General" })}
       ${active === "general" ? "" : shown.map(buzzRegionHtml).join("")}
       ${active === "all" || active === "general" ? buzzGeneralHtml() : ""}

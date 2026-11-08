@@ -118,6 +118,19 @@ function updatedStamp(ms, now) {
 // Facts render as a list so a screen reader hears separate items, not a run
 // of middle dots.
 // ---------------------------------------------------------------------------
+// The one page header, every surface (Director, 2026-11-07): the h1 is the
+// bottom-nav word, exactly, and one short line says what to do here. Anything
+// else (a forecast stamp, a status) follows in pageMetaHtml, only when needed.
+// `voice` marks the line as Nicole speaking (Picks): same slot, plus the gold rule.
+function pageHeaderHtml(title, introHtml, opts) {
+  const voice = opts && opts.voice;
+  return `
+    <header class="page-header">
+      <h1 class="display-h1">${escapeHtml(title)}</h1>
+      ${introHtml ? `<p class="page-intro body-md${voice ? " page-intro--voice" : ""}">${introHtml}</p>` : ""}
+    </header>`;
+}
+
 function pageMetaHtml(items, id) {
   const parts = items.filter(Boolean);
   if (!parts.length) return "";

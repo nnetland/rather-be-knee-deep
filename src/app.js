@@ -325,12 +325,12 @@ function renderSplash(main) {
         <div class="splash-modes">
           <button class="mode-card" id="mode-chase" type="button">
             <span class="mode-card__icon">${ICONS.snow}</span>
-            <span class="mode-card__label">Chase the snow</span>
+            <span class="mode-card__label">Chase</span>
             <span class="mode-card__support body-md">See where it's dumping this week.</span>
           </button>
           <button class="mode-card" id="mode-quiver" type="button">
             <span class="mode-card__icon">${ICONS.skis}</span>
-            <span class="mode-card__label">Quiver Check</span>
+            <span class="mode-card__label">Quiver</span>
             <span class="mode-card__support body-md">Already know where you're going? Find out which skis to bring.</span>
           </button>
           <button class="mode-card" id="mode-buzz" type="button">
@@ -340,7 +340,7 @@ function renderSplash(main) {
           </button>
           <button class="mode-card" id="mode-plan" type="button">
             <span class="mode-card__icon">${ICONS.mountain}</span>
-            <span class="mode-card__label">Plan a trip</span>
+            <span class="mode-card__label">Plan</span>
             <span class="mode-card__support body-md">Answer 5 quick questions. Get one solid pick.</span>
           </button>
         </div>
@@ -417,7 +417,7 @@ const QUIZ_OPTIONS = {
 };
 
 function renderPlan(main) {
-  main.innerHTML = `<div class="page-column"><div id="quiz-step-container" class="quiz-step-container"></div></div>`;
+  main.innerHTML = `<div class="page-column">${pageHeaderHtml("Plan", "Answer 5 questions. Get one resort that fits.")}<div id="quiz-step-container" class="quiz-step-container"></div></div>`;
   renderQuizStep(null);
   // Focus fix (synthetic-user-testing.md Major finding): renderQuizStep(null)
   // is called with no `direction` on this very first render, so neither of
@@ -429,7 +429,12 @@ function renderPlan(main) {
   // the previous round only touched the in-place re-render-after-a-tap case,
   // not this one) — this is the one call site that still needed it, handled
   // the same way every other route's first render already does.
-  focusHeading(main);
+  //
+  // The page h1 ("Plan") sits above the card since 2026-11-07, so focus goes
+  // to the question itself, the thing there is to act on, rather than to
+  // whichever heading comes first. The h1 is still first in reading order.
+  const q = document.getElementById("quiz-step-heading");
+  if (q) { q.setAttribute("tabindex", "-1"); q.focus({ preventScroll: true }); } else focusHeading(main);
 }
 
 function currentQuizScreen() {
@@ -1031,7 +1036,7 @@ function renderResult(main) {
   // dishonest kind of affordance this whole change exists to remove.
   const origin = state.routeParams.origin;
   const backHtml =
-    origin === "chase" ? leafBackHtml("result-leaf-back", "Back to Chase the snow", true) :
+    origin === "chase" ? leafBackHtml("result-leaf-back", "Back to Chase", true) :
     origin === "plan" ? leafBackHtml("result-leaf-back", "Back to your answers", true) :
     "";
 

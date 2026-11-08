@@ -17,7 +17,7 @@ function renderChase(main) {
 
   main.innerHTML = `
     <div class="page-column">
-      <h1 class="display-h1">Where's it dumping?</h1>
+      ${pageHeaderHtml("Chase", "See where it's dumping this week.")}
       <div id="chase-freshness"></div>
       ${showControls ? `
         ${areaChipsHtml("chase", state.chaseAnswers.area, new Set(RESORTS.filter((r) => r.scale !== "day-trip").map((r) => (areaOfResort(r) || {}).id).filter(Boolean)))}
@@ -155,7 +155,6 @@ function chaseFreshnessHtml(forecasts, now) {
     return `<div class="page-meta-wrap" id="freshness-badge">
       <ul class="page-meta body-sm" role="list">
         <li class="freshness-badge--fallback"><span class="freshness-badge__text">Not a live forecast</span></li>
-        <li>Forecast unavailable</li>
         <li><button class="btn-text" id="retry-forecast" type="button">Try again</button></li>
       </ul>
     </div>`;
@@ -163,9 +162,8 @@ function chaseFreshnessHtml(forecasts, now) {
   const latest = Math.max.apply(null, live.map((f) => f.updatedAt || 0));
   const stamp = updatedStamp(latest, now);
   return `<div class="page-meta-wrap" id="freshness-badge">${pageMetaHtml([
-    "NWS 7-day forecast",
+    "NWS forecast",
     stamp ? `Updated ${escapeHtml(stamp)}` : "Updated today",
-    `${Object.keys(forecasts).filter((id) => RESORTS_BY_ID[id] && resortOpening(RESORTS_BY_ID[id], now).open).length} open`,
   ])}</div>`;
 }
 

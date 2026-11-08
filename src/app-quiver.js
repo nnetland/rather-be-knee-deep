@@ -42,7 +42,7 @@ function renderQuiver(main) {
 // explaining why has to be about skis rather than about rankings.
 function renderQuiverOffSeason(body) {
   body.innerHTML = `
-    <h1 class="display-h1">Quiver Check</h1>
+    ${pageHeaderHtml("Quiver", "Pick a resort and a day. Get the right skis.")}
     <div class="center-state">
       ${ICONS.snow}
       <h2 class="display-h3">Nothing's open right now</h2>
@@ -110,16 +110,14 @@ function quiverUpcoming() {
 // ---------------------------------------------------------------------------
 function renderQuiverResortStep(body) {
   body.innerHTML = `
-    <h1 class="display-h1 quiz-title">Where are you skiing?</h1>
-    ${quiverPool().length
-      ? pageMetaHtml(["Step 1 of 2"])
-      : pageMetaHtml(["Nothing's open yet", quiverFirstUnlockText()], "quiver-unlock")}
+    ${pageHeaderHtml("Quiver", "Pick a resort and a day. Get the right skis.")}
+    ${quiverPool().length ? "" : pageMetaHtml(["Nothing's open yet", quiverFirstUnlockText()], "quiver-unlock")}
     <div class="quiver-search">
       <label class="visually-hidden" for="quiver-search-input">Search by name or state</label>
       <div class="quiver-search__field">
         <span class="quiver-search__icon" aria-hidden="true">${ICONS.search}</span>
         <input type="search" id="quiver-search-input" class="quiver-search__input" autocomplete="off"
-               placeholder="Search: Alta, Vermont, Jackson…" value="${escapeHtml(state.quiver.search || "")}">
+               placeholder="Alta, Vermont, Jackson…" value="${escapeHtml(state.quiver.search || "")}">
       </div>
     </div>
     ${areaChipsHtml("quiver", state.quiver.area || "all", new Set(quiverPool().concat(quiverUpcoming()).map((r) => (areaOfResort(r) || {}).id).filter(Boolean)))}
@@ -258,8 +256,8 @@ function renderQuiverDayStep(body) {
   const firstIndex = fullFrame.length - frame.length;
 
   body.innerHTML = `
-    <h1 class="display-h1 quiz-title">Which day?</h1>
-    ${pageMetaHtml(["Step 2 of 2", escapeHtml(resort.name), opening.open ? null : openingStatusHtml(opening, now)])}
+    ${pageHeaderHtml("Quiver", `Which day at ${escapeHtml(resort.name)}?`)}
+    ${opening.open ? "" : pageMetaHtml([openingStatusHtml(opening, now)])}
     <div class="quiver-day-list" role="radiogroup" aria-label="Which day are you skiing?">
       ${frame.map((d, i) => {
         const label = quiverDayLabel(d.dateKey, i + firstIndex);
@@ -374,8 +372,8 @@ function renderQuiverResult(body) {
   // card, and a reader looking for the way out looks up, not down.
   const cameFromPicker = !!state.quiver.hadPrev;
   const backHtml = cameFromPicker
-    ? leafBackHtml("quiver-leaf-back", "Back to Quiver Check", true)
-    : leafBackHtml("quiver-leaf-back", "Start a Quiver Check", false);
+    ? leafBackHtml("quiver-leaf-back", "Back to Quiver", true)
+    : leafBackHtml("quiver-leaf-back", "Open Quiver", false);
 
   body.innerHTML = backHtml + `
     <article class="quiver-card" id="quiver-card">

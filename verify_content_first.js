@@ -86,7 +86,7 @@ async function topText(page) {
   const chaseText = await topText(page);
   for (const re of BANNED_TOP) assert(`Chase: no "${re.source}" explainer`, !re.test(chaseText));
   const meta = await page.locator('#freshness-badge').innerText();
-  assert('Chase: the fact line names the source and the NWS update time', /NWS 7-day forecast/.test(meta) && /Updated \d{1,2}:\d{2}/.test(meta), meta);
+  assert('Chase: the fact line names the source and the NWS update time', /NWS forecast/.test(meta) && /Updated \d{1,2}:\d{2}/.test(meta), meta);
   assert('Chase: the fact line is ONE line at 390px', await page.$eval('#freshness-badge .page-meta', (el) => el.getBoundingClientRect().height < 40));
   assert('Chase: About this data is present and closed', await page.$eval('#chase-about-details', (el) => !el.open));
   const areaRow = await page.$eval('#chase-area-chips', (el) => el.getBoundingClientRect().height);

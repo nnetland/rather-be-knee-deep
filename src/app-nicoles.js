@@ -49,9 +49,7 @@ function renderNicolesList(main) {
 
   main.innerHTML = `
     <div class="page-column">
-      <h1 class="display-h1">Nicole's picks</h1>
-      <p class="nicoleslist-voice body-md">Everywhere I've skied, and what I <strong>actually</strong> think.</p>
-      ${pageMetaHtml([`${rows.length} places`, `<span class="nicoleslist-status">${rows.filter((r) => r.take).length} takes written</span>`])}
+      ${pageHeaderHtml("Picks", "Everywhere I've skied, and what I <strong>actually</strong> think.", { voice: true })}
       ${areaChipsHtml("nicoles", state.nicolesFilters.region, new Set(rows.map((r) => r.areaId).filter(Boolean)))}
       <div id="nicoles-table-wrap"></div>
       ${pageAboutHtml("About this list", `
