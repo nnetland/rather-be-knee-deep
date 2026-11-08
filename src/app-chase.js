@@ -20,18 +20,7 @@ function renderChase(main) {
       ${pageHeaderHtml("Chase", "See where it's dumping this week.")}
       <div id="chase-freshness"></div>
       ${showControls ? `
-        ${areaChipsHtml("chase", state.chaseAnswers.area, new Set(RESORTS.filter((r) => r.scale !== "day-trip").map((r) => (areaOfResort(r) || {}).id).filter(Boolean)))}
-        <div class="origin-line body-sm">
-          <label for="chase-origin">Traveling from</label>
-          <span class="origin-select">
-            <span class="origin-select__value" id="chase-origin-value" aria-hidden="true">${escapeHtml(state.chaseAnswers.region ? (regionById(state.chaseAnswers.region) || {}).label || "Anywhere" : "Anywhere")}</span>
-            <span class="origin-select__chev" aria-hidden="true">${ICONS.chevronDown}</span>
-            <select id="chase-origin">
-              <option value="">Anywhere</option>
-              ${REGIONS.filter((r) => r.id !== "elsewhere").map((r) => `<option value="${r.id}" ${state.chaseAnswers.region === r.id ? "selected" : ""}>${r.label}</option>`).join("")}
-            </select>
-          </span>
-        </div>` : ""}
+        ${areaChipsHtml("chase", state.chaseAnswers.area, new Set(RESORTS.filter((r) => r.scale !== "day-trip").map((r) => (areaOfResort(r) || {}).id).filter(Boolean)))}` : ""}
       <div id="chase-body"></div>
       <div id="chase-about"></div>
     </div>`;
@@ -40,12 +29,6 @@ function renderChase(main) {
     wireAreaChips("chase", (id) => {
       state.chaseAnswers.area = id;
       renderChaseList(true);
-      announceChaseCount();
-    });
-    document.getElementById("chase-origin").addEventListener("change", (e) => {
-      state.chaseAnswers.region = e.target.value || null;
-      document.getElementById("chase-origin-value").textContent = e.target.selectedOptions[0].textContent;
-      renderChaseList(); // re-rank with new feasibility discount, no reload of forecasts needed
       announceChaseCount();
     });
   }
@@ -173,7 +156,7 @@ function chaseAboutHtml(anyCanada) {
     <p>Opening days are each resort's published ${OPENINGS_SEASON} date, checked ${OPENINGS_CHECKED}. Resorts sometimes slip a few days. "Usually mid-Nov" means the resort hasn't announced a date and that's its typical opening; "Opening TBA" means it's past that and still unannounced.</p>
     <p>When nothing is open, the list shows what's opening soon, most forecast snow first.</p>
     ${anyCanada ? "<p>The forecast service only covers the US, so Canadian resorts show typical season snowfall instead. Check the resort's own snow report for real-time numbers.</p>" : ""}
-    <p>Pick where you're traveling from and farther resorts rank lower, and each row shows the drive. Day-trip hills aren't listed here; they're in Nicole's picks.</p>
+    <p>Day-trip hills aren't listed here; they're in Nicole's picks.</p>
     <p>A weather forecast, not a snow report: it can't see base depth, grooming, or what's already tracked out.</p>`, "chase-about-details");
 }
 
@@ -270,11 +253,9 @@ function chaseRowHtml(row, rank, anyLive) {
   const showTile = isLive || opening.open;
   const tagTypical = !isLive && anyLive;
 
-  let feasibilityChip = "";
-  if (state.chaseAnswers.region && feasibility && feasibility.distanceMiles != null) {
-    const hrs = Math.max(1, Math.round(feasibility.distanceMiles / 55));
-    feasibilityChip = `<span class="chase-flag body-sm">${pluralize(hrs, "hour")} drive from ${(regionById(state.chaseAnswers.region) || {}).label || "your area"}</span>`;
-  }
+  // The "Traveling from" control and its drive-time line were removed
+  // 2026-11-07 (Director's call); region chips answer "what can I get to".
+  const feasibilityChip = "";
   const crowdFlag = (resort.crowd_level === "brutal" || resort.crowd_level === "high")
     ? `<span class="chase-flag chase-flag--crowd">${ICONS.crowd} Crowded on powder days</span>` : "";
   const nicoleFlag = resort.hot_take ? `<span class="chase-flag chase-flag--nicole">● Nicole's take →</span>` : "";

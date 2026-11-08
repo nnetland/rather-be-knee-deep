@@ -93,8 +93,7 @@ async function topText(page) {
   assert(`Chase: region chips are one row at 390px (${Math.round(areaRow)}px)`, areaRow < 70, areaRow);
   assert('Chase: no Beginner-friendly toggle', await page.locator('#chase-beginner-toggle-wrap').count() === 0);
   assert('Chase: no "Near" wording anywhere in the header', !/\bNear\b/.test(chaseText));
-  assert('Chase: the origin select is named by its visible "Traveling from" label (2.5.3)',
-    await page.$eval('#chase-origin', (el) => !el.hasAttribute('aria-label') && el.labels.length === 1 && /Traveling from/.test(el.labels[0].textContent)));
+  assert('Chase: no Traveling from control (removed 2026-11-07)', await page.locator('#chase-origin').count() === 0);
   // The same chip control, the same vocabulary, on every surface.
   const chaseAreas = await page.$$eval('#chase-area-chips [data-area]', (bs) => bs.map((b) => b.textContent.trim()));
   assert('Chase: region chips start with "All regions"', chaseAreas[0] === 'All regions', chaseAreas);

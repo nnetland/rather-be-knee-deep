@@ -16,9 +16,10 @@ const state = {
   routeParams: {},
   quizAnswers: {},          // persists across nav within this page session
   quizStepIdx: 0,
-  // region = where the skier is traveling FROM (a REGIONS metro); area = where
-  // the resort is (regions.js). includeBeginnerFriendly stays false: the toggle
-  // was removed 2026-11-07, so Chase never lists day-trip hills.
+  // area = where the resort is (regions.js). region (a home metro) stays null:
+  // Chase's "Traveling from" control was removed 2026-11-07, so nothing re-ranks
+  // by distance. includeBeginnerFriendly stays false: that toggle went too, so
+  // Chase never lists day-trip hills.
   chaseAnswers: { region: null, area: "all", includeBeginnerFriendly: false },
   chaseCache: null,         // { forecasts, anyFallback } once resolved
   chaseLoadHandle: null,    // { skip() } while a forecast fetch is in flight

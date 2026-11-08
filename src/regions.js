@@ -4,8 +4,7 @@
 //
 // AREA vs ORIGIN. An area is where a resort IS, and filtering by it hides
 // everything else. The home metros in REGIONS (data.js) are where the skier is
-// COMING FROM; Plan a trip asks for one and Chase uses it to rank, labelled
-// "Traveling from". The two never share a control or a word.
+// COMING FROM; only Plan asks for one. The two never share a control or a word.
 //
 // Ten areas rather than every state: eleven-plus chips is already a scrolling
 // row, and several states hold one or two resorts. Labels name states where a
