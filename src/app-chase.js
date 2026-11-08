@@ -20,30 +20,34 @@ function renderChase(main) {
       <h1 class="display-h1">Where's it dumping?</h1>
       <div id="chase-freshness"></div>
       ${showControls ? `
-        <div class="chip-row chase-controls" role="group" aria-label="Filter the list">
-          <label class="select-chip">
-            <span class="select-chip__label">Near</span>
-            <select id="chase-region-select">
+        ${areaChipsHtml("chase", state.chaseAnswers.area, new Set(RESORTS.filter((r) => r.scale !== "day-trip").map((r) => (areaOfResort(r) || {}).id).filter(Boolean)))}
+        <div class="origin-line body-sm">
+          <label for="chase-origin">Traveling from</label>
+          <span class="origin-select">
+            <span class="origin-select__value" id="chase-origin-value" aria-hidden="true">${escapeHtml(state.chaseAnswers.region ? (regionById(state.chaseAnswers.region) || {}).label || "Anywhere" : "Anywhere")}</span>
+            <span class="origin-select__chev" aria-hidden="true">${ICONS.chevronDown}</span>
+            <select id="chase-origin">
               <option value="">Anywhere</option>
               ${REGIONS.filter((r) => r.id !== "elsewhere").map((r) => `<option value="${r.id}" ${state.chaseAnswers.region === r.id ? "selected" : ""}>${r.label}</option>`).join("")}
             </select>
-            <span class="select-chip__chev" aria-hidden="true">${ICONS.chevronDown}</span>
-          </label>
-          <button class="filter-chip" type="button" id="chase-beginner-toggle-wrap" aria-pressed="false">
-            <span class="filter-chip__check" aria-hidden="true">${ICONS.check}</span>Beginner-friendly
-          </button>
+          </span>
         </div>` : ""}
       <div id="chase-body"></div>
       <div id="chase-about"></div>
     </div>`;
 
   if (showControls) {
-    document.getElementById("chase-region-select").addEventListener("change", (e) => {
+    wireAreaChips("chase", (id) => {
+      state.chaseAnswers.area = id;
+      renderChaseList(true);
+      announceChaseCount();
+    });
+    document.getElementById("chase-origin").addEventListener("change", (e) => {
       state.chaseAnswers.region = e.target.value || null;
+      document.getElementById("chase-origin-value").textContent = e.target.selectedOptions[0].textContent;
       renderChaseList(); // re-rank with new feasibility discount, no reload of forecasts needed
       announceChaseCount();
     });
-    wireBeginnerToggle();
   }
   document.title = "Where it's dumping this week";
   setOgMeta({
@@ -53,21 +57,6 @@ function renderChase(main) {
 
   loadAndRenderChase();
   focusHeading(main);
-}
-
-function wireBeginnerToggle() {
-  const btn = document.getElementById("chase-beginner-toggle-wrap");
-  const sync = () => {
-    btn.classList.toggle("filter-chip--selected", !!state.chaseAnswers.includeBeginnerFriendly);
-    btn.setAttribute("aria-pressed", String(!!state.chaseAnswers.includeBeginnerFriendly));
-  };
-  sync();
-  btn.addEventListener("click", () => {
-    state.chaseAnswers.includeBeginnerFriendly = !state.chaseAnswers.includeBeginnerFriendly;
-    sync();
-    renderChaseList(true);
-    announceChaseCount();
-  });
 }
 
 // Filters re-render the list silently otherwise (SC 4.1.3).
@@ -186,6 +175,7 @@ function chaseAboutHtml(anyCanada) {
     <p>Opening days are each resort's published ${OPENINGS_SEASON} date, checked ${OPENINGS_CHECKED}. Resorts sometimes slip a few days. "Usually mid-Nov" means the resort hasn't announced a date and that's its typical opening; "Opening TBA" means it's past that and still unannounced.</p>
     <p>When nothing is open, the list shows what's opening soon, most forecast snow first.</p>
     ${anyCanada ? "<p>The forecast service only covers the US, so Canadian resorts show typical season snowfall instead. Check the resort's own snow report for real-time numbers.</p>" : ""}
+    <p>Pick where you're traveling from and farther resorts rank lower, and each row shows the drive. Day-trip hills aren't listed here; they're in Nicole's picks.</p>
     <p>A weather forecast, not a snow report: it can't see base depth, grooming, or what's already tracked out.</p>`, "chase-about-details");
 }
 
@@ -222,13 +212,14 @@ function renderChaseList(isRefresh) {
     return openingSortKey(a, now) - openingSortKey(b, now);
   });
 
-  const ranked = rankChaseTheSnow(openFc, state.chaseAnswers, RESORTS);
-  const canada = rankCanadaTypicalSeason(RESORTS);
+  const area = state.chaseAnswers.area;
+  const ranked = rankChaseTheSnow(openFc, state.chaseAnswers, RESORTS).filter((row) => inArea(row.resort, area));
+  const canada = rankCanadaTypicalSeason(RESORTS).filter((r) => inArea(r, area));
   const about = document.getElementById("chase-about");
   if (about) about.innerHTML = chaseAboutHtml(canada.length > 0);
 
   const upcomingRows = upcoming
-    .filter((r) => state.chaseAnswers.includeBeginnerFriendly || r.scale !== "day-trip")
+    .filter((r) => r.scale !== "day-trip" && inArea(r, state.chaseAnswers.area))
     .map((r) => ({ resort: r, totalInches: forecasts[r.id].totalInches,
       snowQuality: forecasts[r.id].avgTempF != null ? Math.max(0, Math.min(1, 1 - (forecasts[r.id].avgTempF - 10) / 45)) : 0.6,
       feasibility: null }));
@@ -248,7 +239,7 @@ function renderChaseList(isRefresh) {
   if (ranked.length) {
     openHtml = `<ol class="chase-list" id="chase-us-list"${openHeading ? ' aria-labelledby="chase-open-h"' : ""}>` + ranked.map((row, i) => chaseRowHtml(row, i + 1, anyLive)).join("") + `</ol>`;
   } else if (!nothingOpen || !upcomingRows.length) {
-    openHtml = `<div class="center-state">${ICONS.warning}<p class="body-md">Nothing open matches right now — try Beginner-friendly.</p></div>`;
+    openHtml = `<div class="center-state">${ICONS.warning}<p class="body-md">${area && area !== "all" ? `Nothing open in ${escapeHtml(AREAS_BY_ID[area].name)} right now.` : "Nothing open right now."}</p></div>`;
   }
 
   body.innerHTML = openHeading + openHtml + upcomingHtml + canadaSectionHtml(canada);

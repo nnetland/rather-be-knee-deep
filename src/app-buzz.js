@@ -27,13 +27,7 @@ function renderBuzz(main) {
     <div class="page-column buzz-view">
       <h1 class="display-h1">Buzz</h1>
       ${pageMetaHtml([`${subCount} subreddits`, "Where skiers talk on Reddit"])}
-      <div class="chip-row chip-row--scroll" role="group" aria-label="Filter Buzz by region">
-        ${["all", ...regions.map((r) => r.id), "general"].map((id) => {
-          const label = id === "all" ? "All" : id === "general" ? "General" : regions.find((r) => r.id === id).name;
-          const on = active === id;
-          return `<button class="filter-chip ${on ? "filter-chip--selected" : ""}" data-buzz-region="${id}" type="button" aria-pressed="${on}">${escapeHtml(label)}</button>`;
-        }).join("")}
-      </div>
+      ${areaChipsHtml("buzz", active, new Set(regions.map((r) => r.id)), { id: "general", label: "General" })}
       ${active === "general" ? "" : shown.map(buzzRegionHtml).join("")}
       ${active === "all" || active === "general" ? buzzGeneralHtml() : ""}
       ${pageAboutHtml("About these links", `
@@ -42,13 +36,11 @@ function renderBuzz(main) {
         <p>A resort listed under "No subreddit of its own" gets talked about in its region's subreddit instead. Links checked ${escapeHtml(BUZZ_CHECKED)}.</p>`)}
     </div>`;
 
-  main.querySelectorAll("[data-buzz-region]").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      state.buzz.region = btn.dataset.buzzRegion;
-      renderBuzz(main);
-      const again = main.querySelector(`[data-buzz-region="${state.buzz.region}"]`);
-      if (again) again.focus({ preventScroll: true });
-    });
+  wireAreaChips("buzz", (id) => {
+    state.buzz.region = id;
+    renderBuzz(main);
+    const again = main.querySelector(`#buzz-area-chips [data-area="${id}"]`);
+    if (again) again.focus({ preventScroll: true });
   });
 
   document.title = "Buzz — find your next ski trip";

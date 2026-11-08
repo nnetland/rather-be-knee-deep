@@ -16,7 +16,10 @@ const state = {
   routeParams: {},
   quizAnswers: {},          // persists across nav within this page session
   quizStepIdx: 0,
-  chaseAnswers: { region: null, includeBeginnerFriendly: false },
+  // region = where the skier is traveling FROM (a REGIONS metro); area = where
+  // the resort is (regions.js). includeBeginnerFriendly stays false: the toggle
+  // was removed 2026-11-07, so Chase never lists day-trip hills.
+  chaseAnswers: { region: null, area: "all", includeBeginnerFriendly: false },
   chaseCache: null,         // { forecasts, anyFallback } once resolved
   chaseLoadHandle: null,    // { skip() } while a forecast fetch is in flight
   nicolesFilters: { region: "all", sort: "region" },
@@ -29,7 +32,7 @@ const state = {
   // a shared #quiver= link. The result page's back control branches its
   // wording AND its destination on it, because on a cold landing there is no
   // picker behind you to go back to.
-  quiver: { step: "resort", resortId: null, dateKey: null, search: "", hadPrev: false },
+  quiver: { step: "resort", resortId: null, dateKey: null, search: "", area: "all", hadPrev: false },
   quiverForecast: null,     // { resortId, status, days, timeZone, isLive }
   // Buzz: the region filter only. Not in the URL; entering from the nav resets it.
   buzz: { region: "all" },

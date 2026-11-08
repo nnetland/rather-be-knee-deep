@@ -1268,26 +1268,20 @@ ul { margin: 0; padding: 0; list-style: none; }
 .filter-chip__check svg { width: 16px; height: 16px; }
 .filter-chip--selected .filter-chip__check { display: inline-flex; }
 
-.chase-controls .select-chip { flex: 1 1 10rem; min-width: 0; }
-.chase-controls .filter-chip { flex: 0 0 auto; }
-.select-chip {
-  position: relative; display: inline-flex; align-items: center; gap: var(--space-1);
-  min-height: 44px; max-width: 100%; padding: 0 var(--space-3) 0 var(--space-4);
-  border: var(--border-default-w) solid var(--border-interactive); border-radius: var(--radius-pill);
-  background: var(--bg-surface); color: var(--text-primary);
-  font-family: 'Manrope', sans-serif; font-weight: 600; font-size: .875rem;
-}
-.select-chip__label { color: var(--text-secondary); font-weight: 600; flex: none; }
-.select-chip__label::after { content: ":"; }
-.select-chip select {
-  appearance: none; -webkit-appearance: none; border: 0; background: transparent; color: inherit;
-  font: inherit; min-height: 44px; padding: 0 var(--space-6) 0 0; min-width: 0; width: 100%; max-width: 100%;
-  text-overflow: ellipsis; cursor: pointer;
-}
-.select-chip select:focus-visible { outline: none; }
-.select-chip:focus-within { outline: var(--border-focus-w) solid var(--border-selected); outline-offset: 2px; }
-.select-chip__chev { position: absolute; right: var(--space-3); width: 16px; height: 16px; pointer-events: none; color: var(--text-secondary); }
-.select-chip__chev svg { width: 16px; height: 16px; }
+/* "Traveling from" on Chase — where the skier starts, not where the resort is.
+   Deliberately NOT a chip: chips on every surface mean "filter by region", and
+   this only re-ranks. Plain text with an underlined value, one 44px row. */
+.origin-line { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-1) var(--space-2); margin: calc(-1 * var(--space-2)) 0 var(--space-4); color: var(--text-secondary); }
+.origin-line label { font-weight: 600; }
+/* The visible value is a span sized to its own text; the real <select> sits
+   on top of it, transparent, so the native picker opens on tap and the control
+   is only as wide as what it says. */
+.origin-select { position: relative; display: inline-flex; align-items: center; gap: var(--space-1); min-height: 44px; max-width: 100%; color: var(--brand-primary-text); font-weight: 700; }
+.origin-select__value { text-decoration: underline; text-underline-offset: 3px; overflow-wrap: anywhere; }
+.origin-select__chev { flex: none; width: 16px; height: 16px; }
+.origin-select select { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; font: inherit; }
+.origin-select:focus-within { outline: var(--border-focus-w) solid var(--border-selected); outline-offset: 2px; border-radius: 4px; }
+.origin-select__chev svg { width: 16px; height: 16px; display: block; }
 
 /* Chase groups and per-row status */
 .chase-group-h { margin: var(--space-6) 0 var(--space-2); color: var(--text-secondary); }

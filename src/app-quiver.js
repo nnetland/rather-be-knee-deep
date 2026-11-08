@@ -122,6 +122,7 @@ function renderQuiverResortStep(body) {
                placeholder="Search: Alta, Vermont, Jackson…" value="${escapeHtml(state.quiver.search || "")}">
       </div>
     </div>
+    ${areaChipsHtml("quiver", state.quiver.area || "all", new Set(quiverPool().concat(quiverUpcoming()).map((r) => (areaOfResort(r) || {}).id).filter(Boolean)))}
     <p class="visually-hidden" aria-live="polite" id="quiver-search-count"></p>
     <div id="quiver-resort-list"></div>
     ${pageAboutHtml("About this data", `
@@ -129,6 +130,7 @@ function renderQuiverResortStep(body) {
       <p>Only mountains open on or before the day you pick can get a call. Opening days are each resort's published ${OPENINGS_SEASON} date.</p>`)}`;
 
   renderQuiverResortList();
+  wireAreaChips("quiver", (id) => { state.quiver.area = id; renderQuiverResortList(); });
   const input = document.getElementById("quiver-search-input");
   input.addEventListener("input", () => {
     state.quiver.search = input.value;
@@ -140,7 +142,8 @@ function renderQuiverResortList() {
   const wrap = document.getElementById("quiver-resort-list");
   const now = appNow();
   const q = (state.quiver.search || "").trim().toLowerCase();
-  const match = (r) => !q || `${r.name} ${r.state_province} ${r.country}`.toLowerCase().includes(q);
+  const match = (r) => inArea(r, state.quiver.area) &&
+    (!q || `${r.name} ${r.state_province} ${r.country}`.toLowerCase().includes(q));
   const pool = quiverPool().filter(match);
   const upcoming = quiverUpcoming().filter(match);
 
@@ -152,19 +155,19 @@ function renderQuiverResortList() {
     return;
   }
 
-  // Grouped by state/province, which is how people actually narrow a ski
-  // list — "somewhere in Utah" is a far more common starting point than a
-  // specific mountain.
+  // Grouped by area, in the same order and words as the region chips on every
+  // other surface. The state rides on each row, so "somewhere in Utah" and
+  // "Sun Valley, Idaho" both stay findable.
   const groups = {};
   for (const r of pool) {
-    const key = r.country === "Canada" ? `${r.state_province}, Canada` : r.state_province;
+    const key = (areaOfResort(r) || { name: "Elsewhere" }).name;
     (groups[key] = groups[key] || []).push(r);
   }
-  const orderedKeys = Object.keys(groups).sort();
+  const orderedKeys = AREAS.map((a) => a.name).filter((n) => groups[n]).concat(groups.Elsewhere ? ["Elsewhere"] : []);
 
   const metaFor = (r) => {
     const o = resortOpening(r, now);
-    const bits = [];
+    const bits = [escapeHtml(r.country === "Canada" ? `${r.state_province}, Canada` : r.state_province)];
     if (!o.open) bits.push(openingStatusHtml(o, now));
     if (r.country !== "USA") bits.push("Typical season");
     if (r.scale === "day-trip") bits.push("Day-trip hill");

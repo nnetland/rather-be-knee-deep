@@ -11,118 +11,35 @@ const BUZZ_CHECKED = "November 2026";
 
 function redditUrl(sub) { return `https://www.reddit.com/r/${encodeURIComponent(sub)}/`; }
 
-const BUZZ_REGIONS = [
- {
-  "id": "colorado",
-  "name": "Colorado",
-  "states": [
-   "Colorado"
-  ],
-  "subs": [
-   {
-    "sub": "COsnow",
-    "blurb": "Colorado skiing and riding: conditions, traffic, trips"
-   }
-  ]
- },
- {
-  "id": "utah",
-  "name": "Utah",
-  "states": [
-   "Utah"
-  ],
-  "subs": [
-   {
-    "sub": "UTsnow",
-    "blurb": "Utah skiing and riding, sorted by resort"
-   }
-  ]
- },
- {
-  "id": "california",
-  "name": "California",
-  "states": [
-   "California"
-  ],
-  "subs": [
-   {
-    "sub": "tahoe",
-    "blurb": "Lake Tahoe: local news, visits and ski days"
-   }
-  ]
- },
- {
-  "id": "pnw",
-  "name": "Pacific Northwest",
-  "states": [
-   "Oregon",
-   "Washington"
-  ],
-  "subs": []
- },
- {
-  "id": "rockies",
-  "name": "Northern Rockies",
-  "states": [
-   "Wyoming",
-   "Montana",
-   "Idaho"
-  ],
-  "subs": []
- },
- {
-  "id": "southwest",
-  "name": "Southwest",
-  "states": [
-   "New Mexico"
-  ],
-  "subs": []
- },
- {
-  "id": "alaska",
-  "name": "Alaska",
-  "states": [
-   "Alaska"
-  ],
-  "subs": []
- },
- {
-  "id": "west-canada",
-  "name": "Western Canada",
-  "states": [
-   "British Columbia",
-   "Alberta"
-  ],
-  "subs": []
- },
- {
-  "id": "northeast",
-  "name": "Northeast & Quebec",
-  "states": [
-   "Vermont",
-   "Maine",
-   "New Hampshire",
-   "Connecticut",
-   "Quebec"
-  ],
-  "subs": [
-   {
-    "sub": "icecoast",
-    "blurb": "Skiing and riding in the East, Ohio to the Atlantic"
-   }
-  ]
- },
- {
-  "id": "midwest",
-  "name": "Midwest",
-  "states": [
-   "Minnesota",
-   "Michigan",
-   "Wisconsin"
-  ],
-  "subs": []
- }
-];
+// Regional subreddits, keyed by area (regions.js). An area with none listed
+// has no regional ski subreddit that could be verified.
+const BUZZ_REGION_SUBS = {
+ "colorado": [
+  {
+   "sub": "COsnow",
+   "blurb": "Colorado skiing and riding: conditions, traffic, trips"
+  }
+ ],
+ "utah": [
+  {
+   "sub": "UTsnow",
+   "blurb": "Utah skiing and riding, sorted by resort"
+  }
+ ],
+ "california": [
+  {
+   "sub": "tahoe",
+   "blurb": "Lake Tahoe: local news, visits and ski days"
+  }
+ ],
+ "northeast": [
+  {
+   "sub": "icecoast",
+   "blurb": "Skiing and riding in the East, Ohio to the Atlantic"
+  }
+ ]
+};
+const BUZZ_REGIONS = AREAS.map((a) => ({ ...a, subs: BUZZ_REGION_SUBS[a.id] || [] }));
 
 const BUZZ_GENERAL = [
  {

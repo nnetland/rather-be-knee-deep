@@ -34,6 +34,7 @@ replacements = {
     "/*__NOAA_JS__*/": read("noaa.js"),
     "/*__OPENINGS_JS__*/": read("openings.js").replace(
         "/*__OPENINGS_JSON__*/{}", openings_json()),
+    "/*__REGIONS_JS__*/": read("regions.js"),
     "/*__QUIVER_JS__*/": read("quiver.js"),
     "/*__BUZZ_JS__*/": read("buzz.js"),
     "/*__APP_JS__*/": read("app.js"),

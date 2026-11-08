@@ -89,14 +89,21 @@ async function topText(page) {
   assert('Chase: the fact line names the source and the NWS update time', /NWS 7-day forecast/.test(meta) && /Updated \d{1,2}:\d{2}/.test(meta), meta);
   assert('Chase: the fact line is ONE line at 390px', await page.$eval('#freshness-badge .page-meta', (el) => el.getBoundingClientRect().height < 40));
   assert('Chase: About this data is present and closed', await page.$eval('#chase-about-details', (el) => !el.open));
-  const filterH = await page.$eval('.chase-controls', (el) => el.getBoundingClientRect().height);
-  assert(`Chase: both filters fit on one row at 390px (${Math.round(filterH)}px)`, filterH < 60, filterH);
-  assert('Chase: the beginner filter is a real toggle button',
-    await page.$eval('#chase-beginner-toggle-wrap', (el) => el.tagName === 'BUTTON' && el.getAttribute('aria-pressed') === 'false'));
-  await page.click('#chase-beginner-toggle-wrap');
-  assert('Chase: toggling sets aria-pressed', await page.$eval('#chase-beginner-toggle-wrap', (el) => el.getAttribute('aria-pressed') === 'true'));
-  assert('Chase: the region select is named by its visible "Near" label (2.5.3)',
-    await page.$eval('#chase-region-select', (el) => !el.hasAttribute('aria-label') && el.closest('label') && /Near/.test(el.closest('label').textContent)));
+  const areaRow = await page.$eval('#chase-area-chips', (el) => el.getBoundingClientRect().height);
+  assert(`Chase: region chips are one row at 390px (${Math.round(areaRow)}px)`, areaRow < 70, areaRow);
+  assert('Chase: no Beginner-friendly toggle', await page.locator('#chase-beginner-toggle-wrap').count() === 0);
+  assert('Chase: no "Near" wording anywhere in the header', !/\bNear\b/.test(chaseText));
+  assert('Chase: the origin select is named by its visible "Traveling from" label (2.5.3)',
+    await page.$eval('#chase-origin', (el) => !el.hasAttribute('aria-label') && el.labels.length === 1 && /Traveling from/.test(el.labels[0].textContent)));
+  // The same chip control, the same vocabulary, on every surface.
+  const chaseAreas = await page.$$eval('#chase-area-chips [data-area]', (bs) => bs.map((b) => b.textContent.trim()));
+  assert('Chase: region chips start with "All regions"', chaseAreas[0] === 'All regions', chaseAreas);
+  await page.click('#chase-area-chips [data-area="utah"]');
+  await page.waitForTimeout(300);
+  const utahRegions = await page.locator('#chase-body .chase-row__region').allInnerTexts();
+  assert('Chase: picking Utah shows only Utah resorts', utahRegions.length > 0 && utahRegions.every((t) => t.startsWith('Utah')), utahRegions.slice(0, 5));
+  await page.click('#chase-area-chips [data-area="all"]');
+  await page.waitForTimeout(300);
   const statuses = await page.locator('#chase-body .chase-row__status').allInnerTexts();
   assert('Chase: not-yet-open rows carry their opening date', statuses.length > 0 && statuses.every((t) => /^(Opens [A-Z][a-z]{2} \d{1,2}|Usually .+|Opening TBA)$/.test(t)), statuses.slice(0, 5));
   const spoken = await page.$eval('#chase-body .chase-row--upcoming', (el) => el.getAttribute('aria-label')).catch(() => '');
@@ -128,7 +135,7 @@ async function topText(page) {
   assert(`Picks: first place starts in the top half (${pTop}px < ${SCREEN / 2}px)`, pTop != null && pTop < SCREEN / 2, pTop);
   const pText = await topText(page);
   for (const re of BANNED_TOP) assert(`Picks: no "${re.source}" explainer`, !re.test(pText));
-  const chipRow = await page.$eval('.nicoleslist-filters', (el) => ({ h: el.getBoundingClientRect().height, sw: el.scrollWidth, cw: el.clientWidth }));
+  const chipRow = await page.$eval('#nicoles-area-chips', (el) => ({ h: el.getBoundingClientRect().height, sw: el.scrollWidth, cw: el.clientWidth }));
   assert('Picks: region chips are one row that scrolls sideways', chipRow.h < 70 && chipRow.sw > chipRow.cw, chipRow);
   assert('Picks: no page-level horizontal overflow', await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth));
   assert('Picks: About this list is present and closed', await page.$eval('#app-main details.page-about', (el) => !el.open));
