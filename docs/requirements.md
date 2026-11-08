@@ -1,6 +1,6 @@
 # Rather Be Knee Deep — Requirements
 
-_Living document. Director: Nicole. Last updated 2026-10-26._
+_Living document. Director: Nicole. Last updated 2026-11-07._
 
 This is the single record of what this app should do — shipped, agreed, and still wanted.
 
