@@ -101,7 +101,7 @@ async function checkAboveHeading(page, id, headingSel, where) {
   // and /* */ blocks only, never a trailing comment after code on the same
   // line. That can hide nothing — a line with a real call followed by a
   // comment still keeps the call — while letting both this file and
-  // app-rants.js go on explaining IN PROSE why history.back() is wrong here,
+  // app-rants.js (now removed) go on explaining IN PROSE why history.back() is wrong here,
   // which is the most useful thing either of them says about it.
   const stripComments = (s) => s.replace(/\/\*[\s\S]*?\*\//g, "").replace(/^[ \t]*\/\/.*$/gm, "");
   const offenders = fs.readdirSync(SRC).filter((f) => f.endsWith(".js"))
@@ -110,11 +110,11 @@ async function checkAboveHeading(page, id, headingSel, where) {
     `no source file calls history.back()${offenders.length ? " — " + offenders.join(", ") : ""}`);
 
   // This commit adds no global history handling: replaceState only, and no
-  // popstate/hashchange outside the Rants surface, which owns its own routes.
-  const strayHistory = fs.readdirSync(SRC).filter((f) => f.endsWith(".js") && f !== "app-rants.js")
+  // popstate/hashchange anywhere (the Rants surface that had its own routes is gone).
+  const strayHistory = fs.readdirSync(SRC).filter((f) => f.endsWith(".js"))
     .filter((f) => /addEventListener\(\s*["'](?:popstate|hashchange)["']/.test(fs.readFileSync(path.join(SRC, f), "utf8")));
   assert(strayHistory.length === 0,
-    `no popstate/hashchange handling added outside the Rants surface${strayHistory.length ? " — " + strayHistory.join(", ") : ""}`);
+    `no popstate/hashchange handling anywhere${strayHistory.length ? " — " + strayHistory.join(", ") : ""}`);
 
   const browser = await chromium.launch();
   const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } });

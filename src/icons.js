@@ -27,8 +27,11 @@ const ICONS = {
   // everywhere it's used, per this file's own icon-never-carries-meaning-
   // alone rule.
   skis: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 21V8.6c0-2.2 1.1-3.6 2.7-3.6"/><path d="M14.8 21V8.6c0-2.2 1.1-3.6 2.7-3.6"/></svg>`,
+  // External link: an arrow leaving a box. Always paired with visible link text
+  // and a visually-hidden "opens in a new tab" note; the icon never carries it alone.
+  external: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6"/><path d="M20 4l-9 9"/><path d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg>`,
   search: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20.5 20.5L16.7 16.7"/></svg>`,
-  // A speech bubble with a tail, for Rants & Raves. Nothing in the library
+  // A speech bubble with a tail, for Buzz. Nothing in the library
   // fitted: `crowd` is people (it means crowding, not talking), `share` is the
   // three-node share graph, and `list` is already Nicole's List in the nav.
   //

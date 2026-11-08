@@ -113,15 +113,13 @@ async function topText(page) {
   assert('Quiver: About this data is present and closed', await page.$eval('#app-main details.page-about', (el) => !el.open));
 
   // ---- Buzz -----------------------------------------------------------
-  await page.click('#bottom-nav .nav-item[data-route="rants"]');
+  await page.click('#bottom-nav .nav-item[data-route="buzz"]');
   await page.waitForTimeout(600);
-  const bTop = await firstContentTop(page, '.rants-tabs');
-  assert(`Buzz: tabs start in the top third (${bTop}px)`, bTop != null && bTop < THIRD, bTop);
+  const bTop = await firstContentTop(page, '.buzz-link');
+  assert(`Buzz: first link starts in the top half (${bTop}px)`, bTop != null && bTop < SCREEN / 2, bTop);
   const bText = await topText(page);
   for (const re of BANNED_TOP) assert(`Buzz: no "${re.source}" explainer`, !re.test(bText));
-  assert('Buzz: the provenance short form is still visible under the h1',
-    await page.$eval('.rants-frame__short', (el) => el.getBoundingClientRect().height > 1 && el.children.length === 5));
-  assert('Buzz: Where this comes from is at the bottom and closed', await page.$eval('.rants-frame--about', (el) => !el.open));
+  assert('Buzz: About these links is at the bottom and closed', await page.$eval('#app-main details.page-about', (el) => !el.open));
 
   // ---- Picks ----------------------------------------------------------
   await page.click('#bottom-nav .nav-item[data-route="nicoles"]');

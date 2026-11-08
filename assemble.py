@@ -35,12 +35,12 @@ replacements = {
     "/*__OPENINGS_JS__*/": read("openings.js").replace(
         "/*__OPENINGS_JSON__*/{}", openings_json()),
     "/*__QUIVER_JS__*/": read("quiver.js"),
-    "/*__RANTS_JS__*/": read("rants.js"),
+    "/*__BUZZ_JS__*/": read("buzz.js"),
     "/*__APP_JS__*/": read("app.js"),
     "/*__APP_CHASE_JS__*/": read("app-chase.js"),
     "/*__APP_QUIVER_JS__*/": read("app-quiver.js"),
     "/*__APP_NICOLES_JS__*/": read("app-nicoles.js"),
-    "/*__APP_RANTS_JS__*/": read("app-rants.js"),
+    "/*__APP_BUZZ_JS__*/": read("app-buzz.js"),
 }
 
 out = shell

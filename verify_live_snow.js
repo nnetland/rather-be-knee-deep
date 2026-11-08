@@ -8,7 +8,6 @@
 //      the shoulder list, fed by the live NOAA path, labelled "Live forecast".
 //   3. A NOAA failure still falls back to the honest typical-season badge.
 //   4. Mid-August is still the off-season screen.
-//   5. Rants & Raves never shows posts dated after today.
 //
 //     node verify_live_snow.js
 // ---------------------------------------------------------------------------
@@ -108,18 +107,6 @@ async function run() {
     check(await page.locator("#freshness-badge").count() === 0, "no freshness badge off-season");
     await page.waitForTimeout(500);
     check(hits.n === 0, "no NOAA request off-season", hits.n);
-    await ctx.close();
-  }
-
-  console.log("\n5. Rants & Raves refuses future-dated posts");
-  {
-    const { page, ctx } = await open(browser, "2026-10-25T20:00:00", { noaa: false });
-    await page.goto(FILE_URL); await page.click("#mode-rants");
-    await page.waitForTimeout(600);
-    const n = await page.evaluate(() => rantsLiveTopics().length);
-    check(n === 0, "no topics live on Oct 25 (sample corpus is dated Dec–Jan)", n);
-    check(await page.evaluate(() => rantsWithinCeiling("2026-12-20") === false), "a post dated after today is outside the ceiling");
-    check(await page.evaluate(() => rantsWithinCeiling("2026-10-20") === true), "a post 5 days old is inside it");
     await ctx.close();
   }
 
