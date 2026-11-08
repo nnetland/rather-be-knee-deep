@@ -29,6 +29,7 @@ replacements = {
     "/*__STYLES__*/": read("styles.css"),
     "/*__DATA_JS__*/": read("data.js"),
     "/*__ICONS_JS__*/": read("icons.js"),
+    "/*__BADGE_ART_JS__*/": read("badge-art.js"),
     "/*__BADGES_JS__*/": read("badges.js"),
     "/*__ENGINE_JS__*/": read("engine.js"),
     "/*__NOAA_JS__*/": read("noaa.js"),

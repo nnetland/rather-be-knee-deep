@@ -118,11 +118,15 @@
   --space-5: 1.25rem; --space-6: 1.5rem; --space-8: 2rem; --space-10: 2.5rem;
   --space-12: 3rem; --space-16: 4rem; --space-20: 5rem;
 
-  color-scheme: light;
+  color-scheme: dark;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
+/* Dark is the only theme. It used to be conditional on the OS setting; the
+   Director's call is that the app is always dark — it reads sharper and the
+   badge artwork sits better on it. Every token here was already
+   contrast-verified for dark paper (see the indigo-350 and night-500 notes
+   below) and verify_contrast.js exercises this palette. */
+:root {
     --bg-page: var(--night-900);
     --bg-tint: var(--night-800);
     --bg-surface: var(--night-800);
@@ -162,7 +166,6 @@
     --shadow-lg: 0 12px 28px rgba(0,0,0,0.5);
     --top-highlight: 1px solid rgba(245,242,255,0.06);
     color-scheme: dark;
-  }
 }
 
 /* =========================================================================
@@ -430,7 +433,8 @@ ul { margin: 0; padding: 0; list-style: none; }
 /* Home (2026-11-07): sticker, question, one tile per section. */
 .splash { display: flex; flex-direction: column; align-items: stretch; padding-top: var(--space-5); }
 .splash-sticker { align-self: center; width: min(208px, 55vw); transform: rotate(-4deg); }
-.splash-sticker svg { display: block; width: 100%; height: auto; }
+.splash-sticker svg,
+.splash-sticker img { display: block; width: 100%; height: auto; }
 .splash-title { margin-top: var(--space-4); text-align: center; font-weight: 800; font-size: clamp(2rem, 7vw, 2.5rem); line-height: 1.05; text-wrap: balance; }
 .splash-modes { margin-top: var(--space-5); display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-3); }
 .mode-card {
@@ -1286,7 +1290,6 @@ ul { margin: 0; padding: 0; list-style: none; }
 /* Darker than --accent-coral-text in light mode: rows tint on hover/focus, and
    coral-600 on --bg-tint is 3.98:1. */
 .chase-row__status--soon { color: #B42318; }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .chase-row__status--soon { color: var(--accent-coral-text); } }
 :root[data-theme="dark"] .chase-row__status--soon { color: var(--accent-coral-text); }
 .chase-row__status--estimate { font-weight: 500; color: var(--text-secondary); }
 .page-meta .chase-row__status, .quiver-resort__meta .chase-row__status, .quiver-upcoming .chase-row__status { display: inline; }

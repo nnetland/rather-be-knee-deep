@@ -39,12 +39,17 @@ async function run() {
       // motif built mostly from primitives (e.g. the Beaver's ellipses/
       // circles/rects) isn't mistaken for a near-empty render.
       const shapeCount = (svg.match(/<(path|ellipse|circle|rect|polygon)[ >]/g) || []).length;
+      // A resort with generated artwork renders one <image> inside the clip
+      // instead of a stack of motif shapes, so the shape-count floor below
+      // does not apply to it — its "not blank" evidence is the data URI.
+      const hasArt = /<image [^>]*href="data:image\/(webp|png|jpeg);base64,[A-Za-z0-9+/=]{500,}"/.test(svg);
       return {
         id: r.id, name: r.name, category: a ? a.category : null,
         motif: a ? a.layers[0].motif : null,
         paletteKey: a ? a.paletteKey : null,
-        svgLen: svg.length, shapeCount,
+        svgLen: svg.length, shapeCount, hasArt,
         hasSvgTag: svg.includes('<svg'),
+        hasText: svg.includes('<text') || svg.includes('textPath'),
         hasTitle: svg.includes('<title'),
         hasDesc: svg.includes('<desc'),
         motifExists: a ? Object.prototype.hasOwnProperty.call(MOTIFS, a.layers[0].motif) : false,
@@ -57,8 +62,13 @@ async function run() {
   structural.forEach((r) => {
     assert(`${r.id}: assigned a category`, !!r.category);
     assert(`${r.id}: motif "${r.motif}" exists in MOTIFS library`, r.motifExists);
-    assert(`${r.id}: renders a non-trivial SVG (not blank)`, r.svgLen > 800 && r.shapeCount >= 5);
+    assert(`${r.id}: renders a non-trivial SVG (not blank)`,
+      r.svgLen > 800 && (r.hasArt ? r.shapeCount >= 3 : r.shapeCount >= 5));
     assert(`${r.id}: has <svg>/<title>/<desc>`, r.hasSvgTag && r.hasTitle && r.hasDesc);
+    // The resort name is carried by the page (result <h1>, Chase row name),
+    // never baked into the badge — a curved label would duplicate it and
+    // could not hold an accessible contrast on a light background.
+    assert(`${r.id}: badge carries no baked-in text`, !r.hasText);
   });
 
   // --- 2/4: region-repeat check, straight from BADGE_ASSIGNED -----------

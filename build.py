@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 """Build the deployable site into public/.
 
+    theme-color is a single dark value: the app no longer follows the OS
+    colour scheme, so a light-scheme theme-color would tint the browser
+    chrome purple around a page that is always dark.
+
 Runs assemble.py to stitch src/ into one self-contained HTML file, then
 injects the hosting-only <head> tags (icons, manifest, share image) and
 writes the result to public/index.html.
@@ -17,8 +21,7 @@ HEAD_EXTRAS = """<link rel="icon" href="/icon.svg" type="image/svg+xml">
 <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="manifest" href="/manifest.webmanifest">
-<meta name="theme-color" content="#5B3DF0" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#0E1020" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#0E1020">
 <meta name="apple-mobile-web-app-title" content="Knee Deep">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">

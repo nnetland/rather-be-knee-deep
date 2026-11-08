@@ -55,35 +55,6 @@ const LEVEL_GLYPH = {
 // The app's own sticker, in the resort-badge style (badge-system.md): the
 // mountain from the app icon as a wry character, goggles pushed up, standing
 // knee deep in powder. Home page hero. Decorative: the h1 carries the meaning.
-const BRAND_STICKER_SVG = `<svg viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
-  <title id="bdg-rbkd-title">Rather Be Knee Deep sticker</title>
-  <desc id="bdg-rbkd-desc">A wry cartoon mountain with goggles pushed up on its snowcap, standing knee deep in a powder drift, on an indigo circle.</desc>
-  <defs>
-    <path id="arc-bdg-rbkd" d="M 34,168 A 96,96 0 0 0 206,168"/>
-    <clipPath id="clip-bdg-rbkd"><circle cx="120" cy="120" r="109"/></clipPath>
-  </defs>
-  <circle cx="120" cy="120" r="119" fill="#FFFFFF" stroke="#00000014" stroke-width="1"/>
-  <circle cx="120" cy="120" r="109" fill="#5B3DF0"/>
-  <g clip-path="url(#clip-bdg-rbkd)">
-    <g transform="translate(27.5,8) scale(1.85)"><g stroke="#17102B" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
-      <path d="M50,12 Q53,12 55,16 L84,74 Q86,80 80,80 L20,80 Q14,80 16,74 L45,16 Q47,12 50,12 Z" fill="#C6C7CA"/>
-      <path d="M45,16 Q47,12 50,12 Q53,12 55,16 L65,36 Q60,32 56,37 Q52,31 48,37 Q43,31 36,35 Z" fill="#FFFFFF"/>
-      <rect x="31" y="35" width="38" height="8" rx="4" fill="#FF5A3C"/>
-      <rect x="38" y="31" width="24" height="13" rx="6.5" fill="#FFC22B"/>
-      <path d="M50,31 L50,44" stroke-width="3"/>
-      <path d="M32,55 Q38,49 44,55 Q38,59 32,55 Z" fill="#FFFFFF" stroke-width="3"/>
-      <path d="M56,55 Q62,49 68,55 Q62,59 56,55 Z" fill="#FFFFFF" stroke-width="3"/>
-      <ellipse cx="41.2" cy="55.3" rx="2.4" ry="2.6" fill="#17102B" stroke="none"/>
-      <ellipse cx="65.2" cy="55.3" rx="2.4" ry="2.6" fill="#17102B" stroke="none"/>
-      <path d="M31,53.5 Q38,50 45,53.5" stroke-width="4.2" fill="none"/>
-      <path d="M55,53.5 Q62,50 69,53.5" stroke-width="4.2" fill="none"/>
-      <path d="M44,67 Q51,70 57,65" stroke-width="3" fill="none"/>
-      <path d="M4,83 L6,72 Q14,64 22,70 Q32,62 42,70 Q52,63 62,70 Q72,62 82,70 Q90,64 96,72 L98,83 Q50,88 4,83 Z" fill="#FFFFFF"/>
-      <path d="M14,73 Q18,71 22,73" stroke-width="2.5" fill="none" stroke="#9A8ACF"/>
-      <path d="M70,73 Q74,71 78,73" stroke-width="2.5" fill="none" stroke="#9A8ACF"/>
-    </g></g>
-    <text font-family="Manrope, sans-serif" font-weight="800" font-size="12.5" letter-spacing="0.1" fill="#FFFFFF" style="paint-order:stroke; stroke:rgba(0,0,0,0.22); stroke-width:2.5px;">
-      <textPath href="#arc-bdg-rbkd" startOffset="50%" text-anchor="middle" textLength="170" lengthAdjust="spacingAndGlyphs">RATHER BE KNEE DEEP</textPath>
-    </text>
-  </g>
-</svg>`;
+// BRAND_STICKER_SVG lived here: the app-icon mountain drawn as a wry
+// character. Replaced by BRAND_STICKER_ART in badge-art.js so the home
+// sticker and the resort badges come from one illustration system.

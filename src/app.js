@@ -332,7 +332,7 @@ function renderSplash(main) {
   main.innerHTML = `
     <div class="page-column">
       <div class="splash">
-        <div class="splash-sticker" aria-hidden="true">${BRAND_STICKER_SVG}</div>
+        <div class="splash-sticker" aria-hidden="true"><img src="${BRAND_STICKER_ART}" alt="" width="208" height="208" decoding="async"></div>
         <h1 class="display-h1 splash-title">Where should we ski?</h1>
         <div class="splash-modes">
           ${tile("mode-chase", ICONS.snow, "Chase", "Where it's dumping")}

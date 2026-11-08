@@ -876,104 +876,46 @@ snowball: `<g ${outline()} fill="none">
   <circle cx="84" cy="86" r="3.5" fill="${C.sand800}" stroke="none"/>
 </g>`,
 
-};let uidCounter = 0;
+};
 
-// Fixed length (in path units) of the frame spec's curved-type arc,
-// `M 34,168 A 96,96 0 0 0 206,168` (§1) — computed once via
-// SVGPathElement.getTotalLength() and hardcoded, since the arc geometry
-// never changes. Re-derive if that path string is ever edited.
-const BADGE_ARC_LENGTH = 213.18;
 
-// The character-count font-size tiering below (badge-system.md §1) was
-// tuned against the 44-resort preview's own longest labels and is kept as
-// the first-pass sizing choice — it's what gives a short name like "Alta"
-// a bigger, bolder arc than a long one, which plain length-clamping alone
-// wouldn't do. But the real 71-resort dataset has several longer combined
-// name+region labels the preview never exercised (e.g. "REVELSTOKE
-// MOUNTAIN RESORT · BC, CANADA", "PANORAMA MOUNTAIN RESORT · BC, CANADA")
-// that measure wider than the arc even at the smallest tier — confirmed by
-// rendering and measuring every one of the 71 real labels, not just eyeballing
-// string length (see build-notes.md for the full before/after list). Rather
-// than add more brittle character-count thresholds, this measures the
-// label's ACTUAL rendered width via a cached offscreen SVG <text> probe and,
-// only if it would truly overflow, clamps it to a safe width with SVG's own
-// `textLength`/`lengthAdjust="spacingAndGlyphs"` — the correct native tool
-// for exactly this problem. Short labels are completely unaffected (no
-// textLength attribute is added unless the measured width demands it), so
-// this never stretches or otherwise alters any label that already fit.
-let _badgeMeasureProbe = null;
-function measureBadgeTextLength(label, fontSize, letterSpace) {
-  if (typeof document === 'undefined') return null; // no DOM (e.g. non-browser tooling) — caller falls back to the tier alone
-  if (!_badgeMeasureProbe) {
-    const svgNS = 'http://www.w3.org/2000/svg';
-    const svg = document.createElementNS(svgNS, 'svg');
-    svg.setAttribute('aria-hidden', 'true');
-    svg.style.cssText = 'position:absolute;width:0;height:0;overflow:hidden;visibility:hidden;';
-    const text = document.createElementNS(svgNS, 'text');
-    text.setAttribute('font-family', 'Manrope, sans-serif');
-    text.setAttribute('font-weight', '800');
-    svg.appendChild(text);
-    (document.body || document.documentElement).appendChild(svg);
-    _badgeMeasureProbe = { svg, text };
-  }
-  const { text } = _badgeMeasureProbe;
-  text.setAttribute('font-size', fontSize);
-  text.setAttribute('letter-spacing', letterSpace);
-  text.textContent = label;
-  try { return text.getComputedTextLength(); } catch (e) { return null; }
-}
-
-function buildBadgeSVG({ paletteKey, layers, name, region, uid }){
+// The resort name used to run around the lower edge of the badge on a curved
+// textPath, with character-count font tiering plus an offscreen measuring
+// probe and a `textLength` clamp for the long Canadian labels. All of that is
+// gone, deliberately: every surface that shows a badge already shows the
+// resort's name immediately beside it (the result screen's <h1>, the Chase
+// row's .chase-row__name), so the arc was duplicating a label the user could
+// already read — and on a light background it could not carry white type at
+// an accessible contrast anyway. The badge is now purely the illustration.
+function buildBadgeSVG({ rid, paletteKey, layers, name, region, uid }){
   const pal = PALETTES[paletteKey] || PALETTES.indigo;
-  const arcId = `arc-${uid}`;
-  const label = region ? `${name.toUpperCase()} · ${region.toUpperCase()}` : name.toUpperCase();
-  // dynamic size so long labels never overlap/collide on the ~490-unit arc
-  let fontSize = 15.5, letterSpace = 0.5;
-  if (label.length > 22) { fontSize = 12.5; letterSpace = 0.1; }
-  if (label.length > 30) { fontSize = 10.5; letterSpace = -0.1; }
-  if (label.length > 38) { fontSize = 9; letterSpace = -0.2; }
+  const art = (typeof BADGE_ART !== 'undefined' && rid) ? BADGE_ART[rid] : null;
 
-  // Safety net for the handful of real labels the tiering above still
-  // doesn't shrink enough (see comment above measureBadgeTextLength).
-  // Margin is deliberately generous (not just "a few px of padding"): this
-  // measurement can run before the Manrope webfont has finished loading
-  // (this app's whole type system is built to be usable on the fallback
-  // stack before/without Google Fonts — see shell.html's own comment to
-  // that effect), and a fallback system sans-serif's glyph metrics at
-  // font-weight 800 won't exactly match Manrope's. textLength itself keeps
-  // enforcing its target continuously even if the font swaps in later
-  // (it's a live rendering constraint, not a one-time layout snapshot), so
-  // any label that DOES get clamped stays correct across a font swap — the
-  // real residual risk is a label that measures just-barely-under the
-  // threshold on the fallback font but would have measured over it on
-  // Manrope, and therefore never gets clamped at all. A ~12% margin
-  // absorbs realistic cross-font metric variance for that boundary case.
-  const measured = measureBadgeTextLength(label, fontSize, letterSpace);
-  const safeWidth = BADGE_ARC_LENGTH - 25;
-  const textLengthAttr = (measured != null && measured > safeWidth)
-    ? ` textLength="${safeWidth.toFixed(1)}" lengthAdjust="spacingAndGlyphs"`
-    : '';
+  // Raster artwork, when this resort has it. The art is pre-cropped to the
+  // badge's coloured field, so it sits inside the same r=109 clip the vector
+  // motifs use and the white die-cut rim is still drawn here, once.
+  const body = art
+    ? `<image href="${art}" x="11" y="11" width="218" height="218" preserveAspectRatio="xMidYMid slice"/>`
+    : layers.map(l => {
+        const [cx, cy, scale, rot] = l.box;
+        const w = 100 * scale;
+        return `<g transform="translate(${cx - w/2},${cy - w/2}) scale(${scale}) ${rot ? `rotate(${rot} 50 50)`:''}">${MOTIFS[l.motif]}</g>`;
+      }).join('\n');
 
-  const layerMarkup = layers.map(l => {
-    const [cx, cy, scale, rot] = l.box; // center x/y in badge coords, scale of 100x100 symbol, rotation deg
-    const w = 100 * scale;
-    return `<g transform="translate(${cx - w/2},${cy - w/2}) scale(${scale}) ${rot ? `rotate(${rot} 50 50)`:''}">${MOTIFS[l.motif]}</g>`;
-  }).join('\n');
+  const desc = art
+    ? `${BADGE_ART_DESC[rid] || `${name} badge illustration`} on a ${pal.meaning} background.`
+    : `${layers.map(l=>MOTIF_DESC[l.motif]||l.motif).join('; ')} on a ${pal.meaning} background.`;
 
   return `<svg viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="${uid}-title ${uid}-desc">
   <title id="${uid}-title">${name} badge</title>
-  <desc id="${uid}-desc">${layers.map(l=>MOTIF_DESC[l.motif]||l.motif).join('; ')} on a ${pal.meaning} background.</desc>
+  <desc id="${uid}-desc">${desc}</desc>
   <defs>
-    <path id="${arcId}" d="M 34,168 A 96,96 0 0 0 206,168"/>
     <clipPath id="clip-${uid}"><circle cx="120" cy="120" r="109"/></clipPath>
   </defs>
   <circle cx="120" cy="120" r="119" fill="${WHITE}" stroke="${'#00000014'}" stroke-width="1"/>
   <circle cx="120" cy="120" r="109" fill="${pal.bg}"/>
   <g clip-path="url(#clip-${uid})">
-    ${layerMarkup}
-    <text font-family="Manrope, sans-serif" font-weight="800" font-size="${fontSize}" letter-spacing="${letterSpace}" fill="${WHITE}" style="paint-order:stroke; stroke:rgba(0,0,0,0.22); stroke-width:2.5px;">
-      <textPath href="#${arcId}" startOffset="50%" text-anchor="middle"${textLengthAttr}>${label}</textPath>
-    </text>
+    ${body}
   </g>
 </svg>`;
 }
@@ -1329,7 +1271,7 @@ function badgeSvg(resort, context, opts) {
   const a = BADGE_ASSIGNMENTS[resort.id];
   if (!a) return '';
   const uid = `bdg-${resort.id}-${context || 'default'}`;
-  const svg = buildBadgeSVG({ paletteKey: a.paletteKey, layers: a.layers, name: resort.name, region: badgeRegionLabel(resort), uid });
+  const svg = buildBadgeSVG({ rid: resort.id, paletteKey: a.paletteKey, layers: a.layers, name: resort.name, region: badgeRegionLabel(resort), uid });
   const decorative = !opts || opts.decorative !== false;
   if (!decorative) return svg;
   return svg.replace(`role="img" aria-labelledby="${uid}-title ${uid}-desc"`, 'aria-hidden="true" focusable="false"');
