@@ -1055,7 +1055,6 @@ function renderResult(main) {
         <ul class="reason-list">
           ${displayBullets.map((b) => `<li class="reason-bullet reveal-hidden"><span class="reason-bullet__icon">${ICONS.checkCircle}</span><span class="reason-bullet__text body-md">${escapeHtml(b)}</span></li>`).join("")}
         </ul>
-        <h2 class="display-h3 reveal-hidden" style="margin-bottom:var(--space-3)">The numbers</h2>
         <div class="stat-strip stat-strip--quad reveal-hidden" id="stat-strip">${buildStatStrip(resort)}</div>
         ${buildTerrainMixStrip(resort)}
         ${buildDetailNotes(resort)}
