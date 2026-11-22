@@ -1208,18 +1208,7 @@ const HAND_TUNED = {
   'revelstoke-bc':         { paletteKey:'cold',   why:'steeps, big-vert, deep-powder, genuinely backcountry — the same meaning as Telluride’s Goat, different (non-adjacent) region', layers:[{motif:'goat', box:P}] },
   'banff-sunshine-ab':     { paletteKey:'cold',   why:'deep-powder, quiet, big-vert in the Banff backcountry — a sly, sitting coyote', layers:[{motif:'coyote', box:P}] },
   'alyeska-ak':            { paletteKey:'cold',   why:'Alaska’s only full-scale destination resort — literal extreme cold, remote, backcountry-adjacent', layers:[{motif:'polarbear', box:P}] },
-};function dedupeAdjacentPalettes(list){
-  for (let i=1;i<list.length;i++){
-    if (list[i].paletteKey === list[i-1].paletteKey){
-      const idx = PALETTE_ORDER.indexOf(list[i].paletteKey);
-      for (let k=1;k<PALETTE_ORDER.length;k++){
-        const cand = PALETTE_ORDER[(idx+k)%PALETTE_ORDER.length];
-        const nextClash = list[i+1] && list[i+1].paletteKey===cand;
-        if (cand !== list[i-1].paletteKey && !nextClash){ list[i].paletteKey = cand; list[i].bumped = true; break; }
-      }
-    }
-  }
-}/* ============================================================
+};/* ============================================================
    BUILD full assignment list, in fixed dataset (RESORTS) order — this is
    the canonical "presentation order" badge-system.md §3 refers to for the
    adjacency palette dedupe, and it is deliberately NOT any dynamic in-app
@@ -1240,7 +1229,28 @@ const BADGE_ASSIGNED = RESORTS.map((r) => {
 });
 
 badgeDedupeClusterMotifs(BADGE_ASSIGNED);
-dedupeAdjacentPalettes(BADGE_ASSIGNED);
+/* The adjacency pass that used to run here is gone — Director's call,
+   2026-11-22. It reassigned 12 of the 71 badges' colours purely so that two
+   same-coloured badges never sat next to each other in dataset order, which
+   meant page rhythm silently overrode the meaning the colour carries:
+   Arapahoe Basin is hand-tuned to amber for "scrappy, budget, legendary
+   tailgate culture in The Beach" and was being bumped to the backcountry
+   blue. Badge colour is part of a badge's identity and has to be stable and
+   recognisable; occasional same-colour neighbours in a list are the accepted
+   cost. See PALETTES above for what each colour means.
+
+   Two resorts keep the colour the old pass gave them, because their artwork
+   has already shipped with that colour painted into the image — reverting
+   them would leave the badge's description naming a background that is not
+   on screen. Remove a pin only when that resort's art is regenerated. */
+const BADGE_PALETTE_PINNED = {
+  'timberline-or':   'cold',  // shipped art has the cold field baked in
+  'stevens-pass-wa': 'mint',  // shipped art has the mint field baked in
+};
+BADGE_ASSIGNED.forEach((a) => {
+  const pinned = BADGE_PALETTE_PINNED[a.resort.id];
+  if (pinned) a.paletteKey = pinned;
+});
 
 const BADGE_ASSIGNMENTS = Object.fromEntries(BADGE_ASSIGNED.map((a) => [a.resort.id, a]));
 

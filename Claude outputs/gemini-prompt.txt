@@ -1,0 +1,19 @@
+Look at the three attached sticker illustrations. They are one design system. Study their shared drawing language — not their subjects — and produce a new illustration in exactly that style.
+
+Make a square image of a circular die-cut vinyl sticker, centred, on a plain white background, with a thin pure-white rim around the sticker's edge.
+
+Inside the rim, one solid flat field of colour: [HEX]. The field is completely empty — no scene, no landscape, no horizon, no ground, no snow, no mountains, no background objects of any kind.
+
+Centred on that field, floating with clear empty space around it, draw a single character caught mid-action: [SUBJECT]. Show the moment, not a portrait — a limb, prop or spray of snow in motion. The character should fill roughly 65% of the circle's width and 75% of its height, sitting slightly above centre, never touching the rim.
+
+Match the reference images on all of the following:
+
+Flat vector cartoon. Thick black outlines of even weight on every shape. Completely flat colour fills — no gradients, no shading, no texture, no gloss, no highlights. Interior detail lines in the same black at about half the outline weight. Rounded bulbous rubber-hose forms; noodle limbs with no visible elbows or knees; simple mitten hands with three or four stubby rounded fingers. Animals are drawn with human hands, human posture and human props.
+
+The face is the most important part. Large white almond-shaped eyes with a heavy black upper-lid arc pressing down across the top, half-lidded, and a solid black oval pupil pushed to one side so plenty of white shows around it — a sideways, knowing, deadpan glance. A small black lash flick at the outer corner. The expression is wry and self-aware, with attitude — never innocent, never cute, never a wide open smile. The mouth is a single simple curved line or small solid lips. No teeth. The nose is one short hooked line with no nostrils. If the character wears sunglasses or goggles, the lenses are translucent and the eyes are clearly visible behind them, as in the Statue of Liberty reference.
+
+Colour is assigned for harmony, not realism: skin and fur are flat light grey, and limbs may be any colour from the palette. Use four to six colours only.
+
+A soft dark drop shadow sits directly beneath the character, offset slightly down, low opacity, slightly blurred — a layered cut-paper sticker feel.
+
+Do not put any text, letters, words or numbers anywhere in the image. Do not put any brand logos, wordmarks, monograms or manufacturer badges on clothing, gear or props — no real-world brands of any kind. Do not draw a border or frame other than the white die-cut rim. Do not make it photorealistic or 3D. No scenery, no multiple characters, no cute big-eyed kawaii style, no realistic skin tones, no outlines of varying thickness.

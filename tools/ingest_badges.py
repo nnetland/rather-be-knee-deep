@@ -21,7 +21,7 @@ from PIL import Image
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 INBOX = os.path.join(ROOT, "badges-in")
 ART = os.path.join(ROOT, "src", "badge-art.js")
-SUBJECTS = os.path.join(ROOT, "tools", "badge-subjects-43.json")
+SUBJECTS = os.path.join(ROOT, "tools", "badge-subjects.json")  # all 71 since the 2026-11-22 re-run
 
 def field_bbox(img, tol=40):
     """Bounding box of pixels that are clearly not white."""
