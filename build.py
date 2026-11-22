@@ -49,3 +49,52 @@ print(f"Wrote {out} ({len(html.encode()):,} bytes)")
 for required in ("icon.svg", "manifest.webmanifest", "og-image.png", "apple-touch-icon.png"):
     if not (ROOT / "public" / required).exists():
         print(f"  WARNING: public/{required} is missing")
+
+# ---------------------------------------------------------------------------
+# Per-resort share pages (2026-11-21, Director's call): when a pick is shared
+# by text or DM, the link preview should show that resort's badge. Link
+# crawlers don't run JavaScript or see the #result= hash, so every resort gets
+# a tiny static page at /r/<id> carrying its own og:image (public/og/<id>.jpg,
+# rendered from the badge by tools/render_og.js). A person who taps the link
+# is sent straight on to the app with the hash intact.
+# ---------------------------------------------------------------------------
+import html as _html
+import json as _json
+
+SITE = "https://rather-be-knee-deep.web.app"
+_data = (ROOT / "src" / "data.js").read_text()
+_start = _data.index("[", _data.index("RESORTS"))
+_resorts, _ = _json.JSONDecoder().raw_decode(_data[_start:])
+_outdir = ROOT / "public" / "r"
+_outdir.mkdir(exist_ok=True)
+_made = 0
+for _r in _resorts:
+    _rid = _r["id"]
+    if not (ROOT / "public" / "og" / f"{_rid}.jpg").exists():
+        continue
+    _place = _r["state_province"] + (", Canada" if _r.get("country") == "Canada" else "")
+    _title = _html.escape(f"{_r['name']} — a ski trip pick")
+    _desc = _html.escape(f"{_r['name']}, {_place}. See why it's the pick.")
+    _img = f"{SITE}/og/{_rid}.jpg"
+    (_outdir / f"{_rid}.html").write_text(f"""<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<title>{_title}</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Rather Be Knee Deep">
+<meta property="og:title" content="{_title}">
+<meta property="og:description" content="{_desc}">
+<meta property="og:url" content="{SITE}/r/{_rid}">
+<meta property="og:image" content="{_img}">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="{_img}">
+<meta name="theme-color" content="#0E1020">
+<script>location.replace("/" + location.hash);</script>
+</head><body style="background:#14101F;color:#F5F2FF;font-family:system-ui,sans-serif">
+<p><a href="/" style="color:#8C78F5">Open {_title}</a></p>
+</body></html>
+""")
+    _made += 1
+print(f"Wrote {_made} share pages to public/r/")

@@ -1241,7 +1241,9 @@ function setOgMeta({ title, description, image }) {
 
 async function shareResult(resort, shared) {
   const token = b64urlEncode(JSON.stringify(shared));
-  const url = `${location.origin}${location.pathname}#result=${token}`;
+  // /r/<id> is a static page whose link preview shows this resort's badge;
+  // it hands the hash straight on to the app (see build.py).
+  const url = `${location.origin}/r/${resort.id}#result=${token}`;
   const shareData = {
     title: `${resort.name} — your ski trip match`,
     text: `${shared.reasonBullets[0] || "A real fit for your crew"} — see the full pick:`,
