@@ -14,7 +14,9 @@ Entries are tagged: **SHIPPED** (built and live), **AGREED** (decided, not built
 
 Changes Nicole wants but isn't ready to make. Nothing here is a decision until she promotes it; when she does, it moves to the right section as AGREED and comes out of this list. Add with "park this: …"; review with "what's in the parking lot?". Open items here are listed in the Saturday Weekly Briefing as a reminder until they're promoted or dropped.
 
-Nothing is parked right now. On 2026-11-21 every item was worked through on the canvas: P1, P2 and P5–P10 were built (see *Round of 2026-11-21* below), P4 was promoted and waits on Nicole's Gemini art, and P3 was dropped at the Director's call (see C1).
+**P11 · "Submit your take": friends send hot takes for Nicole to review. PARKED 2026-11-21, Director's call ("log the first option in the backlog and I can pick up tomorrow").** On the resort page, an outlined "Submit your take" button between "Share this pick" and "See all picks" opens a short form: the resort pre-filled, "Your take" capped at 140 characters with a counter (the longest written take is about 120), an optional name for credit, and "Send my take". Mocked on the canvas ("Mock · Submit your take button / form"). Chosen backend, option 1: **Firestore in the `rather-be-knee-deep` Firebase project**, so the form stays on the site. Nicole's setup: turn on Firestore in the Firebase console and give the deploy service account read access. Claude's build: security rules that allow create only (no client reads), with length limits on every field; the client write; and a GitHub Actions job that exports new submissions so Claude can list them for Nicole in a session. Nothing submitted appears on the site until Nicole approves it and adds it as a take (C1). Option not taken: a Google Form plus Sheet (less setup, but the form leaves the site).
+
+Earlier items: on 2026-11-21 every item was worked through on the canvas: P1, P2 and P5–P10 were built (see *Round of 2026-11-21* below), P4 was promoted and waits on Nicole's Gemini art, and P3 was dropped at the Director's call (see C1).
 
 ---
 
@@ -265,3 +267,15 @@ All committed on Nicole's Mac and passing the full suite; live once the branch i
 **P1 · Favicon and app icons from the brand sticker. BUILT, Director's call.** Browser tab: a round crop of the sticker's face and goggles, which still reads at 32px. Home-screen and install icons: the full sticker on the dark ground, inside the maskable safe zone. The manifest's colours now match the always-dark theme.
 
 **S11 · Shared picks preview with the resort's badge. BUILT, Director's call.** *"When these are shared, ensure the resort badge is the image that is seen in the text summary."* "Share this resort" links to `/r/<id>#result=…`. Link crawlers don't run JavaScript or see the hash, so `build.py` writes a small static page per resort carrying its own `og:image` — the badge on the dark ground at 1200×630 (`public/og/<id>.jpg`, rendered by `tools/render_og.js`). A person who taps the link goes straight on to the app with the hash intact. Verified end to end against an emulation of Firebase's cleanUrls and rewrite. Old `/#result=` links still work, with the generic preview. Re-render after badge art changes (P4).
+
+---
+
+## Round of 2026-11-21, evening (canvas comments; PRs #11, #12, #14 shipped)
+
+**Copy.** Picks intro: "Hot takes from the resorts in my log book." (R5a's first-person line). Buzz intro: "Catch up on the resort Reddit chatter." Resort page: "Share this pick" and "See all picks →". Terrain tiles read "Beginner", "Intermediate", "Advanced & expert" (no "terrain"). "The numbers" heading removed from the resort page; the same removal on the Quiver result is in PR #13, not yet shipped.
+
+**Quiver search below the region chips. SHIPPED, Director's call.** Region chips first, then the search box.
+
+**H8 · Home button. SHIPPED, Director's call ("works for now").** Shared links land deep in the app, so every section page (Chase, Quiver, Buzz, Plan, Picks) and the resort page carry the home sticker as a 44px round button, top-right, beside the h1 or the back link. It goes to the home screen; screen readers hear "Rather Be Knee Deep home". No wordmark, in keeping with the brand line's removal from the resort card.
+
+**Canvas.** Quiver now has a board. The canvas also holds the home-button option boards and the P11 mockups.
