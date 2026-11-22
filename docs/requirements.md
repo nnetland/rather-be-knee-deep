@@ -270,9 +270,9 @@ All committed on Nicole's Mac and passing the full suite; live once the branch i
 
 ---
 
-## Round of 2026-11-21, evening (canvas comments; PRs #11, #12, #14 shipped)
+## Round of 2026-11-21, evening (canvas comments; PRs #11–#14 shipped)
 
-**Copy.** Picks intro: "Hot takes from the resorts in my log book." (R5a's first-person line). Buzz intro: "Catch up on the resort Reddit chatter." Resort page: "Share this pick" and "See all picks →". Terrain tiles read "Beginner", "Intermediate", "Advanced & expert" (no "terrain"). "The numbers" heading removed from the resort page; the same removal on the Quiver result is in PR #13, not yet shipped.
+**Copy.** Picks intro: "Hot takes from the resorts in my log book." (R5a's first-person line). Buzz intro: "Catch up on the resort Reddit chatter." Resort page: "Share this pick" and "See all picks →". Terrain tiles read "Beginner", "Intermediate", "Advanced & expert" (no "terrain"). "The numbers" heading removed from the resort page and the Quiver result (PR #13).
 
 **Quiver search below the region chips. SHIPPED, Director's call.** Region chips first, then the search box.
 
