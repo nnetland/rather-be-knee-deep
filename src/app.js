@@ -43,7 +43,7 @@ const COST_LABEL = { "$": "budget-conscious", "$$": "mid-range", "$$$": "splurge
 const CROWD_COPY = { low: "Rarely crowded", moderate: "Can get busy", high: "Usually crowded", brutal: "Expect crowds, especially on powder days" };
 const PASS_COPY = { Epic: "Epic pass", Ikon: "Ikon pass", "Mountain Collective": "Mountain Collective", Indy: "Indy pass", Independent: "Independent (no multi-resort pass)" };
 const SCHOOL_COPY = { strong: "Highly rated", decent: "Solid", weak: "Limited — check details before booking" };
-const ACTIVITIES_COPY = { strong: "Plenty to do beyond skiing", decent: "A few solid options beyond skiing", thin: "Not much beyond skiing — plan for that" };
+const ACTIVITIES_COPY = { strong: "Plenty to do beyond skiing", decent: "A few solid options beyond skiing", thin: "Not much beyond skiing" };
 
 // Fix 3 (synthetic-user-testing.md Major finding): `family_ski_school_basis`,
 // `beginner_note`, and `character_note` are dataset prose fields written for
@@ -127,8 +127,83 @@ function leafBackHtml(id, label, isBack) {
 // ---------------------------------------------------------------------------
 // Routing
 // ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+// History (heuristic review 2026-11-21, HR-1). The app used to call only
+// replaceState, so the browser's Back button, and the phone's back swipe,
+// always left the site. Every route change, and each forward step in Quiver,
+// now pushes an entry; popstate restores it. Hash writes (#result=, #quiz=,
+// #quiver=) still use replaceState, and keep the entry's state object.
+//
+// `depth` counts entries pushed in this visit. A leaf page's own Back control
+// uses history.back() only when depth > 0, i.e. when there is an in-app page
+// behind it; a cold-landed shared link keeps its existing fallback.
+// ---------------------------------------------------------------------------
+function historySnapshot(depth) {
+  return {
+    rbkd: 1,
+    depth,
+    route: state.route,
+    params: state.routeParams || {},
+    quiver: state.route === "quiver" && state.quiver ? Object.assign({}, state.quiver) : null,
+  };
+}
+function saveScrollToHistory() {
+  try {
+    const cur = history.state;
+    if (cur && cur.rbkd) history.replaceState(Object.assign({}, cur, { scrollY: window.scrollY }), "", location.href);
+  } catch (e) { /* history unavailable (sandboxed iframe): ignore */ }
+}
+function pushHistoryEntry() {
+  try {
+    const depth = (history.state && history.state.rbkd ? history.state.depth : 0) + 1;
+    history.pushState(historySnapshot(depth), "", location.pathname + location.search);
+  } catch (e) { /* ignore */ }
+}
+function initHistory() {
+  try {
+    if ("scrollRestoration" in history) history.scrollRestoration = "manual";
+    history.replaceState(historySnapshot(0), "", location.href);
+  } catch (e) { /* ignore */ }
+  window.addEventListener("popstate", onHistoryPop);
+}
+function canGoBackInApp() {
+  return !!(history.state && history.state.rbkd && history.state.depth > 0);
+}
+function onHistoryPop(e) {
+  const s = e.state;
+  const fromRoute = state.route;
+  const fromParams = state.routeParams || {};
+  if (!s || !s.rbkd) { state.route = "splash"; state.routeParams = {}; syncHash(); render(); window.scrollTo(0, 0); return; }
+  state.route = s.route;
+  state.routeParams = Object.assign({}, s.params || {});
+  // Leaving a resort page: land on the row that opened it (HR-11).
+  if (fromRoute === "result" && fromParams.shared) state.routeParams.focusResort = fromParams.shared.rid;
+  if (s.route === "quiver" && s.quiver) {
+    const keepDay = state.quiver && state.quiver.resortId === s.quiver.resortId ? state.quiver.dateKey : null;
+    state.quiver = Object.assign({}, s.quiver);
+    // Back from a call to the day picker keeps the day you'd chosen selected.
+    if (state.quiver.step === "day" && !state.quiver.dateKey && keepDay) state.quiver.dateKey = keepDay;
+    if (state.quiver.resortId && (!state.quiverForecast || state.quiverForecast.resortId !== state.quiver.resortId)) prefetchQuiverForecast(state.quiver.resortId);
+  }
+  if (s.route === "plan") clampQuizStep();
+  syncHash();
+  if (s.route === "quiver" && fromRoute === "quiver" && document.getElementById("quiver-body")) {
+    renderQuiverStep();
+    focusHeading(mainEl());
+  } else {
+    render();
+  }
+  if (!state.routeParams.focusResort) window.scrollTo(0, s.scrollY || 0);
+}
+function clampQuizStep() {
+  const screens = getQuizScreens(state.quizAnswers);
+  if (state.quizStepIdx >= screens.length) state.quizStepIdx = screens.length - 1;
+  if (state.quizStepIdx < 0) state.quizStepIdx = 0;
+}
+
 function navigate(route, params) {
   const previousRoute = state.route;
+  saveScrollToHistory();
   state.route = route;
   state.routeParams = params || {};
   if (route === "quiver") {
@@ -146,28 +221,16 @@ function navigate(route, params) {
   if (route === "buzz") state.buzz.region = "all";
 
   if (route === "plan") {
-    // Only reset to the first step on a genuinely fresh entry (from the
-    // splash screen, a completed result, etc). Jumping Chase/Nicole's List
-    // -> Plan mid-quiz must resume at the step the user left, not restart
-    // at Step 1 — the underlying answers were already retained, but the
-    // visible step wasn't, which reads as "start over" even though nothing
-    // was actually lost (heuristic-evaluation.md, H3/H6 major finding).
-    // "result" joins this list for the leaf-page back control. Coming back
-    // from your own finished pick has to land on the last question you
-    // answered — the whole reason to press it is to change an answer. Resetting
-    // to step 1 with the answers still filled in reads as "start over" for a
-    // move labelled "Back to your answers". Nothing else can take this branch:
-    // result is the one route that renders no nav chrome, and its other two
-    // exits go to the splash and Nicole's list.
-    const cameFromModeSwitch = previousRoute === "chase" || previousRoute === "nicoles" || previousRoute === "result";
-    if (!cameFromModeSwitch) {
-      state.quizStepIdx = 0;
-    } else {
-      const screens = getQuizScreens(state.quizAnswers);
-      if (state.quizStepIdx >= screens.length) state.quizStepIdx = screens.length - 1;
-      if (state.quizStepIdx < 0) state.quizStepIdx = 0;
-    }
+    // HR-3 (heuristic review 2026-11-21): re-tapping the Plan tab, or going
+    // home and back, mid-quiz used to drop you to Step 1 with your answers
+    // still selected. Now any entry resumes while answers exist; "Start over"
+    // is the one way to clear them.
+    const hasAnswers = Object.keys(state.quizAnswers || {}).length > 0;
+    if (!hasAnswers) state.quizStepIdx = 0;
+    else clampQuizStep();
   }
+  // A tap on the tab you're already on re-renders in place; it isn't a new page.
+  if (!(route === previousRoute && route !== "result")) pushHistoryEntry();
   window.scrollTo(0, 0);
   syncHash();
   render();
@@ -186,31 +249,31 @@ function navigate(route, params) {
 function syncQuizHash() {
   const hasAnyAnswer = Object.keys(state.quizAnswers).length > 0;
   if (!hasAnyAnswer) {
-    if (location.hash) history.replaceState(null, "", location.pathname + location.search);
+    if (location.hash) history.replaceState(history.state, "", location.pathname + location.search);
     return;
   }
   const payload = { v: 1, q: state.quizAnswers, i: state.quizStepIdx };
-  history.replaceState(null, "", "#quiz=" + b64urlEncode(JSON.stringify(payload)));
+  history.replaceState(history.state, "", "#quiz=" + b64urlEncode(JSON.stringify(payload)));
 }
 
 function syncHash() {
   if (state.route === "result" && state.routeParams.shareToken) {
-    history.replaceState(null, "", "#result=" + state.routeParams.shareToken);
+    history.replaceState(history.state, "", "#result=" + state.routeParams.shareToken);
   } else if (state.route === "plan") {
     syncQuizHash();
   } else if (state.route === "buzz") {
-    if (location.hash) history.replaceState(null, "", location.pathname + location.search);
+    if (location.hash) history.replaceState(history.state, "", location.pathname + location.search);
   } else if (state.route === "quiver") {
     // renderQuiverResult() writes #quiver= itself once it knows the resort
     // and day; the two picker steps have nothing shareable yet, so the URL
     // is cleared rather than left pointing at a stale call.
     if (state.quiver.step !== "result" && location.hash) {
-      history.replaceState(null, "", location.pathname + location.search);
+      history.replaceState(history.state, "", location.pathname + location.search);
     }
   } else {
     // Keep the URL tidy for other routes; result links and in-progress quiz
     // state are the only shareable, resumable states.
-    if (location.hash) history.replaceState(null, "", location.pathname + location.search);
+    if (location.hash) history.replaceState(history.state, "", location.pathname + location.search);
   }
 }
 
@@ -232,6 +295,23 @@ function parseInitialRoute() {
         return;
       }
     } catch (e) { /* fall through to splash on any malformed share link */ }
+  }
+  // HR-5 (heuristic review 2026-11-21): a /r/<id> share page reached without
+  // its #result= fragment (a messenger stripped it, or someone copied the
+  // preview page's own URL) forwards here, so the reader still lands on the
+  // resort the preview promised. Published facts only, as from Picks.
+  if (hash.startsWith("#resort=")) {
+    const rid = decodeURIComponent(hash.slice("#resort=".length));
+    const resort = RESORTS_BY_ID[rid];
+    if (resort) {
+      const bullets = resort.character_note ? [sanitizeDatasetProse(resort.character_note)] : [];
+      const payload = { v: 1, rid, reasonBullets: bullets, showRangeReadout: false, range: null };
+      const token = b64urlEncode(JSON.stringify(payload));
+      state.route = "result";
+      state.routeParams = { shared: payload, shareToken: token };
+      history.replaceState(history.state, "", "#result=" + token);
+      return;
+    }
   }
   if (hash.startsWith("#quiver=")) {
     const token = hash.slice("#quiver=".length);
@@ -256,7 +336,7 @@ function parseInitialRoute() {
     // Rants & Raves became Buzz on 2026-11-07. An old shared link lands on the
     // directory rather than on the splash screen, and the stale hash is dropped.
     state.route = "buzz";
-    history.replaceState(null, "", location.pathname + location.search);
+    history.replaceState(history.state, "", location.pathname + location.search);
     return;
   }
   if (hash.startsWith("#quiz=")) {
@@ -286,7 +366,10 @@ const mainEl = () => document.getElementById("app-main");
 
 function render() {
   const main = mainEl();
-  const chromeRoutes = ["splash", "plan", "chase", "quiver", "nicoles", "buzz"];
+  // HR-8 (heuristic review 2026-11-21): the resort page carries the nav too.
+  // It was a nav-less island, and a friend who opened a shared pick had an
+  // unlabelled sticker as the only way into the rest of the app.
+  const chromeRoutes = ["splash", "plan", "chase", "quiver", "nicoles", "buzz", "result"];
   const showNav = chromeRoutes.includes(state.route);
   document.getElementById("bottom-nav").hidden = !showNav;
   document.getElementById("top-nav").hidden = !showNav;
@@ -304,8 +387,11 @@ function render() {
 }
 
 function updateNavCurrent() {
+  // A resort page counts as the section that opened it; a cold-landed one as none.
+  const ORIGIN_ROUTE = { chase: "chase", picks: "nicoles", plan: "plan" };
+  const current = state.route === "result" ? ORIGIN_ROUTE[(state.routeParams || {}).origin] : state.route;
   document.querySelectorAll(".nav-item").forEach((btn) => {
-    if (btn.dataset.route === state.route) btn.setAttribute("aria-current", "page");
+    if (btn.dataset.route === current) btn.setAttribute("aria-current", "page");
     else btn.removeAttribute("aria-current");
   });
 }
@@ -320,11 +406,13 @@ function focusHeading(main) {
 // ---------------------------------------------------------------------------
 function renderSplash(main) {
   // Home (Director, 2026-11-07, option A from the home-page exploration): the
-  // app's sticker, the question people text Nicole, then one tile per section
-  // in the same style, Plan last at full width so no tile reads as the one main
-  // action. The bottom nav shows here too, with nothing marked current.
+  // app's sticker, the question people text Nicole, then one tile per section.
+  // HR-12 (heuristic review 2026-11-21): Plan is now the one primary tile,
+  // first and full width, because it is the answer to the headline's question
+  // for a newcomer or a friend who was just sent a pick. The bottom nav shows
+  // here too, with nothing marked current.
   const tile = (id, icon, label, support, wide) => `
-    <button class="mode-card${wide ? " mode-card--wide" : ""}" id="${id}" type="button">
+    <button class="mode-card${wide ? " mode-card--wide mode-card--primary" : ""}" id="${id}" type="button">
       <span class="mode-card__icon">${icon}</span>
       <span class="mode-card__label">${label}</span>
       <span class="mode-card__support body-sm">${support}</span>
@@ -335,11 +423,11 @@ function renderSplash(main) {
         <div class="splash-sticker" aria-hidden="true"><img src="${BRAND_STICKER_ART}" alt="" width="208" height="208" decoding="async"></div>
         <h1 class="display-h1 splash-title">Where should we ski?</h1>
         <div class="splash-modes">
+          ${tile("mode-plan", ICONS.mountain, "Plan", "Find a resort in 5 quick questions", true)}
           ${tile("mode-chase", ICONS.snow, "Chase", "Where it's dumping")}
           ${tile("mode-quiver", ICONS.skis, "Quiver", "Which skis to bring")}
-          ${tile("mode-buzz", ICONS.speech, "Buzz", "Chatter on Reddit")}
+          ${tile("mode-buzz", ICONS.speech, "Buzz", "Subreddits by region")}
           ${tile("mode-nicoles", ICONS.list, "Picks", "Resort hot takes")}
-          ${tile("mode-plan", ICONS.mountain, "Plan", "Find a resort in 5 quick questions", true)}
         </div>
       </div>
     </div>`;
@@ -411,8 +499,9 @@ const QUIZ_OPTIONS = {
 };
 
 function renderPlan(main) {
-  main.innerHTML = `<div class="page-column">${pageHeaderHtml("Plan", "Answer 5 questions. Get one resort that fits.")}<div id="quiz-step-container" class="quiz-step-container"></div></div>`;
+  main.innerHTML = `<div class="page-column">${pageHeaderHtml("Plan")}<div id="quiz-step-container" class="quiz-step-container"></div></div>`;
   renderQuizStep(null);
+  document.title = "Plan — find a ski resort that fits";
   // Focus fix (synthetic-user-testing.md Major finding): renderQuizStep(null)
   // is called with no `direction` on this very first render, so neither of
   // its own two focus branches fires (direction is falsy, and there's no
@@ -484,7 +573,6 @@ function quizStepHtml(screen) {
     <div class="quiz-card">
       <div class="progress-wrap" role="progressbar" aria-valuemin="1" aria-valuemax="5" aria-valuenow="${topicIdx}"
            aria-valuetext="Step ${topicIdx} of 5: ${escapeHtml(screen.topicLabel)}">
-        <span class="progress-label" aria-hidden="true">Step ${topicIdx} of 5</span>
         <span class="progress-track">
           ${[1,2,3,4,5].map((n) => `
             <span class="progress-segment ${n < topicIdx ? "progress-segment--complete" : n === topicIdx ? "progress-segment--current" : ""}">
@@ -500,7 +588,7 @@ function quizStepHtml(screen) {
         <button class="btn-text" id="quiz-back" type="button" ${canGoBack ? "" : "disabled"}>Back</button>
         <button class="btn btn-primary" id="quiz-continue" type="button" ${hasAnswer ? "" : "disabled"}>Continue</button>
       </div>
-      ${canGoBack ? `<p style="text-align:center;margin-top:var(--space-4)"><button class="btn-text" id="quiz-start-over" type="button">Start over</button></p>` : ""}
+      ${canGoBack && isLast ? `<p style="text-align:center;margin-top:var(--space-4)"><button class="btn-text" id="quiz-start-over" type="button">Start over</button></p>` : ""}
     </div>`;
 }
 
@@ -822,7 +910,9 @@ function buildTerrainMixStrip(resort) {
     html += statTile("Intermediate", resort.terrain_pct.intermediate, "%", null, false);
     html += statTile("Advanced &amp; expert", resort.terrain_pct.advanced_expert, "%", null, false);
   } else {
-    html += statTile("Terrain mix", null, null, "Terrain breakdown not published by the resort", true);
+    // HR-15: no empty ~100px tile for the 17 resorts without a published
+    // breakdown. R8 still holds: buildDetailNotes says "Not published" in one row.
+    return "";
   }
   return `<div class="stat-strip" id="terrain-strip" style="margin-top:var(--space-3)">${html}</div>`;
 }
@@ -852,6 +942,7 @@ function skiSchoolNotesValue(resort) {
 }
 function buildDetailNotes(resort) {
   return `<dl class="notes-list">
+    ${resort.terrain_pct ? "" : notesRow("Terrain", "Not published by the resort")}
     ${notesRow("Crowds", escapeHtml(CROWD_COPY[resort.crowd_level] || "Not published by the resort"))}
     ${notesRow("Pass", escapeHtml(PASS_COPY[resort.pass_affiliation] || resort.pass_affiliation || "Not published by the resort"))}
     ${notesRow("Ski school", skiSchoolNotesValue(resort))}
@@ -1040,54 +1131,81 @@ function renderResult(main) {
     origin === "plan" ? leafBackHtml("result-leaf-back", "Back to your answers", true) :
     origin === "picks" ? leafBackHtml("result-leaf-back", "Back to Picks", true) :
     "";
+  // HR-10: "Your pick" only where the user actually made one, in Plan. A Chase
+  // or Picks row is a resort you tapped, not your pick. A cold-landed link
+  // keeps "Their pick": someone chose to send it.
+  const eyebrow = origin === "plan" ? "Your pick" : !origin ? "Their pick" : "";
+  const shareLabel = origin === "plan" || !origin ? "Share this pick" : "Share";
+  // HR-9: the one link under Share depends on how you got here. A cold-landed
+  // reader gets a way to find their own; a Plan result gets a way to change an
+  // answer; from Chase or Picks the nav and Back already cover it.
+  const footerLink =
+    !origin ? `<button class="btn-text" id="result-find-yours" type="button" style="text-align:center">Find yours →</button>` :
+    origin === "plan" ? `<button class="btn-text" id="result-change-answer" type="button" style="text-align:center">Change an answer</button>` :
+    "";
+  const hasReasons = displayBullets.length > 0;
 
   main.innerHTML = `
     <div class="result-wrap">
-      <div class="result-topbar">${backHtml || "<span></span>"}${homeLinkHtml()}</div>
+      <div class="result-topbar">${backHtml || "<span></span>"}<span class="result-topbar__end">
+        <button class="icon-btn" id="share-btn-top" type="button" aria-label="${escapeHtml(shareLabel)}">${ICONS.share}</button>
+        ${homeLinkHtml()}</span></div>
       <article class="result-card" id="result-card">
-        ${origin === "picks" ? "" : `<p class="result-eyebrow label reveal-hidden">${isFreshResult ? "Your pick" : "Their pick"}</p>`}
+        ${eyebrow ? `<p class="result-eyebrow label reveal-hidden">${eyebrow}</p>` : ""}
+        <div class="result-layout">
+        <div class="result-layout__lead">
         <div class="badge-panel reveal-hidden" role="img" aria-label="${escapeHtml(altText)}">${badge}</div>
         <h1 class="display-hero result-headline reveal-hidden" tabindex="-1">
           <span class="resort-name">${escapeHtml(resort.name)}</span>
           <span class="location body-md">${escapeHtml(location)}</span>
         </h1>
-        <h2 class="display-h3 reason-heading reveal-hidden">Why this one</h2>
+        ${hasReasons ? `<h2 class="visually-hidden">Why</h2>
         <ul class="reason-list">
           ${displayBullets.map((b) => `<li class="reason-bullet reveal-hidden"><span class="reason-bullet__icon">${ICONS.checkCircle}</span><span class="reason-bullet__text body-md">${escapeHtml(b)}</span></li>`).join("")}
-        </ul>
+        </ul>` : ""}
+        </div>
+        <div class="result-layout__detail">
         <div class="stat-strip stat-strip--quad reveal-hidden" id="stat-strip">${buildStatStrip(resort)}</div>
         ${buildTerrainMixStrip(resort)}
-        ${buildDetailNotes(resort)}
-        ${shared.showRangeReadout ? buildRangeReadoutHtml(resort, shared.range).replace('class="range-readout"', 'class="range-readout reveal-hidden"') : ""}
         ${hasHotTake ? `
           <div class="hot-take reveal-hidden" id="hot-take">
-            <span class="hot-take__quote-mark" aria-hidden="true">&ldquo;</span>
             <div class="hot-take__header">
               <span class="hot-take__avatar" aria-hidden="true">N</span>
               <span class="hot-take__label label">Nicole's Hot Take</span>
               ${resort.hot_take.rating ? `<span class="hot-take__rating data-inline">${escapeHtml(String(resort.hot_take.rating))}/10</span>` : ""}
             </div>
             <p class="hot-take__body">${escapeHtml(resort.hot_take.text)}</p>
-            <span class="hot-take__attribution">— Nicole, on ${escapeHtml(resort.name)}</span>
           </div>` : ""}
+        ${buildDetailNotes(resort)}
+        ${shared.showRangeReadout ? buildRangeReadoutHtml(resort, shared.range).replace('class="range-readout"', 'class="range-readout reveal-hidden"') : ""}
         ${resortLinksHtml(resort)}
         <div class="footer-cta reveal-hidden" id="footer-cta">
-          <button class="btn btn-primary btn-block" id="share-btn" type="button">${ICONS.share} Share this pick</button>
-          <button class="btn-text" id="see-nicoles-btn" type="button" style="text-align:center">See all picks →</button>
+          <button class="btn btn-primary btn-block" id="share-btn" type="button">${ICONS.share} ${shareLabel}</button>
+          ${footerLink}
+        </div>
+        </div>
         </div>
       </article>
     </div>`;
 
-  // navigate() re-renders the destination, and both renderChase() and
-  // renderPlan() already call focusHeading() on the way in — so focus lands on
-  // the destination's own heading with no extra handling here, matching every
-  // other route change in the app.
+  // Back: history.back() when there's an in-app page behind (HR-1), so the
+  // browser's own Back and this control land in the same place, scrolled to
+  // the row you opened (HR-11). Otherwise the explicit route, as before.
+  const goBackToOrigin = () => {
+    if (canGoBackInApp()) { history.back(); return; }
+    origin === "picks" ? navigate("nicoles", { focusResort: resort.id })
+      : origin === "chase" ? navigate("chase", { focusResort: resort.id })
+      : navigate("plan");
+  };
   const leafBack = document.getElementById("result-leaf-back");
-  if (leafBack) leafBack.addEventListener("click", () =>
-    origin === "picks" ? navigate("nicoles", { focusResort: resort.id }) : navigate(origin === "chase" ? "chase" : "plan"));
+  if (leafBack) leafBack.addEventListener("click", goBackToOrigin);
 
   document.getElementById("share-btn").addEventListener("click", () => shareResult(resort, shared));
-  document.getElementById("see-nicoles-btn").addEventListener("click", () => navigate("nicoles"));
+  document.getElementById("share-btn-top").addEventListener("click", () => shareResult(resort, shared));
+  const findYours = document.getElementById("result-find-yours");
+  if (findYours) findYours.addEventListener("click", () => { state.quizAnswers = {}; state.quizStepIdx = 0; navigate("plan"); });
+  const changeAnswer = document.getElementById("result-change-answer");
+  if (changeAnswer) changeAnswer.addEventListener("click", goBackToOrigin);
   main.querySelectorAll(".stat-tile__expand-btn, .notes-row__expand-btn").forEach((btn) => {
     btn.addEventListener("click", () => {
       const panel = document.getElementById(btn.getAttribute("aria-controls"));
@@ -1097,7 +1215,10 @@ function renderResult(main) {
     });
   });
 
-  document.title = isFreshResult ? `${resort.name} — your ski trip match` : `${resort.name} — a ski trip match`;
+  // HR-6: only a Plan result is "your match".
+  document.title = origin === "plan" ? `${resort.name} — your ski trip match`
+    : !origin ? `${resort.name} — a ski trip match`
+    : `${resort.name} — Rather Be Knee Deep`;
   // og.description.result bug fix: the raw first reason bullet already ends
   // in a period, so concatenating ". See the full pick." produced a visible
   // double period in the real link-preview text ("...ones.. See the full

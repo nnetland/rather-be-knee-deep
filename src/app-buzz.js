@@ -24,14 +24,12 @@ function renderBuzz(main) {
 
   main.innerHTML = `
     <div class="page-column buzz-view">
-      ${pageHeaderHtml("Buzz", "Catch up on the resort Reddit chatter.")}
+      ${pageHeaderHtml("Buzz", "Subreddits by region.")}
       ${areaChipsHtml("buzz", active, new Set(regions.map((r) => r.id)), { id: "general", label: "General" })}
-      ${active === "general" ? "" : shown.map(buzzRegionHtml).join("")}
-      ${active === "all" || active === "general" ? buzzGeneralHtml() : ""}
-      ${pageAboutHtml("About these links", `
-        <p>Links only. The app doesn't read, copy or show anything from Reddit, and opening a link takes you to Reddit itself.</p>
-        <p>Each subreddit is run by its own moderators. None of them are connected to this app, to the resorts, or to Nicole.</p>
-        <p>Links checked ${escapeHtml(BUZZ_CHECKED)}.</p>`)}
+      ${active === "general" ? "" : shown.map((r) => buzzRegionHtml(r, active !== "all")).join("")}
+      ${active === "all" || active === "general" ? buzzGeneralHtml(active === "general") : ""}
+      ${pageAboutHtml("About this data", `
+        <p>Links only; nothing is read from Reddit. Subreddits aren't affiliated with this app, the resorts or Nicole. Checked ${escapeHtml(BUZZ_CHECKED)}.</p>`)}
     </div>`;
 
   wireAreaChips("buzz", (id) => {
@@ -50,7 +48,11 @@ function renderBuzzRoute(main) {
   focusHeading(main);
 }
 
-function buzzRegionHtml(region) {
+// HR-18 (heuristic review 2026-11-21): the region heading uses the same small
+// group label as Chase and Quiver rather than outranking the h1, and is hidden
+// when that region's chip is already selected. Region subreddits and resort
+// subreddits sit in one list, no blurbs, no "Resorts" subhead.
+function buzzRegionHtml(region, chipSelected) {
   const resorts = buzzResortsIn(region);
   const withSub = resorts.filter((r) => RESORT_LINKS[r.id] && RESORT_LINKS[r.id].sub);
   // Resorts with no subreddit of their own are simply not listed (Director's
@@ -60,25 +62,20 @@ function buzzRegionHtml(region) {
   const hId = `buzz-h-${region.id}`;
   return `
     <section class="buzz-region" aria-labelledby="${hId}">
-      <h2 class="display-h2" id="${hId}">${escapeHtml(region.name)}</h2>
-      ${region.subs.length ? `
-        <ul class="buzz-links" role="list">
-          ${region.subs.map((s) => buzzLinkHtml(`r/${s.sub}`, s.blurb, s.sub)).join("")}
-        </ul>` : ""}
-      ${withSub.length ? `
-        <h3 class="label buzz-subhead">Resorts</h3>
-        <ul class="buzz-links" role="list">
-          ${withSub.map((r) => buzzLinkHtml(r.name, buzzSubLabel(RESORT_LINKS[r.id]), RESORT_LINKS[r.id].sub)).join("")}
-        </ul>` : ""}
+      <h2 class="${chipSelected ? "visually-hidden" : "chase-group-h data-label"}" id="${hId}">${escapeHtml(region.name)}</h2>
+      <ul class="buzz-links" role="list">
+        ${region.subs.map((s) => buzzLinkHtml(`r/${s.sub}`, null, s.sub)).join("")}
+        ${withSub.map((r) => buzzLinkHtml(r.name, buzzSubLabel(RESORT_LINKS[r.id]), RESORT_LINKS[r.id].sub)).join("")}
+      </ul>
     </section>`;
 }
 
-function buzzGeneralHtml() {
+function buzzGeneralHtml(chipSelected) {
   return `
     <section class="buzz-region" aria-labelledby="buzz-h-general">
-      <h2 class="display-h2" id="buzz-h-general">General</h2>
+      <h2 class="${chipSelected ? "visually-hidden" : "chase-group-h data-label"}" id="buzz-h-general">General</h2>
       <ul class="buzz-links" role="list">
-        ${BUZZ_GENERAL.map((s) => buzzLinkHtml(`r/${s.sub}`, s.blurb, s.sub)).join("")}
+        ${BUZZ_GENERAL.map((s) => buzzLinkHtml(`r/${s.sub}`, null, s.sub)).join("")}
       </ul>
     </section>`;
 }
@@ -121,7 +118,7 @@ function resortLinksHtml(resort) {
   }
   if (!rows.length) return "";
   return `
-    <h2 class="display-h3 reveal-hidden" style="margin-bottom:var(--space-3)">Links</h2>
+    <h2 class="visually-hidden">Links</h2>
     <ul class="buzz-links resort-links reveal-hidden" id="resort-links" role="list">${rows.join("")}</ul>`;
 }
 

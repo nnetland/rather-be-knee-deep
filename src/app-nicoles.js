@@ -52,7 +52,7 @@ function renderNicolesList(main) {
       ${pageHeaderHtml("Picks", "Hot takes from the resorts in my log book.")}
       ${areaChipsHtml("nicoles", state.nicolesFilters.region, new Set(rows.map((r) => r.areaId).filter(Boolean)))}
       <div id="nicoles-table-wrap"></div>
-      ${pageAboutHtml("About this list", `
+      ${pageAboutHtml("About this data", `
         <p>Not a ranked list — just Nicole's record, and some of these aren't flattering. Her takes never change what the trip planner recommends.</p>
         <p><span class="info-badge">Day-trip hill</span> and <span class="info-badge">International</span> places are part of her record but aren't offered by the trip planner or Chase.</p>`)}
     </div>`;
@@ -67,14 +67,20 @@ function renderNicolesList(main) {
   // at the top of it would make the link's promise technically true and
   // practically false. Scroll only: the row is not an interactive target, and
   // focus stays on the h1 where focusHeading() puts it below.
-  if (state.routeParams && state.routeParams.focusResort) {
-    const row = document.getElementById(`nicoles-row-${state.routeParams.focusResort}`);
-    if (row) row.scrollIntoView({ block: "center", behavior: "auto" });
-  }
-
   document.title = "Nicole's picks — find your next ski trip";
   setOgMeta({ title: "Find your next ski trip", description: "Everywhere Nicole's actually skied, with her real takes where she has one." });
   focusHeading(main);
+  // Back from a resort page: scroll to the row and, since the review of
+  // 2026-11-21 (HR-11), put focus on it too, so a keyboard user doesn't have
+  // to Tab ~40 times to get back to where they were.
+  if (state.routeParams && state.routeParams.focusResort) {
+    const row = document.getElementById(`nicoles-row-${state.routeParams.focusResort}`);
+    if (row) {
+      row.scrollIntoView({ block: "center", behavior: "auto" });
+      const btn = row.querySelector(".nicoles-place");
+      if (btn) btn.focus({ preventScroll: true });
+    }
+  }
 }
 
 // Responsive treatment (design-critic.md finding 5/6, accessibility-review.md
@@ -104,7 +110,6 @@ function renderNicolesTable(rows) {
             <th scope="col" role="columnheader" class="data-label">Place</th>
             <th scope="col" role="columnheader" class="data-label">Nicole's take</th>
             <th scope="col" role="columnheader" class="data-label">Best for</th>
-            <th scope="col" role="columnheader" class="data-label">Region</th>
           </tr>
         </thead>
         <tbody role="rowgroup">
@@ -134,7 +139,7 @@ function nicolesRowHtml(row) {
   // role in some browser/AT combinations (a known Safari/VoiceOver gotcha).
   const tagsHtml = row.tags.length
     ? `<ul class="tag-row" role="list">${row.tags.slice(0, 4).map((t) => `<li class="pill-tag" role="listitem">${escapeHtml(t.replace(/-/g, " "))}</li>`).join("")}</ul>`
-    : `<span class="body-sm data-gap">—</span>`;
+    : "";
 
   // No truncation and no disclosure control. The visually-hidden prefix is
   // what keeps R5 intact now that the visible per-row label is gone: a
@@ -152,7 +157,7 @@ function nicolesRowHtml(row) {
        ${row.verdict ? `<p class="take-verdict">${escapeHtml(row.verdict)}</p>` : ""}
        <p class="take-body body-sm">${escapeHtml(row.take)}</p>
        ${row.rating ? `<p class="data-inline take-rating">${escapeHtml(String(row.rating))}/10</p>` : ""}`
-    : `<span class="take-empty body-sm">No take yet</span>`;
+    : "";
 
   return `
     <tr role="row" class="nicoles-table__row"${row.resortId ? ` id="nicoles-row-${escapeHtml(row.resortId)}"` : ""}>
@@ -166,8 +171,7 @@ function nicolesRowHtml(row) {
         ${badges.length ? `<div class="nicoles-badges" style="margin-top:var(--space-1)">${badges.join("")}</div>` : ""}
       </td>
       <td role="cell" class="nicoles-table__cell nicoles-table__cell--take" data-label="Nicole's take">${takeHtml}</td>
-      <td role="cell" class="nicoles-table__cell" data-label="Best for">${tagsHtml}</td>
-      <td role="cell" class="nicoles-table__cell nicoles-table__cell--region" data-label="Region"><span class="body-sm" style="color:var(--text-secondary)">${escapeHtml(row.region)}</span></td>
+      <td role="cell" class="nicoles-table__cell nicoles-table__cell--tags">${tagsHtml}</td>
     </tr>`;
 }
 
@@ -176,10 +180,10 @@ function nicolesRowHtml(row) {
 function showPicksResort(rid) {
   const resort = RESORTS_BY_ID[rid];
   if (!resort) return;
+  // HR-15: the published-facts reason only. Average snowfall has its own tile
+  // and crowds their own row on the same page.
   const bullets = [];
-  if (resort.avg_annual_snowfall_in != null) bullets.push(`Averages about ${resort.avg_annual_snowfall_in}" a year in a typical season.`);
   if (resort.character_note) bullets.push(sanitizeDatasetProse(resort.character_note));
-  if (resort.crowd_level) bullets.push(CROWD_COPY[resort.crowd_level]);
   const payload = { v: 1, rid: resort.id, reasonBullets: bullets.slice(0, 3), showRangeReadout: false, range: null };
   navigate("result", { shared: payload, shareToken: b64urlEncode(JSON.stringify(payload)), fresh: true, origin: "picks" });
 }

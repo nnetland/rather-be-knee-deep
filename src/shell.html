@@ -115,6 +115,11 @@
 document.querySelectorAll('.nav-item').forEach((btn) => {
   btn.addEventListener('click', () => navigate(btn.dataset.route));
 });
+// P14 / HR-8: on desktop, home sits at the leading edge of the top nav, at the
+// same level as the sections, instead of nested beside each page's h1.
+document.getElementById('top-nav').insertAdjacentHTML('afterbegin',
+  `<button class="nav-home" type="button" aria-label="Rather Be Knee Deep home"><img src="${BRAND_STICKER_ART}" alt="" width="40" height="40" decoding="async"></button>`);
+document.querySelector('#top-nav .nav-home').addEventListener('click', () => navigate('splash'));
 
 // Global error boundary: if anything truly unexpected throws during
 // rendering, surface copy-deck's error.generic rather than a blank/broken
@@ -134,6 +139,7 @@ window.addEventListener('error', (e) => {
 
 
 parseInitialRoute();
+initHistory();
 render();
 // A #quiver= share link needs its forecast fetched before the call can be
 // rendered; parseInitialRoute() flags it, and this is the first point at

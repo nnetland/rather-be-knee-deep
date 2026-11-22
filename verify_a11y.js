@@ -83,10 +83,12 @@ async function run() {
   assert('badge panel has a non-empty descriptive aria-label', badgeLabel && badgeLabel.label && badgeLabel.label.length > 10);
   const svgHidden = await page.$eval('.badge-panel svg', (el) => el.getAttribute('aria-hidden') === 'true');
   assert('inner badge SVG is aria-hidden (label carried by wrapper)', svgHidden);
-  const navHiddenOnResult = await page.$eval('#bottom-nav', (el) => el.hidden);
-  assert('bottom nav is hidden on the result screen (Principle 1)', navHiddenOnResult);
-  const topNavHiddenOnResult = await page.$eval('#top-nav', (el) => el.hidden);
-  assert('top nav is hidden on the result screen (Principle 1)', topNavHiddenOnResult);
+  // HR-8 (heuristic review 2026-11-21) reversed Principle 1: the resort page
+  // carries the main nav, so a cold-landed reader can reach the rest of the app.
+  const navShownOnResult = await page.$eval('#bottom-nav', (el) => !el.hidden);
+  assert('bottom nav shows on the result screen (HR-8)', navShownOnResult);
+  const topNavShownOnResult = await page.$eval('#top-nav', (el) => !el.hidden);
+  assert('top nav element is enabled on the result screen (HR-8)', topNavShownOnResult);
 
   // Range Readout has a single summarizing aria-label
   const rangeLabel = await page.$eval('.range-readout', (el) => el.getAttribute('aria-label')).catch(() => null);

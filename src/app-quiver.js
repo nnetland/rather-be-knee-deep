@@ -42,7 +42,7 @@ function renderQuiver(main) {
 // explaining why has to be about skis rather than about rankings.
 function renderQuiverOffSeason(body) {
   body.innerHTML = `
-    ${pageHeaderHtml("Quiver", "Pick a resort and a day. Get the right skis.")}
+    ${pageHeaderHtml("Quiver", "Pick a resort and a day.")}
     <div class="center-state">
       ${ICONS.snow}
       <h2 class="display-h3">Nothing's open right now</h2>
@@ -110,7 +110,7 @@ function quiverUpcoming() {
 // ---------------------------------------------------------------------------
 function renderQuiverResortStep(body) {
   body.innerHTML = `
-    ${pageHeaderHtml("Quiver", "Pick a resort and a day. Get the right skis.")}
+    ${pageHeaderHtml("Quiver", "Pick a resort and a day.")}
     ${quiverPool().length ? "" : pageMetaHtml(["Nothing's open yet", quiverFirstUnlockText()], "quiver-unlock")}
     ${areaChipsHtml("quiver", state.quiver.area || "all", new Set(quiverPool().concat(quiverUpcoming()).map((r) => (areaOfResort(r) || {}).id).filter(Boolean)))}
     <div class="quiver-search">
@@ -124,8 +124,7 @@ function renderQuiverResortStep(body) {
     <p class="visually-hidden" aria-live="polite" id="quiver-search-count"></p>
     <div id="quiver-resort-list"></div>
     ${pageAboutHtml("About this data", `
-      <p>Reads the National Weather Service's 7-day forecast for the mountain you pick, then works out which skis suit that day. Canadian resorts aren't covered by that forecast, so they use typical snowfall for the time of year.</p>
-      <p>Only mountains open on or before the day you pick can get a call. Opening days are each resort's published ${OPENINGS_SEASON} date.</p>`)}`;
+      <p>NWS 7-day forecast; Canada uses typical snowfall. Only open mountains get a call, using each resort's published ${OPENINGS_SEASON} opening date.</p>`)}`;
 
   renderQuiverResortList();
   wireAreaChips("quiver", (id) => { state.quiver.area = id; renderQuiverResortList(); });
@@ -165,7 +164,8 @@ function renderQuiverResortList() {
 
   const metaFor = (r) => {
     const o = resortOpening(r, now);
-    const bits = [escapeHtml(r.country === "Canada" ? `${r.state_province}, Canada` : r.state_province)];
+    // The state only where it adds something: not under its own heading.
+    const bits = (areaOfResort(r) || {}).name === r.state_province ? [] : [escapeHtml(r.country === "Canada" ? `${r.state_province}, Canada` : r.state_province)];
     if (!o.open) bits.push(openingStatusHtml(o, now));
     if (r.country !== "USA") bits.push("Typical season");
     if (r.scale === "day-trip") bits.push("Day-trip hill");
@@ -214,6 +214,7 @@ function selectQuiverResort(rid) {
   // tap — which is the difference between this mode feeling instant and
   // feeling like Chase the Snow's cold start.
   prefetchQuiverForecast(rid);
+  pushHistoryEntry();
   renderQuiverStep();
   focusHeading(mainEl());
 }
@@ -272,7 +273,7 @@ function renderQuiverDayStep(body) {
           <span class="tap-chip__indicator tap-chip__indicator--radio">${ICONS.check}</span>
           <span class="tap-chip__body">
             <span class="tap-chip__label">${escapeHtml(label.primary)}</span>
-            <span class="tap-chip__sublabel">${escapeHtml(label.secondary)}</span>
+            <span class="tap-chip__sublabel">${escapeHtml(label.short)}</span>
           </span>
         </button>`;
       }).join("")}
@@ -289,6 +290,7 @@ function renderQuiverDayStep(body) {
       // Leaving the picker for the call: remember there is a picker to go back
       // to, which is what separates this from a cold-landed shared link.
       state.quiver.hadPrev = true;
+      pushHistoryEntry();
       renderQuiverStep();
     });
     // Roving tabindex, matching the quiz's radiogroup keyboard model.
@@ -304,6 +306,7 @@ function renderQuiverDayStep(body) {
   });
 
   document.getElementById("quiver-back").addEventListener("click", () => {
+    if (canGoBackInApp()) { history.back(); return; }
     state.quiver.step = "resort";
     renderQuiverStep();
     focusHeading(mainEl());
@@ -322,9 +325,10 @@ function quiverDayLabel(dateKey, index) {
   const date = parseDayKey(dateKey);
   const weekday = date.toLocaleDateString("en-US", { weekday: "long" });
   const dayMonth = date.toLocaleDateString("en-US", { month: "long", day: "numeric" });
-  if (index === 0) return { primary: "Today", secondary: `${weekday}, ${dayMonth}` };
-  if (index === 1) return { primary: "Tomorrow", secondary: `${weekday}, ${dayMonth}` };
-  return { primary: weekday, secondary: dayMonth };
+  const short = date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  if (index === 0) return { primary: "Today", secondary: `${weekday}, ${dayMonth}`, short };
+  if (index === 1) return { primary: "Tomorrow", secondary: `${weekday}, ${dayMonth}`, short };
+  return { primary: weekday, secondary: dayMonth, short };
 }
 
 // ---------------------------------------------------------------------------
@@ -375,16 +379,15 @@ function renderQuiverResult(body) {
     ? leafBackHtml("quiver-leaf-back", "Back to Quiver", true)
     : leafBackHtml("quiver-leaf-back", "Open Quiver", false);
 
-  body.innerHTML = backHtml + `
+  body.innerHTML = `<div class="result-topbar">${backHtml}<button class="icon-btn" id="quiver-share-top" type="button" aria-label="Share this call">${ICONS.share}</button></div>` + `
     <article class="quiver-card" id="quiver-card">
-      <p class="result-eyebrow label">The call</p>
       <h1 class="display-hero quiver-call" tabindex="-1">${escapeHtml(result.call.label)}</h1>
       <p class="quiver-call__tagline body-md">${escapeHtml(result.call.tagline)} <span class="data-inline quiver-call__waist">${escapeHtml(result.call.waistLabel)}</span></p>
       <p class="quiver-context body-md">${escapeHtml(resort.name)}, ${escapeHtml(location)} — ${escapeHtml(dayPhrase)}, ${escapeHtml(label.secondary)}.</p>
 
       ${quiverFreshnessHtml(fc)}
 
-      <h2 class="display-h3 reason-heading">Why</h2>
+      <h2 class="visually-hidden">Why</h2>
       <ul class="reason-list">
         ${result.reasons.map((r) => `<li class="reason-bullet"><span class="reason-bullet__icon">${ICONS.checkCircle}</span><span class="reason-bullet__text body-md">${escapeHtml(r)}</span></li>`).join("")}
       </ul>
@@ -415,27 +418,25 @@ function renderQuiverResult(body) {
           </ul>
         </div>` : ""}
 
-      <p class="quiver-limits body-sm">This reads the weather forecast, not the mountain's snow report. It doesn't know the settled base depth, what got groomed last night, or what's already been tracked out. Check the resort's own report before you pack.</p>
+      <p class="quiver-limits body-sm">A forecast, not a snow report: it can't see base depth, grooming or tracked-out snow.</p>
 
       ${resort.hot_take ? `
         <div class="hot-take" id="quiver-hot-take">
-          <span class="hot-take__quote-mark" aria-hidden="true">&ldquo;</span>
           <div class="hot-take__header">
             <span class="hot-take__avatar" aria-hidden="true">N</span>
             <span class="hot-take__label label">Nicole's Hot Take</span>
           </div>
           <p class="hot-take__body">${escapeHtml(resort.hot_take.text)}</p>
-          <span class="hot-take__attribution">— Nicole, on ${escapeHtml(resort.name)}</span>
         </div>` : ""}
 
       <div class="footer-cta">
         <button class="btn btn-primary btn-block" id="quiver-share" type="button">${ICONS.share} Share this call</button>
         <button class="btn btn-secondary btn-block" id="quiver-another-day" type="button">Try a different day</button>
-        <button class="btn-text" id="quiver-another-resort" type="button" style="text-align:center">Check a different mountain →</button>
       </div>
     </article>`;
 
-  document.getElementById("quiver-leaf-back").addEventListener("click", () => {
+  const goBack = () => {
+    if (cameFromPicker && canGoBackInApp()) { history.back(); return; }
     if (cameFromPicker) {
       // The day step re-renders with the chosen day still selected, so this is
       // a genuine step back rather than a reset.
@@ -448,17 +449,16 @@ function renderQuiverResult(body) {
     }
     renderQuiverStep();
     focusHeading(mainEl());
-  });
+  };
+  document.getElementById("quiver-leaf-back").addEventListener("click", goBack);
 
   document.getElementById("quiver-share").addEventListener("click", () => shareQuiverCall(resort, result, day, idx));
+  document.getElementById("quiver-share-top").addEventListener("click", () => shareQuiverCall(resort, result, day, idx));
+  // "Try a different day" is the same move as Back from a call you reached
+  // through the picker; on a cold link it opens the day picker for this resort.
   document.getElementById("quiver-another-day").addEventListener("click", () => {
+    if (cameFromPicker && canGoBackInApp()) { history.back(); return; }
     state.quiver.step = "day";
-    renderQuiverStep();
-    focusHeading(mainEl());
-  });
-  document.getElementById("quiver-another-resort").addEventListener("click", () => {
-    state.quiver.step = "resort";
-    state.quiver.resortId = null;
     renderQuiverStep();
     focusHeading(mainEl());
   });
@@ -490,7 +490,7 @@ function quiverFreshnessHtml(fc) {
   const canada = fc.fallbackReason === "outside NOAA coverage";
   return pageMetaHtml([
     `<span class="freshness-badge--fallback"><span class="freshness-badge__text">Not a live forecast</span></span>`,
-    canada ? "typical snowfall, no US forecast for Canada" : "typical snowfall for the time of year",
+    canada ? "typical snowfall, no US forecast for Canada" : null,
     canada ? null : `<button class="btn-text" id="quiver-retry-forecast" type="button">Try again</button>`,
   ]);
 }
@@ -547,7 +547,7 @@ function buildQuiverToken(resort, day) {
 }
 
 function syncQuiverHash(resort, day) {
-  history.replaceState(null, "", "#quiver=" + buildQuiverToken(resort, day));
+  history.replaceState(history.state, "", "#quiver=" + buildQuiverToken(resort, day));
 }
 
 async function shareQuiverCall(resort, result, day, idx) {

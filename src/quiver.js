@@ -412,9 +412,8 @@ function quiverCheck(resort, day, priorDays, now) {
   }
 
   // --- Caveats — things that don't change the call but change the day ------
-  if (!c.isLive) {
-    caveats.push("This is typical snowfall for this time of year, not a live forecast — treat it as a starting point and check the resort's own snow report before you pack.");
-  }
+  // HR-16 (heuristic review 2026-11-21): no "not a live forecast" caveat here.
+  // The page's status line already says it, once, and Q9 is still met there.
   if (c.leadDaysObserved < 2 && c.forecastShaped) {
     caveats.push(`The forecast only runs forward, so this counts ${c.leadDaysObserved === 0 ? "no" : pluralize(c.leadDaysObserved, "day")} of snow before your day. If there's already fresh snow on the ground, size up.`);
   }

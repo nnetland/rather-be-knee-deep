@@ -91,9 +91,9 @@ for _r in _resorts:
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="{_img}">
 <meta name="theme-color" content="#0E1020">
-<script>location.replace("/" + location.hash);</script>
+<script>location.replace("/" + (location.hash || "#resort={_rid}"));</script>
 </head><body style="background:#14101F;color:#F5F2FF;font-family:system-ui,sans-serif">
-<p><a href="/" style="color:#8C78F5">Open {_title}</a></p>
+<p><a href="/#resort={_rid}" style="color:#8C78F5">Open {_title}</a></p>
 </body></html>
 """)
     _made += 1
