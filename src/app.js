@@ -1032,16 +1032,13 @@ function renderResult(main) {
   const backHtml =
     origin === "chase" ? leafBackHtml("result-leaf-back", "Back to Chase", true) :
     origin === "plan" ? leafBackHtml("result-leaf-back", "Back to your answers", true) :
+    origin === "picks" ? leafBackHtml("result-leaf-back", "Back to Picks", true) :
     "";
 
   main.innerHTML = `
     <div class="result-wrap">
       ${backHtml}
       <article class="result-card" id="result-card">
-        <div class="attribution reveal-hidden">
-          <span class="attribution__mark">${ICONS.mountain}</span>
-          <span class="attribution__word label">Rather Be Knee Deep</span>
-        </div>
         <p class="result-eyebrow label reveal-hidden">${isFreshResult ? "Your pick" : "Their pick"}</p>
         <div class="badge-panel reveal-hidden" role="img" aria-label="${escapeHtml(altText)}">${badge}</div>
         <h1 class="display-hero result-headline reveal-hidden" tabindex="-1">
@@ -1081,7 +1078,8 @@ function renderResult(main) {
   // the destination's own heading with no extra handling here, matching every
   // other route change in the app.
   const leafBack = document.getElementById("result-leaf-back");
-  if (leafBack) leafBack.addEventListener("click", () => navigate(origin === "chase" ? "chase" : "plan"));
+  if (leafBack) leafBack.addEventListener("click", () =>
+    origin === "picks" ? navigate("nicoles", { focusResort: resort.id }) : navigate(origin === "chase" ? "chase" : "plan"));
 
   document.getElementById("share-btn").addEventListener("click", () => shareResult(resort, shared));
   document.getElementById("see-nicoles-btn").addEventListener("click", () => navigate("nicoles"));
@@ -1169,7 +1167,6 @@ function revealResultCard(card, { hasRangeReadout, hasHotTake }) {
     { duration: 360, easing: "cubic-bezier(.16,1,.3,1)", fill: "both" }
   );
 
-  push(".attribution", [{ opacity: 0 }, { opacity: 1 }], { duration: 160, delay: 0, easing: "cubic-bezier(.2,0,0,1)", fill: "both" });
   push(".result-eyebrow", [{ opacity: 0 }, { opacity: 1 }], { duration: 160, delay: 0, easing: "cubic-bezier(.2,0,0,1)", fill: "both" });
   push(".badge-panel", [{ opacity: 0, transform: "scale(.97)" }, { opacity: 1, transform: "scale(1)" }], { duration: 220, delay: 40, easing: "cubic-bezier(.16,1,.3,1)", fill: "both" });
   push(".result-headline", [{ opacity: 0, transform: "translateY(6px)" }, { opacity: 1, transform: "translateY(0)" }], { duration: 220, delay: 80, easing: "cubic-bezier(.16,1,.3,1)", fill: "both" });

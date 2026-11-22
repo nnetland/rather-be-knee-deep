@@ -483,9 +483,6 @@ ul { margin: 0; padding: 0; list-style: none; }
   padding: var(--space-5);
 }
 @media (min-width: 768px) { .result-card { padding: var(--space-8); } }
-.attribution { display: flex; align-items: center; gap: var(--space-2); margin-bottom: var(--space-4); }
-.attribution__mark { width: 20px; height: 20px; color: var(--brand-primary-text); flex: none; }
-.attribution__word { color: var(--text-secondary); }
 .result-eyebrow { color: var(--text-secondary); margin-bottom: var(--space-1); }
 /* Badge panel — replaces the old wide-landscape illustration-panel. A
    circular die-cut badge has different proportions than the 4:3 illustration
@@ -1001,6 +998,18 @@ ul { margin: 0; padding: 0; list-style: none; }
 .nicoles-table__row { border-bottom: 1px solid var(--border-hairline); }
 .nicoles-table__cell { padding: var(--space-3) var(--space-2); vertical-align: top; }
 .nicoles-table__cell--place { padding-left: 0; }
+/* P7: the place is a button that opens the resort page; its badge sits
+   beside the name at the same 44px list-row scale Chase uses. */
+.nicoles-place {
+  display: flex; align-items: center; gap: var(--space-3); min-height: 44px; width: 100%;
+  padding: 0; border: 0; background: none; color: inherit; font: inherit; text-align: left; cursor: pointer;
+  border-radius: var(--radius-sm);
+}
+.nicoles-place__avatar { flex: none; width: 44px; height: 44px; }
+.nicoles-place__avatar svg { width: 100%; height: 100%; display: block; }
+.nicoles-place__name { display: block; }
+@media (hover: hover) { .nicoles-place:hover .nicoles-place__name { color: var(--brand-primary-text); } }
+.nicoles-place:focus-visible { outline: var(--border-focus-w) solid var(--border-selected); outline-offset: 2px; }
 .nicoles-table__cell--region { padding-right: 0; }
 
 /* Column weighting inverted from v1. The take used to be capped at 220px

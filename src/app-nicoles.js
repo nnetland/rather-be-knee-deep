@@ -112,6 +112,12 @@ function renderNicolesTable(rows) {
         </tbody>
       </table>
     </div>`;
+  // P7 (2026-11-21, Director's call): each place with a resort record opens
+  // that resort's full page, like a Chase row does. Back returns here,
+  // scrolled to the row.
+  wrap.querySelectorAll(".nicoles-place[data-rid]").forEach((btn) => {
+    btn.addEventListener("click", () => showPicksResort(btn.dataset.rid));
+  });
 }
 
 function nicolesRowHtml(row) {
@@ -151,11 +157,29 @@ function nicolesRowHtml(row) {
   return `
     <tr role="row" class="nicoles-table__row"${row.resortId ? ` id="nicoles-row-${escapeHtml(row.resortId)}"` : ""}>
       <td role="cell" class="nicoles-table__cell nicoles-table__cell--place">
-        <span class="display-h3" style="display:block">${escapeHtml(row.place)}</span>
+        ${row.resortId && RESORTS_BY_ID[row.resortId]
+          ? `<button type="button" class="nicoles-place" data-rid="${escapeHtml(row.resortId)}">
+              <span class="nicoles-place__avatar" aria-hidden="true">${badgeSvg(RESORTS_BY_ID[row.resortId], "picks-row")}</span>
+              <span class="display-h3 nicoles-place__name">${escapeHtml(row.place)}</span>
+            </button>`
+          : `<span class="display-h3" style="display:block">${escapeHtml(row.place)}</span>`}
         ${badges.length ? `<div class="nicoles-badges" style="margin-top:var(--space-1)">${badges.join("")}</div>` : ""}
       </td>
       <td role="cell" class="nicoles-table__cell nicoles-table__cell--take" data-label="Nicole's take">${takeHtml}</td>
       <td role="cell" class="nicoles-table__cell" data-label="Best for">${tagsHtml}</td>
       <td role="cell" class="nicoles-table__cell nicoles-table__cell--region" data-label="Region"><span class="body-sm" style="color:var(--text-secondary)">${escapeHtml(row.region)}</span></td>
     </tr>`;
+}
+
+// Opens the result card for a place on Picks. Same honest reason set as a
+// Chase row seen off-season: published facts only, nothing from a quiz.
+function showPicksResort(rid) {
+  const resort = RESORTS_BY_ID[rid];
+  if (!resort) return;
+  const bullets = [];
+  if (resort.avg_annual_snowfall_in != null) bullets.push(`Averages about ${resort.avg_annual_snowfall_in}" a year in a typical season.`);
+  if (resort.character_note) bullets.push(sanitizeDatasetProse(resort.character_note));
+  if (resort.crowd_level) bullets.push(CROWD_COPY[resort.crowd_level]);
+  const payload = { v: 1, rid: resort.id, reasonBullets: bullets.slice(0, 3), showRangeReadout: false, range: null };
+  navigate("result", { shared: payload, shareToken: b64urlEncode(JSON.stringify(payload)), fresh: true, origin: "picks" });
 }
