@@ -16,6 +16,10 @@ Changes Nicole wants but isn't ready to make. Nothing here is a decision until s
 
 **P11 · "Submit your take": friends send hot takes for Nicole to review. PARKED 2026-11-21, Director's call ("log the first option in the backlog and I can pick up tomorrow").** On the resort page, an outlined "Submit your take" button between "Share this pick" and "See all picks" opens a short form: the resort pre-filled, "Your take" capped at 140 characters with a counter (the longest written take is about 120), an optional name for credit, and "Send my take". Mocked on the canvas ("Mock · Submit your take button / form"). Chosen backend, option 1: **Firestore in the `rather-be-knee-deep` Firebase project**, so the form stays on the site. Nicole's setup: turn on Firestore in the Firebase console and give the deploy service account read access. Claude's build: security rules that allow create only (no client reads), with length limits on every field; the client write; and a GitHub Actions job that exports new submissions so Claude can list them for Nicole in a session. Nothing submitted appears on the site until Nicole approves it and adds it as a take (C1). Option not taken: a Google Form plus Sheet (less setup, but the form leaves the site).
 
+**P12 · A navigational arrow on each pick. PARKED 2026-11-21.** Each place on Picks carries an arrow icon showing that the row opens the full resort page (the link itself shipped as P7).
+
+**P13 · Buzz shows region chips only for regions with a subreddit. PARKED 2026-11-21.** If a region has nothing to link on Buzz, it gets no chip in the region row at the top. Follows B3, which already skips empty regions in the list. A1's shared chip row stays the same on Chase, Quiver and Picks.
+
 Earlier items: on 2026-11-21 every item was worked through on the canvas: P1, P2 and P5–P10 were built (see *Round of 2026-11-21* below), P4 was promoted and waits on Nicole's Gemini art, and P3 was dropped at the Director's call (see C1).
 
 ---
