@@ -80,10 +80,10 @@ async function run() {
       const btnRatio = contrast(btnFg, btnBg);
       assert('Dark mode: "Share this pick" button text clears 4.5:1 on its real background', btnRatio >= 4.5, { btnRatio, btnFg, btnBg });
 
-      const linkFg = parseRgb(await page.$eval('#see-nicoles-btn', (el) => getComputedStyle(el).color));
-      const linkBg = parseRgb(await effectiveBg(page, '#see-nicoles-btn'));
+      const linkFg = parseRgb(await page.$eval('#result-change-answer', (el) => getComputedStyle(el).color));
+      const linkBg = parseRgb(await effectiveBg(page, '#result-change-answer'));
       const linkRatio = contrast(linkFg, linkBg);
-      assert('Dark mode: "See all picks" link clears 4.5:1 on its real background', linkRatio >= 4.5, { linkRatio, linkFg, linkBg });
+      assert('Dark mode: "Change an answer" link clears 4.5:1 on its real background', linkRatio >= 4.5, { linkRatio, linkFg, linkBg });
     }
 
     // Nicole's List "All regions" selected filter chip. Result screens (the

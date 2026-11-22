@@ -68,6 +68,17 @@ function wireAreaChips(surface, onChange) {
       onChange(b.dataset.area);
     });
   });
+  // HR-21: the row stays one line on desktop too, and a mouse wheel only
+  // scrolls vertically, so turn vertical wheel movement into sideways scroll
+  // while the pointer is over the row (only when there's somewhere to go).
+  row.addEventListener("wheel", (e) => {
+    if (Math.abs(e.deltaY) <= Math.abs(e.deltaX) || row.scrollWidth <= row.clientWidth) return;
+    const max = row.scrollWidth - row.clientWidth;
+    const next = Math.max(0, Math.min(max, row.scrollLeft + e.deltaY));
+    if (next === row.scrollLeft) return;
+    e.preventDefault();
+    row.scrollLeft = next;
+  }, { passive: false });
   const on = row.querySelector('[aria-pressed="true"]');
   if (on && on.dataset.area !== "all" && row.scrollWidth > row.clientWidth) {
     row.scrollLeft = Math.max(0, on.offsetLeft - row.offsetLeft - 16);

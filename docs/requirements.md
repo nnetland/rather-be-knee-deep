@@ -1,6 +1,6 @@
 # Rather Be Knee Deep — Requirements
 
-_Living document. Director: Nicole. Last updated 2026-11-21._
+_Living document. Director: Nicole. Last updated 2026-11-22._
 
 This is the single record of what this app should do — shipped, agreed, and still wanted.
 
@@ -14,7 +14,15 @@ Entries are tagged: **SHIPPED** (built and live), **AGREED** (decided, not built
 
 Changes Nicole wants but isn't ready to make. Nothing here is a decision until she promotes it; when she does, it moves to the right section as AGREED and comes out of this list. Add with "park this: …"; review with "what's in the parking lot?". Open items here are listed in the Saturday Weekly Briefing as a reminder until they're promoted or dropped.
 
-Nothing is parked right now. On 2026-11-21 every item was worked through on the canvas: P1, P2 and P5–P10 were built (see *Round of 2026-11-21* below), P4 was promoted and waits on Nicole's Gemini art, and P3 was dropped at the Director's call (see C1).
+**P11 · "Submit your take": friends send hot takes for Nicole to review. PARKED 2026-11-21, Director's call ("log the first option in the backlog and I can pick up tomorrow").** On the resort page, an outlined "Submit your take" button between "Share this pick" and "See all picks" opens a short form: the resort pre-filled, "Your take" capped at 140 characters with a counter (the longest written take is about 120), an optional name for credit, and "Send my take". Mocked on the canvas ("Mock · Submit your take button / form"). Chosen backend, option 1: **Firestore in the `rather-be-knee-deep` Firebase project**, so the form stays on the site. Nicole's setup: turn on Firestore in the Firebase console and give the deploy service account read access. Claude's build: security rules that allow create only (no client reads), with length limits on every field; the client write; and a GitHub Actions job that exports new submissions so Claude can list them for Nicole in a session. Nothing submitted appears on the site until Nicole approves it and adds it as a take (C1). Option not taken: a Google Form plus Sheet (less setup, but the form leaves the site). _Note 2026-11-22:_ the resort page footer is now Share plus one origin-dependent link (HR-9), so the button would sit under Share.
+
+**P12 · A navigational arrow on each pick. PARKED 2026-11-21.** Each place on Picks carries an arrow icon showing that the row opens the full resort page (the link itself shipped as P7).
+
+**P13 · Buzz shows region chips only for regions with a subreddit. PARKED 2026-11-21.** If a region has nothing to link on Buzz, it gets no chip in the region row at the top. Follows B3, which already skips empty regions in the list. A1's shared chip row stays the same on Chase, Quiver and Picks.
+
+**P15 · Resort badges in Quiver. PARKED 2026-11-21.** Show each resort's badge in the Quiver section, matching Chase and Picks, which already carry the badge at 44px list scale. This is the existing resort badges, not the per-ski-type stickers deferred in D9; Q5 (the ski call stays typographic) is unchanged.
+
+Earlier items: on 2026-11-21 every item was worked through on the canvas: P1, P2 and P5–P10 were built (see *Round of 2026-11-21* below), P4 was promoted and waits on Nicole's Gemini art, and P3 was dropped at the Director's call (see C1). P14 (the desktop home button) was resolved by HR-8 on 2026-11-22 (see *Heuristic review fixes* below).
 
 ---
 
@@ -32,11 +40,11 @@ These came from the original brief and are non-negotiable unless Nicole changes 
 
 **R2 · Mobile and desktop, mobile primary. SHIPPED.** The app arrives in a text message or an Instagram DM. It works at 320px and at 200% zoom.
 
-**R3 · Shareable via text and Instagram DM. SHIPPED.** The result encodes into the URL, so a shared link reproduces the sender's exact recommendation, badge, and reasoning. Link previews carry a share image. **Amended 2026-11-21:** a shared pick's preview shows that resort's badge (see S11).
+**R3 · Shareable via text and Instagram DM. SHIPPED.** The result encodes into the URL, so a shared link reproduces the sender's exact recommendation, badge, and reasoning. Link previews carry a share image. **Amended 2026-11-21:** a shared pick's preview shows that resort's badge (see S11). **Amended 2026-11-22:** a share link that loses its `#result=` fragment still opens that resort (HR-5).
 
 **R4 · Nicole's ski history is browsable. SHIPPED.** 44 places, sourced from her Google Sheet, filterable. Renamed **Nicole's picks** (nav: *Picks*) 2026-10-26.
 
-**R5 · "Nicole's Hot Take" is an explicit labelled section, not an ambient voice. SHIPPED.** The app speaks in a neutral register; her opinions sit in an attributed block. A resort with no take shows no take block — never a fabricated or placeholder one.
+**R5 · "Nicole's Hot Take" is an explicit labelled section, not an ambient voice. SHIPPED.** The app speaks in a neutral register; her opinions sit in an attributed block. A resort with no take shows no take block — never a fabricated or placeholder one. **Amended 2026-11-22 (HR-15):** the block is attributed by its label and the N avatar; the decorative quote mark and the "— Nicole, on X" footer line are gone.
 
 **R5a · Nicole's List is a documented exception to R5. SHIPPED 2026-08-05.** On that one surface the per-row label is gone at the Director's call — repeated 45 times it was noise, and it ate the space the verdict line needs. Attribution moved to page level instead, and is carried by three things, not one: a first-person standing line ("Hot takes from the resorts in my log book." since 2026-11-21; was "Everywhere I've skied, and what I *actually* think"), an honest coverage count (since 2026-10-26: "44 places · 9 takes written") in place of 38 per-row apologies, and a visually-hidden per-row prefix so a screen-reader user landing mid-list still hears whose opinion it is. The exception is scoped: the recommendation screen and the quiver keep the labelled, quarantined block, and `RESORTS[].hot_take.text` there still carries the whole opinion (verdict + take) as one string. Known gap: a single row screenshotted into a group chat loses the attribution, since the page header doesn't travel with it.
 
@@ -50,7 +58,7 @@ These came from the original brief and are non-negotiable unless Nicole changes 
 
 **R8 · Data honesty is a hard constraint. SHIPPED.** Historical averages are never presented as live forecasts. Missing data says "not published" rather than being estimated. Editorial judgments are marked as judgment. Canada has no NOAA coverage, so those resorts sit in a separate labelled tier.
 
-**R8a · Honesty is shown with facts, not explained in paragraphs. SHIPPED 2026-10-26, Director's call.** *"Instead of explaining 'not a live forecast' simply indicate opening dates for resorts and the last time the forecast was updated."* R8 still holds in full; what changed is how it's met. A live forecast says its source and NWS's own update time ("NWS 7-day forecast · Updated 8:41 PM today"). A resort that isn't open says when it opens. The fallback still says "Not a live forecast", in one line with a retry. Longer explanations live in one closed "About this data" disclosure at the bottom of the page. See *Content-first headers* below.
+**R8a · Honesty is shown with facts, not explained in paragraphs. SHIPPED 2026-10-26, Director's call.** *"Instead of explaining 'not a live forecast' simply indicate opening dates for resorts and the last time the forecast was updated."* R8 still holds in full; what changed is how it's met. A live forecast says its source and NWS's own update time ("NWS 7-day forecast · Updated 8:41 PM today"). A resort that isn't open says when it opens. The fallback still says "Not a live forecast", in one line with a retry. Longer explanations live in one closed "About this data" disclosure at the bottom of the page. See *Content-first headers* below. **Amended 2026-11-22 (HR-16/HR-17):** the fallback line is said once per page (Quiver had said it three times) and in secondary text, not bold white.
 
 **R9 · Recommendations explain themselves in the user's own words. SHIPPED.** "You said your crew ranges from never skied to expert" beats "87% match."
 
@@ -66,7 +74,7 @@ These came from the original brief and are non-negotiable unless Nicole changes 
 
 ## Outstanding — content
 
-**C1 · Hot takes are added as the season goes. ONGOING, Director's call 2026-11-21.** *"I don't need a 'hot take' on every resort. I can add them as the season goes on."* Not every place needs a take, so the missing ones are not a gap to close. Nine are written. New ones go in the `nicoles_take_template` Google Sheet and flow through on rebuild. Supersedes the earlier "write the remaining 38" target and parking-lot item P3; Crested Butte's short take can be expanded whenever Nicole likes.
+**C1 · Hot takes are added as the season goes. ONGOING, Director's call 2026-11-21.** *"I don't need a 'hot take' on every resort. I can add them as the season goes on."* Not every place needs a take, so the missing ones are not a gap to close. 21 are written (12 added 2026-11-21). New ones go in the `nicoles_take_template` Google Sheet. The site does not read the sheet: say "pull the new takes" and Claude reads the sheet, drafts each new take as a verdict plus a take (R5b/R5c lengths, typos fixed, words kept), shows them for review, and ships on "ship it". The drafts live in `tools/new_takes_<date>.json`. Supersedes the earlier "write the remaining 38" target and parking-lot item P3; Crested Butte's short take can be expanded whenever Nicole likes.
 
 **C2 · Sentiment ratings on takes. DEFERRED by Director, explicitly post-launch.** An "Overall Rating" column already exists empty in the sheet. Once populated, the app could surface how strongly Nicole rates a place. Deferred deliberately: takes are commentary, and ranking stays on the data.
 
@@ -96,6 +104,8 @@ These came from the original brief and are non-negotiable unless Nicole changes 
 
 **D8 · New copy strings await content-writer ratification. AGREED.** The off-season screen, the sanitised dataset prose, the "show typical-season data now" escape and several badge alt-text fragments were written by the builder in the copy deck's register but never reviewed.
 
+**D10 · Plan asks which ski pass you have. AGREED 2026-11-21, Director's call, not built.** The Plan quiz gains a pass question (Epic, Ikon, Indy, or none), built on the pass affiliations already in the resort data (kept current by T3). This makes Plan six questions instead of five. Still to decide: whether a matching pass boosts resorts in the ranking or filters to only those resorts, and how the result explains it in the user's words (R9), e.g. "You said you have an Ikon pass".
+
 ---
 
 ## Outstanding — data
@@ -112,7 +122,7 @@ These came from the original brief and are non-negotiable unless Nicole changes 
 
 **T7 · Refresh day-pass prices and après lines before each season. AGREED, recurring (added 2026-11-21).** `research/day-pass-2026-27.json` (31 of 71 resorts had published 2026–27 figures on 2026-11-21; sources per row) and `research/apres.json`. Resorts that publish prices later in the season can be added any time.
 
-**T5 · `terrain_pct` is null for 17 resorts. ACCEPTED, not a gap to close.** The matching model falls back to editorial fields rather than treating this as required input. Documented as permanent partial coverage.
+**T5 · `terrain_pct` is null for 17 resorts. ACCEPTED, not a gap to close.** The matching model falls back to editorial fields rather than treating this as required input. Documented as permanent partial coverage. Since 2026-11-22 the resort page shows it as one "Terrain: Not published by the resort" row, not an empty tile (HR-15).
 
 ---
 
@@ -132,7 +142,7 @@ Added 2026-10-26, Director's call: *"The app has way too much explaining at the 
 
 **H1 · One pattern on every surface. SHIPPED.** Title → one line of facts → compact filters → content → one closed "About this data" disclosure at the bottom. Facts, not sentences. Nothing explanatory sits above the content. `verify_content_first.js` measures it: the first resort, mountain, tab or place starts in the top third of a 390×844 screen (Picks: top half). Before → after, first content: Chase 521px → 224px, Quiver 366 → 195, Buzz 226 → 116, Picks 574 → 215.
 
-**H2 · Opening status on every resort row. SHIPPED.** "Opens Nov 6" (announced), "Usually mid-Nov" (no announcement; typical window), "Opening TBA" (past its typical date, still unannounced). Colour marks the exception: only an opening inside the next week is coral; announced dates are strong text; estimates are quiet. When nothing is open, Chase lists what's opening soon, most forecast snow first (by opening day when there's no live forecast).
+**H2 · Opening status on every resort row. SHIPPED.** "Opens Nov 6" (announced), "Usually mid-Nov" (no announcement; typical window), "Opening TBA" (past its typical date, still unannounced). Colour marks the exception: only an opening inside the next week is coral; announced dates are strong text; estimates are quiet. When nothing is open, Chase lists what's opening soon, most forecast snow first (by opening day when there's no live forecast). **Amended 2026-11-22 (HR-17):** coral only for an opening today or tomorrow; at "inside a week" most of the Quiver list was red at once.
 
 **H3 · Buzz keeps its provenance visible. SHIPPED.** The legal frame is unchanged in substance: the five facts stay visible under the h1 on every view, now as one line, not a ruled block. The five explained rows moved to the bottom disclosure. Cutting the visible line further was considered and rejected — it's what keeps strangers' words from reading as Nicole's.
 
@@ -162,7 +172,7 @@ Added 2026-08-05. The 2.0 draft's third item, and the first of that list to be b
 
 **Q8 · Shared links re-read the forecast rather than freezing an answer. SHIPPED.** `#quiver=` carries only the resort and the date. A ski call is true only as long as the forecast behind it is, so a recipient opening it tomorrow may correctly see a different answer, and a day that has passed says so plainly instead of confidently reporting last week's weather. This is deliberately different from `#result=`, which does freeze its payload — a trip-planner match doesn't decay.
 
-**Q9 · The honesty boundary is stated on every card. SHIPPED.** It reads a weather forecast, not a snow report. It cannot see settled base depth, last night's grooming, or what's already been tracked out. When the live forecast is unreachable — or for the 10 Canadian resorts NOAA doesn't cover — the card carries the same "typical season, not a forecast" treatment used elsewhere, the reasoning switches to typical-season phrasing rather than saying "forecast", and it withholds the snow-to-liquid ratio entirely, because on that path the ratio is an assumption the app made rather than a measurement.
+**Q9 · The honesty boundary is stated on every card. SHIPPED.** It reads a weather forecast, not a snow report. It cannot see settled base depth, last night's grooming, or what's already been tracked out. When the live forecast is unreachable — or for the 10 Canadian resorts NOAA doesn't cover — the card carries the same "typical season, not a forecast" treatment used elsewhere, the reasoning switches to typical-season phrasing rather than saying "forecast", and it withholds the snow-to-liquid ratio entirely, because on that path the ratio is an assumption the app made rather than a measurement. **Amended 2026-11-22 (HR-16):** the status line says "Not a live forecast" once; the duplicate "Worth knowing" caveat is gone and the snow-report limit is one line.
 
 ### Known limits, logged
 
@@ -232,13 +242,13 @@ Deploy is the same in all three: commit and push in GitHub Desktop, GitHub Actio
 
 **B2 · Resort result screen links out. SHIPPED on branch.** A Links block with the official site and the resort's subreddit, falling back to the region's subreddit, then r/skiing, each labelled so it isn't mistaken for the resort's own.
 
-**A1 · One region picker across the app. SHIPPED on branch, Director's call.** Chase, Quiver, Buzz and Picks use the same scrolling chip row and the same ten areas (`src/regions.js`), "All regions" first, in a fixed geographic order. Quiver groups its list by area and shows the state on each row. Chase's old "Near" select was a home-metro re-ranker that looked like a region filter. It was briefly kept as "Traveling from", then removed at the Director's call: the region chips answer "what can I get to", and only Plan asks where you're coming from. The Beginner-friendly toggle is removed; day-trip hills stay out of Chase.
+**A1 · One region picker across the app. SHIPPED on branch, Director's call.** Chase, Quiver, Buzz and Picks use the same scrolling chip row and the same ten areas (`src/regions.js`), "All regions" first, in a fixed geographic order. Quiver groups its list by area and shows the state on each row. Chase's old "Near" select was a home-metro re-ranker that looked like a region filter. It was briefly kept as "Traveling from", then removed at the Director's call: the region chips answer "what can I get to", and only Plan asks where you're coming from. The Beginner-friendly toggle is removed; day-trip hills stay out of Chase. **Amended 2026-11-22 (HR-21):** the row stays one scrolling line on desktop too (a mouse wheel scrolls it), instead of wrapping to three rows.
 
-**H6 · One page header. SHIPPED on branch, Director's call.** *"Page titles should match bottom nav… every word should earn its spot."* Every tab page: h1 = the nav word exactly (Chase, Quiver, Buzz, Plan, Picks), one line saying what to do, then a status line only when needed, then controls. Splash cards and back links use the same words. Counts were cut ("44 places · 9 takes written", "29 subreddits", "4 open", "Step 1 of 2"). Plan gained its h1 and intro; its in-card step counter stays, the progress dot is gone. Chase status is "NWS forecast · Updated …" live, "Not a live forecast · Try again" otherwise (R8a still met). Picks' intro has no gold rule (removed at the Director's call; the first person does the work). Allowed deviation: drill-down screens (result, Quiver call) use the resort as their heading.
+**H6 · One page header. SHIPPED on branch, Director's call.** *"Page titles should match bottom nav… every word should earn its spot."* Every tab page: h1 = the nav word exactly (Chase, Quiver, Buzz, Plan, Picks), one line saying what to do, then a status line only when needed, then controls. Splash cards and back links use the same words. Counts were cut ("44 places · 9 takes written", "29 subreddits", "4 open", "Step 1 of 2"). Plan gained its h1 and intro; its in-card step counter stays, the progress dot is gone. Chase status is "NWS forecast · Updated …" live, "Not a live forecast · Try again" otherwise (R8a still met). Picks' intro has no gold rule (removed at the Director's call; the first person does the work). Allowed deviation: drill-down screens (result, Quiver call) use the resort as their heading. **Amended 2026-11-22 (HR-27, Director approved the review):** the intro line is cut where it repeated the Home tile word for word — Chase and Plan have none; Buzz reads "Subreddits by region."; Quiver "Pick a resort and a day."; Picks keeps its first-person line. Plan's visible "Step n of 5" text is gone; the bar and its screen-reader text stay.
 
 **R5a amended 2026-11-07.** The coverage count is gone at the Director's call. Page-level attribution on Picks is now carried by the first-person intro line alone plus the visually-hidden per-row prefix.
 
-**H7 · New home page. SHIPPED on branch, Director's call (option A of three from a competitive audit and design exploration).** The app's own sticker (new: the app-icon mountain as a wry character, goggles up, knee deep in powder, `BRAND_STICKER_SVG` in `src/icons.js`), the headline "Where should we ski?", then one tile per section in the same style: Chase, Quiver, Buzz, Picks, and Plan last at full width so no tile reads as the one main action. Picks finally has a tile. The bottom nav now shows on home too, with nothing marked current. Options considered and not taken: a sticker wall (browse-first, no clear start) and a "this week's call" editorial card (needs weekly upkeep and a reliable live forecast; a candidate to add later).
+**H7 · New home page. SHIPPED on branch, Director's call (option A of three from a competitive audit and design exploration).** The app's own sticker (new: the app-icon mountain as a wry character, goggles up, knee deep in powder, `BRAND_STICKER_SVG` in `src/icons.js`), the headline "Where should we ski?", then one tile per section in the same style: Chase, Quiver, Buzz, Picks, and Plan last at full width so no tile reads as the one main action. Picks finally has a tile. The bottom nav now shows on home too, with nothing marked current. Options considered and not taken: a sticker wall (browse-first, no clear start) and a "this week's call" editorial card (needs weekly upkeep and a reliable live forecast; a candidate to add later). **Amended 2026-11-22 (HR-12):** Plan is now the first tile, full width, filled in the brand colour, as the one primary action; it answers the headline's question for a newcomer or a friend who was just sent a pick.
 
 ---
 
@@ -250,7 +260,7 @@ All committed on Nicole's Mac and passing the full suite; live once the branch i
 
 **P10 · "The numbers" are top-aligned and uncaptioned. BUILT, Director's call.** Stat tiles align to the top. "Top to bottom, in one run" and "A typical season, not this week" are removed; "not published" captions stay.
 
-**P6 · The resort page ends in one action. BUILT, Director's call.** One "Share this resort" button and a "See all →" link to Picks. The explainer line and "Make your own pick" are gone. Known cost: a cold-landed shared link now has "See all" as its only way into the app.
+**P6 · The resort page ends in one action. BUILT, Director's call.** One "Share this resort" button and a "See all →" link to Picks. The explainer line and "Make your own pick" are gone. Known cost: a cold-landed shared link now has "See all" as its only way into the app. **Amended 2026-11-22 (HR-8/HR-9):** the page now carries the main nav, so the known cost is gone. Share is still the one primary action; the link under it depends on how you arrived — "Find yours →" (Plan) on a shared link, "Change an answer" on your own Plan result, nothing from Chase or Picks.
 
 **Brand line removed from the resort card. BUILT, Director's call.** The "Rather Be Knee Deep" attribution row at the top of the card is gone. It existed so a screenshot of the card still said where it came from; the share preview (S11) now carries that job for links.
 
@@ -265,3 +275,85 @@ All committed on Nicole's Mac and passing the full suite; live once the branch i
 **P1 · Favicon and app icons from the brand sticker. BUILT, Director's call.** Browser tab: a round crop of the sticker's face and goggles, which still reads at 32px. Home-screen and install icons: the full sticker on the dark ground, inside the maskable safe zone. The manifest's colours now match the always-dark theme.
 
 **S11 · Shared picks preview with the resort's badge. BUILT, Director's call.** *"When these are shared, ensure the resort badge is the image that is seen in the text summary."* "Share this resort" links to `/r/<id>#result=…`. Link crawlers don't run JavaScript or see the hash, so `build.py` writes a small static page per resort carrying its own `og:image` — the badge on the dark ground at 1200×630 (`public/og/<id>.jpg`, rendered by `tools/render_og.js`). A person who taps the link goes straight on to the app with the hash intact. Verified end to end against an emulation of Firebase's cleanUrls and rewrite. Old `/#result=` links still work, with the generic preview. Re-render after badge art changes (P4).
+
+---
+
+## Round of 2026-11-21, evening (canvas comments; PRs #11–#15 shipped)
+
+**Copy.** Picks intro: "Hot takes from the resorts in my log book." (R5a's first-person line). Buzz intro: "Catch up on the resort Reddit chatter." (since 2026-11-22: "Subreddits by region."). Resort page: "Share this pick" and "See all picks →" (since 2026-11-22: see P6). Terrain tiles read "Beginner", "Intermediate", "Advanced & expert" (no "terrain"). "The numbers" heading removed from the resort page and the Quiver result (PR #13).
+
+**Quiver search below the region chips. SHIPPED, Director's call.** Region chips first, then the search box.
+
+**H8 · Home button. SHIPPED, Director's call ("works for now").** Shared links land deep in the app, so every section page (Chase, Quiver, Buzz, Plan, Picks) and the resort page carry the home sticker as a 44px round button, top-right, beside the h1 or the back link. It goes to the home screen; screen readers hear "Rather Be Knee Deep home". No wordmark, in keeping with the brand line's removal from the resort card. **Amended 2026-11-22 (HR-8):** with the nav on every page, the sticker is gone from the section pages. It stays top-right on the resort page on phones, and on desktop sits at the leading edge of the top nav (resolves P14).
+
+**Picks: 12 new hot takes. SHIPPED (PR #15).** Alyeska, Mt. Baker, Mount Hood (Timberline), Whistler, Bridger Bowl, Red Lodge, Jackson Hole, Park City, Snowbird, Solitude, Alta and Vail, from the sheet, approved as drafted.
+
+**Canvas.** Quiver now has a board. The canvas also holds the home-button option boards and the P11 mockups.
+
+---
+
+## Heuristic review fixes, 2026-11-22 (branch `claude/heuristic-review-fixes`)
+
+From the overnight review in the project doc `claude/Heuristic review 2026-11-21.md`. Director's call: *"I trust the team's recommendation here. Run all the recommended fixes."* Built in the cloud, full suite green, plus `verify_review_fixes.js` (49 checks) holding every item below in place. Live once the PR is merged.
+
+**Navigation**
+
+**HR-1 · Back works. BUILT.** Every route change and each forward step in Quiver adds a history entry, and a `popstate` handler restores it, so the browser's Back and a phone's back swipe move through the app instead of leaving it. Hash writes still use `replaceState`. In-app Back controls use `history.back()` only when this visit put a page behind them; a cold-landed link keeps its explicit fallback.
+
+**HR-8 · The resort page carries the nav. BUILT.** On every origin, cold-landed links included. It marks the section that opened it as current. The home sticker is off the section pages (see H8).
+
+**HR-9 · The resort page footer depends on how you arrived. BUILT.** See P6.
+
+**HR-10 · "Your pick" only on a Plan result. BUILT.** From Chase or Picks, no eyebrow and Share reads "Share". A cold-landed link keeps "Their pick" and "Share this pick".
+
+**HR-11 · Back lands on the row you opened. BUILT.** Chase now does what Picks did: scroll to the row and put focus on it. Picks now moves focus to the row too, not just scroll.
+
+**HR-12 · Plan is the primary tile on Home. BUILT.** See H7.
+
+**HR-3 · Plan keeps your step. BUILT.** Re-tapping Plan, or leaving and coming back, resumes where you were while answers exist. "Start over" clears them, and shows on the last step only.
+
+**HR-5 · Share links without their fragment still work. BUILT.** A `/r/<id>` page with no `#result=` forwards to `#resort=<id>`, which opens that resort with its published facts.
+
+**Simplification**
+
+**HR-14 · Picks uses a compact stacked row at every width. BUILT.** Badge and name, then the verdict, the take and the tags on one muted line. No Region column (the chips filter by it), no "Best for" label. Fixes HR-2, desktop names running under the verdicts. Still a real table for screen readers.
+
+**HR-15 · Resort page. BUILT.** No crowd bullet (the Crowds row says it) and no annual-average bullet (the snowfall tile says it). The empty Terrain mix tile is a one-line "Terrain: Not published" row. Nicole's hot take sits right under the stats instead of ~1,300px down. "Why this one" and "Links" headings are screen-reader only. "Not much beyond skiing — plan for that" is now "Not much beyond skiing".
+
+**HR-16 · Quiver call. BUILT.** "Not a live forecast" once. No "The call" eyebrow or visible "Why" heading; the snow-report limit is one line; "Check a different mountain" is gone (Back to Quiver does it). The resort's state isn't repeated under its own region heading, and day chips read "Nov 22".
+
+**HR-17 · One accent per Chase row. BUILT.** Gold "Nicole's take" is the only row accent; the orange "Crowded on powder days" flag is off the row. The fallback status line is secondary text. Coral opening dates for today or tomorrow only (see H2).
+
+**HR-18 · Buzz. BUILT.** Region headings are the small group label used on Chase and Quiver, hidden when that region's chip is selected. No blurbs, no "Resorts" subhead; region and resort subreddits in one list; rows in regular weight with the accent on the link icon. About is one line.
+
+**HR-19 · One footer title. BUILT.** "About this data" on every surface.
+
+**HR-20 · Plan. BUILT.** No intro, no "Step n of 5" text, answers at most two across on desktop.
+
+**HR-25 · Chase's number is labelled. BUILT.** "7-day" under a live total, "avg week" under a typical one.
+
+**HR-26 · Share at the top too. BUILT.** An icon button beside the back link on the resort page and the Quiver call.
+
+**HR-27 · Copy cuts. BUILT.** As listed in the review's table, including Chase's About trimmed from six paragraphs to two sentences.
+
+**Desktop**
+
+**HR-21 · One chip row. BUILT.** See A1.
+
+**HR-22 · Resort page width. BUILT (minimal option).** Same width as every other page, with the four stats kept 2×2 so prices and units don't wrap. On desktop the page's own home sticker hides, since the top nav has one.
+
+**Accessibility and bugs**
+
+**HR-4 · Coral contrast. FIXED.** The dark-mode override was keyed on a `data-theme` attribute nothing set, so "Opens Nov 25" showed at 2.84:1. Now ~5:1.
+
+**HR-6 · Page titles. FIXED.** Plan sets its own; only a Plan result is "your ski trip match".
+
+**HR-7 · Small targets and reflow. FIXED.** Plan's Back is 44×44. No sideways scroll on Quiver or Plan at 200% text on a 320px phone.
+
+**Not done, by the review's own recommendation**
+
+**HR-13 · Rename the Picks nav. PROPOSED.** "Pick" means fewer things now that HR-10 shipped; left as is.
+
+**HR-23 · Master-detail layout on desktop. PROPOSED.** Only worth it if desktop use turns out to be real.
+
+**HR-24 · Quiver defaults the day. PROPOSED.** Would make Q1's two steps one; needs a Director's call against Q1/Q3.

@@ -100,7 +100,8 @@ async function run() {
   // is identical, but the pronoun framing must NOT be.
   assert('Cold-loaded share link uses "They said…" framing, not "You said…"', receivedState.bullets.every((b) => !/\byou\b|\byour\b/i.test(b)));
   assert('Cold-loaded share link eyebrow reads "Their pick", not "Your pick"', receivedState.eyebrow === 'Their pick');
-  assert('Shared/cold-start result screen has zero nav chrome', !receivedState.navVisible);
+  // HR-8 (heuristic review 2026-11-21): the shared screen now carries the nav.
+  assert('Shared/cold-start result screen carries the main nav (HR-8)', receivedState.navVisible);
   // M9 fix: keyboard/AT focus must land on the new content on arrival —
   // this is the cold-share-link path specifically named as most at risk,
   // since it's the one case where an aria-live announcement could race a

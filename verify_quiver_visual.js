@@ -222,7 +222,7 @@ async function run() {
         await off.waitForTimeout(1200);
         const offText = await off.locator("#quiver-card").innerText();
         check(offText.includes("Not a live forecast"), "with no network, the card is labelled not-live");
-        check(/typical snowfall for this time of year/i.test(offText), "the fallback states it is typical-season data");
+        check(/typical/i.test(offText), "the fallback reasons are phrased as typical-season data");
         check(!/[0-9]+:1/.test(offText), "the fallback never claims a measured snow-to-water ratio anywhere on the card");
         await off.screenshot({ path: path.join(SHOT_DIR, "07-fallback-light-390.png"), fullPage: true });
         shots.push(path.join(SHOT_DIR, "07-fallback-light-390.png"));

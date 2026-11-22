@@ -104,17 +104,24 @@ async function checkAboveHeading(page, id, headingSel, where) {
   // app-rants.js (now removed) go on explaining IN PROSE why history.back() is wrong here,
   // which is the most useful thing either of them says about it.
   const stripComments = (s) => s.replace(/\/\*[\s\S]*?\*\//g, "").replace(/^[ \t]*\/\/.*$/gm, "");
-  const offenders = fs.readdirSync(SRC).filter((f) => f.endsWith(".js"))
-    .filter((f) => /history\s*\.\s*back\s*\(/.test(stripComments(fs.readFileSync(path.join(SRC, f), "utf8"))));
-  assert(offenders.length === 0,
-    `no source file calls history.back()${offenders.length ? " — " + offenders.join(", ") : ""}`);
+  // HR-1 (heuristic review 2026-11-21) added real history entries, so leaf
+  // controls may now call history.back() — but only behind canGoBackInApp(),
+  // i.e. only when this visit pushed an in-app page behind them. A cold
+  // reader still gets the explicit fallback. Every call must sit on a line
+  // guarded by that check.
+  const unguarded = [];
+  fs.readdirSync(SRC).filter((f) => f.endsWith(".js")).forEach((f) => {
+    stripComments(fs.readFileSync(path.join(SRC, f), "utf8")).split("\n").forEach((line) => {
+      if (/history\s*\.\s*back\s*\(/.test(line) && !/canGoBackInApp\(\)/.test(line)) unguarded.push(f);
+    });
+  });
+  assert(unguarded.length === 0,
+    `every history.back() is guarded by canGoBackInApp()${unguarded.length ? " — " + unguarded.join(", ") : ""}`);
 
-  // This commit adds no global history handling: replaceState only, and no
-  // popstate/hashchange anywhere (the Rants surface that had its own routes is gone).
-  const strayHistory = fs.readdirSync(SRC).filter((f) => f.endsWith(".js"))
-    .filter((f) => /addEventListener\(\s*["'](?:popstate|hashchange)["']/.test(fs.readFileSync(path.join(SRC, f), "utf8")));
-  assert(strayHistory.length === 0,
-    `no popstate/hashchange handling anywhere${strayHistory.length ? " — " + strayHistory.join(", ") : ""}`);
+  // One popstate handler, in app.js; no hashchange routing.
+  const popFiles = fs.readdirSync(SRC).filter((f) => f.endsWith(".js"))
+    .filter((f) => /addEventListener\(\s*["']popstate["']/.test(fs.readFileSync(path.join(SRC, f), "utf8")));
+  assert(popFiles.length === 1 && popFiles[0] === "app.js", `exactly one popstate handler, in app.js — ${popFiles.join(", ")}`);
 
   const browser = await chromium.launch();
   const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } });
@@ -138,7 +145,7 @@ async function checkAboveHeading(page, id, headingSel, where) {
 
     // The lateral exits are additive, not replaced — they were explicitly kept.
     assert(await page.locator("#quiver-another-day").count() === 1, "Try a different day is still there");
-    assert(await page.locator("#quiver-another-resort").count() === 1, "Check a different mountain is still there");
+    assert(await page.locator("#quiver-another-resort").count() === 0, "Check a different mountain is gone (HR-16: Back to Quiver does it)");
 
     await page.click("#quiver-leaf-back");
     await page.waitForTimeout(400);
@@ -146,6 +153,7 @@ async function checkAboveHeading(page, id, headingSel, where) {
       step: state.quiver.step,
       h1: document.querySelector("#app-main h1").textContent.trim(),
       focused: document.activeElement.textContent.trim(),
+      focusedRow: document.activeElement.classList.contains("chase-row"),
       selectedDays: document.querySelectorAll(".tap-chip--selected").length,
     }));
     assert(landed.step === "day", `back lands on the day picker, the step it came from (${landed.step})`);
@@ -193,6 +201,7 @@ async function checkAboveHeading(page, id, headingSel, where) {
       step: state.quiver.step,
       h1: document.querySelector("#app-main h1").textContent.trim(),
       focused: document.activeElement.textContent.trim(),
+      focusedRow: document.activeElement.classList.contains("chase-row"),
     }));
     assert(after.route === "quiver" && after.step === "resort",
       `it navigates into the surface's own entry point rather than backwards out of the app (${after.route}/${after.step})`);
@@ -225,10 +234,13 @@ async function checkAboveHeading(page, id, headingSel, where) {
       route: state.route,
       h1: document.querySelector("#app-main h1").textContent.trim(),
       focused: document.activeElement.textContent.trim(),
+      focusedRow: document.activeElement.classList.contains("chase-row"),
       rows: document.querySelectorAll(".chase-row").length,
     }));
     assert(back.route === "chase", "back returns to Chase the Snow");
-    assert(back.focused === back.h1, "focus moves to Chase's heading");
+    // HR-11 (heuristic review 2026-11-21): focus returns to the row that
+    // opened the resort page, not the heading.
+    assert(back.focusedRow, "focus returns to the Chase row that was opened");
     assert(back.rows === rowsBefore && back.rows > 0,
       `the ranked list is restored from cache, not refetched (${back.rows} rows, was ${rowsBefore})`);
     await page.close();
@@ -264,6 +276,7 @@ async function checkAboveHeading(page, id, headingSel, where) {
       idx: state.quizStepIdx,
       heading: (document.getElementById("quiz-step-heading") || {}).textContent,
       focused: document.activeElement.textContent.trim(),
+      focusedRow: document.activeElement.classList.contains("chase-row"),
       selected: document.querySelectorAll("#quiz-step-container .tap-chip--selected").length,
     }));
     assert(back.route === "plan", "back returns to the quiz");
@@ -304,10 +317,10 @@ async function checkAboveHeading(page, id, headingSel, where) {
       "no in-app origin is recorded for a cold share link");
     assert(await page.locator("#result-leaf-back").count() === 0,
       "no back control is rendered — there is nothing behind this reader to return to");
-    assert(await page.evaluate(() => document.getElementById("bottom-nav").hidden) === true,
-      "and the screen's zero-nav-chrome rule is intact");
-    assert(await page.locator("#see-nicoles-btn").count() === 1,
-      "its honest destination is still named in the footer (\"See all\", P6)");
+    assert(await page.evaluate(() => document.getElementById("bottom-nav").hidden) === false,
+      "and the main nav is there to go anywhere else (HR-8)");
+    assert(await page.locator("#result-find-yours").count() === 1,
+      "the footer offers a way to find their own (\"Find yours\", HR-9)");
     await page.close();
   }
 

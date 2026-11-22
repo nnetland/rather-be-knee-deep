@@ -94,7 +94,9 @@ function openingSortKey(resort, now) {
 function openingStatusHtml(o, now) {
   now = now || appNow();
   let tone = "estimate";
-  if (o.date) tone = (o.date.getTime() - now.getTime() < 7 * 864e5) ? "soon" : "announced";
+  // HR-17 (heuristic review 2026-11-21): coral only for today or tomorrow.
+  // At "inside a week", 6 of the first 8 Quiver rows were red at once.
+  if (o.date) tone = (o.date.getTime() - now.getTime() < 2 * 864e5) ? "soon" : "announced";
   return `<span class="chase-row__status chase-row__status--${tone} body-sm">${escapeHtml(o.label)}</span>`;
 }
 
@@ -121,9 +123,11 @@ function updatedStamp(ms, now) {
 // The one page header, every surface (Director, 2026-11-07): the h1 is the
 // bottom-nav word, exactly, and one short line says what to do here. Anything
 // else (a forecast stamp, a status) follows in pageMetaHtml, only when needed.
-// Home button (2026-11-21 canvas round): the home sticker, small, top-right
-// of every section page and the resort page. Shared links land deep in the
-// app, so this is the way back to the front door.
+// Home button (2026-11-21 canvas round): the home sticker, small. Since the
+// heuristic review of 2026-11-21 (HR-8) every page, the resort page included,
+// carries the main nav, so section pages no longer need it: it stays at the
+// top-right of the resort page and at the leading edge of the desktop top nav
+// (P14), and nowhere else.
 function homeLinkHtml() {
   return `<a class="home-link" href="/" aria-label="Rather Be Knee Deep home"><img src="${BRAND_STICKER_ART}" alt="" width="44" height="44" decoding="async"></a>`;
 }
@@ -133,7 +137,6 @@ function pageHeaderHtml(title, introHtml) {
     <header class="page-header">
       <div class="page-header__row">
         <h1 class="display-h1">${escapeHtml(title)}</h1>
-        ${homeLinkHtml()}
       </div>
       ${introHtml ? `<p class="page-intro body-md">${introHtml}</p>` : ""}
     </header>`;

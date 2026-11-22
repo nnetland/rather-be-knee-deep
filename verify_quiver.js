@@ -231,8 +231,10 @@ for (const resort of RESORTS.slice(0, 25)) {
   const uniq = new Set(fc.days.map((d) => d.snowIn));
   assert(uniq.size === 1, `${resort.id}: typical-season days must be flat, got ${uniq.size} distinct values`);
   const r = quiverCheck(resort, fc.days[3], fc.days.slice(0, 3), MIDWINTER);
-  assert(r.caveats.some((t) => t.includes("typical snowfall for this time of year")),
-    `${resort.id}: fallback path must carry the not-a-forecast caveat`);
+  // HR-16 (heuristic review 2026-11-21): the page's status line says "Not a
+  // live forecast" once; the caveat list no longer repeats it.
+  assert(!r.caveats.some((t) => /not a live forecast/i.test(t)),
+    `${resort.id}: fallback caveats must not repeat the status line`);
   // The badge says "Not a live forecast"; no sentence underneath it may then
   // turn round and describe the same numbers as a forecast.
   for (const reason of r.reasons) {

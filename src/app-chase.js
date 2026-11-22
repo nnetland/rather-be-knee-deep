@@ -17,7 +17,7 @@ function renderChase(main) {
 
   main.innerHTML = `
     <div class="page-column">
-      ${pageHeaderHtml("Chase", "See where it's dumping this week.")}
+      ${pageHeaderHtml("Chase")}
       <div id="chase-freshness"></div>
       ${showControls ? `
         ${areaChipsHtml("chase", state.chaseAnswers.area, new Set(RESORTS.filter((r) => r.scale !== "day-trip").map((r) => (areaOfResort(r) || {}).id).filter(Boolean)))}` : ""}
@@ -38,8 +38,10 @@ function renderChase(main) {
     description: "Ranked by real snow quality, not just inches — updated from live forecasts.",
   });
 
-  loadAndRenderChase();
+  // Heading first: when this render is a return from a resort page,
+  // renderChaseList() then moves focus on to the row that opened it (HR-11).
   focusHeading(main);
+  loadAndRenderChase();
 }
 
 // Filters re-render the list silently otherwise (SC 4.1.3).
@@ -152,12 +154,9 @@ function chaseFreshnessHtml(forecasts, now) {
 
 function chaseAboutHtml(anyCanada) {
   return pageAboutHtml("About this data", `
-    <p>Snow totals are the National Weather Service's 7-day forecast for each mountain, refreshed every time you open this page. Ranked by snow quality and terrain, not just inches — cold, light snow on steep terrain beats a wet foot on groomers.</p>
-    <p>Opening days are each resort's published ${OPENINGS_SEASON} date, checked ${OPENINGS_CHECKED}. Resorts sometimes slip a few days. "Usually mid-Nov" means the resort hasn't announced a date and that's its typical opening; "Opening TBA" means it's past that and still unannounced.</p>
-    <p>When nothing is open, the list shows what's opening soon, most forecast snow first.</p>
-    ${anyCanada ? "<p>The forecast service only covers the US, so Canadian resorts show typical season snowfall instead. Check the resort's own snow report for real-time numbers.</p>" : ""}
-    <p>Day-trip hills aren't listed here; they're in Nicole's picks.</p>
-    <p>A weather forecast, not a snow report: it can't see base depth, grooming, or what's already tracked out.</p>`, "chase-about-details");
+    <p>The National Weather Service 7-day forecast, ranked by snow quality and terrain, not just inches. A forecast, not a snow report: it can't see base depth, grooming or tracked-out snow.</p>
+    <p>Opening days are each resort's published ${OPENINGS_SEASON} date, checked ${OPENINGS_CHECKED}; resorts sometimes slip.</p>
+    ${anyCanada ? "<p>The forecast covers the US only, so Canada shows typical-season snowfall.</p>" : ""}`, "chase-about-details");
 }
 
 function renderChaseList(isRefresh) {
@@ -209,9 +208,9 @@ function renderChaseList(isRefresh) {
   // with what's coming. Something open but filtered out: say so in one line.
   const nothingOpen = Object.keys(openFc).length === 0;
   const openHeading = upcomingRows.length && !nothingOpen
-    ? `<h2 class="chase-group-h data-label" id="chase-open-h">Open now · ${ranked.length}</h2>` : "";
+    ? `<h2 class="chase-group-h data-label" id="chase-open-h">Open now</h2>` : "";
   const upcomingHtml = upcomingRows.length ? `
-    <h2 class="chase-group-h data-label" id="chase-upcoming-h">Opening soon · ${anyLive ? "most snow first" : "by opening day"}</h2>
+    <h2 class="chase-group-h data-label" id="chase-upcoming-h">Opening soon</h2>
     <ul class="chase-list chase-list--upcoming" id="chase-upcoming-list" aria-labelledby="chase-upcoming-h">
       ${upcomingRows.map((row) => chaseRowHtml(row, null, anyLive)).join("")}
     </ul>` : "";
@@ -232,6 +231,18 @@ function renderChaseList(isRefresh) {
   });
 
   const rows = document.querySelectorAll("#chase-body .chase-row");
+  // HR-11: back from a resort page lands on the row that opened it, with
+  // focus on it, the way Picks already did. No entrance animation then.
+  const focusId = state.routeParams && state.routeParams.focusResort;
+  if (focusId) {
+    delete state.routeParams.focusResort;
+    const row = document.querySelector(`#chase-body .chase-row[data-rid="${focusId}"]`);
+    if (row) {
+      row.scrollIntoView({ block: "center", behavior: "auto" });
+      row.focus({ preventScroll: true });
+      return;
+    }
+  }
   if (!isRefresh) revealListRows(rows); else refreshListRows(rows);
 }
 
@@ -256,8 +267,9 @@ function chaseRowHtml(row, rank, anyLive) {
   // The "Traveling from" control and its drive-time line were removed
   // 2026-11-07 (Director's call); region chips answer "what can I get to".
   const feasibilityChip = "";
-  const crowdFlag = (resort.crowd_level === "brutal" || resort.crowd_level === "high")
-    ? `<span class="chase-flag chase-flag--crowd">${ICONS.crowd} Crowded on powder days</span>` : "";
+  // HR-17: gold "Nicole's take" is the one row accent. The crowd flag moved
+  // off the row; crowds are on the resort page.
+  const crowdFlag = "";
   const nicoleFlag = resort.hot_take ? `<span class="chase-flag chase-flag--nicole">● Nicole's take →</span>` : "";
   const snowSpoken = !showTile ? "" : ` ${totalInches} inches ${isLive ? "forecast over the next 7 days" : "in an average week, not a live forecast"}.`;
   const spoken = `${escapeHtml(resort.name)}, ${escapeHtml(region)}.${opening.open ? "" : " " + escapeHtml(opening.label) + "."}${snowSpoken}${opening.open ? " " + escapeHtml(reason) + "." : ""}`;
@@ -280,6 +292,7 @@ function chaseRowHtml(row, rank, anyLive) {
               <span class="forecast-badge__icon">${cold ? ICONS.crystal : ICONS.droplet}</span>
               <span class="forecast-badge__inches data-inline">${totalInches}"</span>
             </span>
+            ${tagTypical ? "" : `<span class="forecast-badge__period" aria-hidden="true">${isLive ? "7-day" : "avg week"}</span>`}
           </span>
         </span>` : ""}
       </div>
@@ -368,7 +381,6 @@ function offSeasonPreviewHtml(preview) {
           <span class="canada-divider__icon" aria-hidden="true">${ICONS.signalSlash}</span>
           <div class="canada-divider__body">
             <span class="typical-season-tag">Typical season, not a forecast</span>
-            <p class="body-sm">Based on typical snowfall for this time of year in a normal season, not what's happening right now.</p>
           </div>
         </div>
         <ol class="chase-list">
@@ -417,17 +429,13 @@ function showChaseRowDetail(rid) {
   const fc = state.chaseCache && state.chaseCache.forecasts[rid];
   if (fc) {
     bullets.push(fc.isLive ? `${fc.totalInches}" forecast over the next 7 days.` : `Typical for this time of year: about ${fc.totalInches}" a week during the core season.`);
-  } else if (resort.avg_annual_snowfall_in != null) {
-    // Off-season preview row — there's no forecast fetch in this state at
-    // all (see renderChaseOffSeason), so the only honest snow fact
-    // available is the published annual average, clearly framed as such.
-    bullets.push(`Averages about ${resort.avg_annual_snowfall_in}" a year in a typical season.`);
   }
+  // HR-15: no "averages X a year" bullet (the Average snowfall tile says it)
+  // and no crowd bullet (the Crowds row says it).
   // sanitizeDatasetProse strips research-register framing before this raw
   // dataset field reaches a reader (Fix 3, synthetic-user-testing.md) — same
   // helper as the result card's ski-school disclosure and Range Readout.
   if (resort.character_note) bullets.push(sanitizeDatasetProse(resort.character_note));
-  if (resort.crowd_level) bullets.push(CROWD_COPY[resort.crowd_level]);
   const payload = { v: 1, rid: resort.id, reasonBullets: bullets.slice(0, 3), showRangeReadout: false, range: null };
   // fresh: true — this is a same-session, self-generated view (the user just
   // tapped their own Chase-the-Snow row), not a cold shared link, so it must
