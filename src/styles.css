@@ -801,8 +801,11 @@ ul { margin: 0; padding: 0; list-style: none; }
 .freshness-badge--fallback .freshness-badge__text { color: var(--accent-warm-text-tint); font-weight: 700; }
 .escalation-note { color: var(--text-secondary); margin-top: var(--space-2); }
 
-.chase-list { display: flex; flex-direction: column; }
-/* Zoom-round fix: `align-items: center` vertically centers `.chase-row__rank`
+/* P5 (2026-11-21, Director's call): no rank numbers. The order already
+   carries the ranking, so the list markers and the number pill that sat on
+   each badge are gone. Still an <ol>, so screen readers keep the order. */
+.chase-list { display: flex; flex-direction: column; list-style: none; margin: 0; padding: 0; }
+/* Zoom-round fix: `align-items: center` vertically centers the avatar
    and `.chase-row__badge` against the row's own cross-axis size — fine when
    `.chase-row__main` (the resort name/region/flags) is a single line, but at
    200% zoom a longer name (e.g. "Whistler Blackcomb", "Revelstoke Mountain
@@ -841,12 +844,6 @@ ul { margin: 0; padding: 0; list-style: none; }
 @media (min-width: 480px) { .chase-row__avatar { width: 72px; height: 72px; } }
 @media (min-width: 700px) { .chase-row__avatar { width: 96px; height: 96px; } }
 .chase-row__avatar svg { width: 100%; height: 100%; display: block; }
-.chase-row__rank {
-  position: absolute; right: -3px; bottom: -3px; flex: none; width: 20px; height: 20px; border-radius: 50%;
-  background: var(--bg-surface); border: var(--border-default-w) solid var(--border-hairline); box-shadow: var(--shadow-sm);
-  display: flex; align-items: center; justify-content: center; font-family: 'IBM Plex Mono', monospace; font-weight: 700; font-size: .625rem;
-}
-@media (min-width: 480px) { .chase-row__rank { right: -4px; bottom: -4px; width: 24px; height: 24px; font-size: .6875rem; } }
 /* Zoom-round fix: `.chase-row__main` correctly shrinks (`min-width: 0`), but
    `.chase-row__badge` is `flex: none` with nothing capping its own natural
    width — at 200% zoom, "next 7 days" alone needs ~140px on one line, and an

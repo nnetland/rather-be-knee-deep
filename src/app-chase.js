@@ -259,14 +259,13 @@ function chaseRowHtml(row, rank, anyLive) {
   const crowdFlag = (resort.crowd_level === "brutal" || resort.crowd_level === "high")
     ? `<span class="chase-flag chase-flag--crowd">${ICONS.crowd} Crowded on powder days</span>` : "";
   const nicoleFlag = resort.hot_take ? `<span class="chase-flag chase-flag--nicole">● Nicole's take →</span>` : "";
-  const rankHtml = rank != null ? `<span class="chase-row__rank">${rank}</span>` : "";
   const snowSpoken = !showTile ? "" : ` ${totalInches} inches ${isLive ? "forecast over the next 7 days" : "in an average week, not a live forecast"}.`;
   const spoken = `${escapeHtml(resort.name)}, ${escapeHtml(region)}.${opening.open ? "" : " " + escapeHtml(opening.label) + "."}${snowSpoken}${opening.open ? " " + escapeHtml(reason) + "." : ""}`;
 
   return `
     <li>
       <div class="chase-row${rank == null ? " chase-row--upcoming" : ""}" data-rid="${resort.id}" role="link" tabindex="0" aria-label="${spoken}">
-        <span class="chase-row__avatar" aria-hidden="true">${badgeSvg(resort, "chase-row")}${rankHtml}</span>
+        <span class="chase-row__avatar" aria-hidden="true">${badgeSvg(resort, "chase-row")}</span>
         <span class="chase-row__main">
           <span class="chase-row__name display-h3">${escapeHtml(resort.name)}</span>
           <span class="chase-row__region body-sm">${escapeHtml(region)}</span>
@@ -307,7 +306,7 @@ function typicalSeasonRowHtml(resort, rank) {
   return `
     <li>
       <div class="chase-row" data-rid="${resort.id}" role="link" tabindex="0" aria-label="${escapeHtml(resort.name)}, ${escapeHtml(region)}.${opening.open ? "" : " " + escapeHtml(opening.label) + "."} Typical season average ${resort.avg_annual_snowfall_in ?? "unpublished"} inches a year. Not a live forecast.">
-        <span class="chase-row__avatar" aria-hidden="true">${badgeSvg(resort, "chase-row")}<span class="chase-row__rank">${rank}</span></span>
+        <span class="chase-row__avatar" aria-hidden="true">${badgeSvg(resort, "chase-row")}</span>
         <span class="chase-row__main">
           <span class="chase-row__name display-h3">${escapeHtml(resort.name)}</span>
           <span class="chase-row__region body-sm">${escapeHtml(region)}</span>
