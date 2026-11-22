@@ -405,7 +405,6 @@ function renderQuiverResult(body) {
           <p class="body-md">${escapeHtml(result.aside.text)}</p>
         </div>` : ""}
 
-      <h2 class="display-h3" style="margin-bottom:var(--space-3)">The numbers</h2>
       <div class="stat-strip stat-strip--quad">${quiverStatsHtml(c)}</div>
 
       ${result.caveats.length ? `
