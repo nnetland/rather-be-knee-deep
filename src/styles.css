@@ -1226,9 +1226,6 @@ ul { margin: 0; padding: 0; list-style: none; }
 .buzz-link__support { color: var(--text-secondary); overflow-wrap: anywhere; }
 .buzz-link__out { flex: none; width: 18px; height: 18px; color: var(--text-secondary); }
 .buzz-link__out svg { width: 100%; height: 100%; display: block; }
-.buzz-none { margin: var(--space-3) 0 0; color: var(--text-secondary); }
-.buzz-none__label { font-weight: 700; color: var(--text-primary); }
-.buzz-none a { color: var(--brand-primary-text); font-weight: 700; }
 .resort-links { margin-bottom: var(--space-5); }
 
 /* =========================================================================
