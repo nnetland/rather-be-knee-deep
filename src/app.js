@@ -1073,8 +1073,8 @@ function renderResult(main) {
           </div>` : ""}
         ${resortLinksHtml(resort)}
         <div class="footer-cta reveal-hidden" id="footer-cta">
-          <button class="btn btn-primary btn-block" id="share-btn" type="button">${ICONS.share} Share this resort</button>
-          <button class="btn-text" id="see-nicoles-btn" type="button" style="text-align:center">See all →</button>
+          <button class="btn btn-primary btn-block" id="share-btn" type="button">${ICONS.share} Share this pick</button>
+          <button class="btn-text" id="see-nicoles-btn" type="button" style="text-align:center">See all picks →</button>
         </div>
       </article>
     </div>`;

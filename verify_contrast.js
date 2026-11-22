@@ -59,7 +59,7 @@ async function run() {
       const navRatio = contrast(navFg, navBg);
       assert('Dark mode: nav active-tab label clears 4.5:1 on its real background', navRatio >= 4.5, { navRatio, navFg, navBg });
 
-      // "Share this resort" button + "See all" link, on the result card (P6, 2026-11-21)
+      // "Share this pick" button + "See all picks" link, on the result card (P6, 2026-11-21)
       await page.click('[data-group="q1"][data-value="solo"]');
       await page.waitForTimeout(700);
       await page.click('[data-group="q2a"][data-value="intermediate"]');
@@ -78,12 +78,12 @@ async function run() {
       const btnFg = parseRgb(await page.$eval('#share-btn', (el) => getComputedStyle(el).color));
       const btnBg = parseRgb(await effectiveBg(page, '#share-btn'));
       const btnRatio = contrast(btnFg, btnBg);
-      assert('Dark mode: "Share this resort" button text clears 4.5:1 on its real background', btnRatio >= 4.5, { btnRatio, btnFg, btnBg });
+      assert('Dark mode: "Share this pick" button text clears 4.5:1 on its real background', btnRatio >= 4.5, { btnRatio, btnFg, btnBg });
 
       const linkFg = parseRgb(await page.$eval('#see-nicoles-btn', (el) => getComputedStyle(el).color));
       const linkBg = parseRgb(await effectiveBg(page, '#see-nicoles-btn'));
       const linkRatio = contrast(linkFg, linkBg);
-      assert('Dark mode: "See all" link clears 4.5:1 on its real background', linkRatio >= 4.5, { linkRatio, linkFg, linkBg });
+      assert('Dark mode: "See all picks" link clears 4.5:1 on its real background', linkRatio >= 4.5, { linkRatio, linkFg, linkBg });
     }
 
     // Nicole's List "All regions" selected filter chip. Result screens (the
