@@ -68,7 +68,7 @@ These came from the original brief and are non-negotiable unless Nicole changes 
 
 ## Outstanding — content
 
-**C1 · Hot takes are added as the season goes. ONGOING, Director's call 2026-11-21.** *"I don't need a 'hot take' on every resort. I can add them as the season goes on."* Not every place needs a take, so the missing ones are not a gap to close. Nine are written. New ones go in the `nicoles_take_template` Google Sheet and flow through on rebuild. Supersedes the earlier "write the remaining 38" target and parking-lot item P3; Crested Butte's short take can be expanded whenever Nicole likes.
+**C1 · Hot takes are added as the season goes. ONGOING, Director's call 2026-11-21.** *"I don't need a 'hot take' on every resort. I can add them as the season goes on."* Not every place needs a take, so the missing ones are not a gap to close. 21 are written (12 added 2026-11-21). New ones go in the `nicoles_take_template` Google Sheet. The site does not read the sheet: say "pull the new takes" and Claude reads the sheet, drafts each new take as a verdict plus a take (R5b/R5c lengths, typos fixed, words kept), shows them for review, and ships on "ship it". The drafts live in `tools/new_takes_<date>.json`. Supersedes the earlier "write the remaining 38" target and parking-lot item P3; Crested Butte's short take can be expanded whenever Nicole likes.
 
 **C2 · Sentiment ratings on takes. DEFERRED by Director, explicitly post-launch.** An "Overall Rating" column already exists empty in the sheet. Once populated, the app could surface how strongly Nicole rates a place. Deferred deliberately: takes are commentary, and ranking stays on the data.
 
@@ -270,12 +270,14 @@ All committed on Nicole's Mac and passing the full suite; live once the branch i
 
 ---
 
-## Round of 2026-11-21, evening (canvas comments; PRs #11–#14 shipped)
+## Round of 2026-11-21, evening (canvas comments; PRs #11–#15 shipped)
 
 **Copy.** Picks intro: "Hot takes from the resorts in my log book." (R5a's first-person line). Buzz intro: "Catch up on the resort Reddit chatter." Resort page: "Share this pick" and "See all picks →". Terrain tiles read "Beginner", "Intermediate", "Advanced & expert" (no "terrain"). "The numbers" heading removed from the resort page and the Quiver result (PR #13).
 
 **Quiver search below the region chips. SHIPPED, Director's call.** Region chips first, then the search box.
 
 **H8 · Home button. SHIPPED, Director's call ("works for now").** Shared links land deep in the app, so every section page (Chase, Quiver, Buzz, Plan, Picks) and the resort page carry the home sticker as a 44px round button, top-right, beside the h1 or the back link. It goes to the home screen; screen readers hear "Rather Be Knee Deep home". No wordmark, in keeping with the brand line's removal from the resort card.
+
+**Picks: 12 new hot takes. SHIPPED (PR #15).** Alyeska, Mt. Baker, Mount Hood (Timberline), Whistler, Bridger Bowl, Red Lodge, Jackson Hole, Park City, Snowbird, Solitude, Alta and Vail, from the sheet, approved as drafted.
 
 **Canvas.** Quiver now has a board. The canvas also holds the home-button option boards and the P11 mockups.
