@@ -1045,7 +1045,7 @@ function renderResult(main) {
     <div class="result-wrap">
       ${backHtml}
       <article class="result-card" id="result-card">
-        <p class="result-eyebrow label reveal-hidden">${isFreshResult ? "Your pick" : "Their pick"}</p>
+        ${origin === "picks" ? "" : `<p class="result-eyebrow label reveal-hidden">${isFreshResult ? "Your pick" : "Their pick"}</p>`}
         <div class="badge-panel reveal-hidden" role="img" aria-label="${escapeHtml(altText)}">${badge}</div>
         <h1 class="display-hero result-headline reveal-hidden" tabindex="-1">
           <span class="resort-name">${escapeHtml(resort.name)}</span>
