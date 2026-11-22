@@ -804,7 +804,12 @@ function buildStatStrip(resort) {
   html += statTile("Vertical drop", fmtNum(resort.vertical_drop_ft), "ft", resort.vertical_drop_ft == null ? "Vertical drop not published by the resort" : null, resort.vertical_drop_ft == null);
   html += statTile("Skiable acres", fmtNum(resort.skiable_acres), "", resort.skiable_acres == null ? "Skiable acres not published by the resort" : null, resort.skiable_acres == null);
   html += statTile("Average snowfall", fmtNum(resort.avg_annual_snowfall_in), "in", resort.avg_annual_snowfall_in == null ? "Average snowfall not published by the resort" : null, resort.avg_annual_snowfall_in == null);
-  html += `<div class="stat-tile"><span class="data-label">Cost</span><span class="stat-tile__value data-stat">${resort.cost_tier || "—"}</span></div>`;
+  // P8: a published 2026–27 day-pass range when there is one; otherwise the
+  // editorial cost tier, labelled as such, rather than a guessed price.
+  const pass = dayPassLabel(resort.id);
+  html += pass
+    ? `<div class="stat-tile"><span class="data-label">Day pass</span><span class="stat-tile__value data-stat">${escapeHtml(pass)}</span></div>`
+    : `<div class="stat-tile"><span class="data-label">Cost</span><span class="stat-tile__value data-stat">${resort.cost_tier || "—"}</span></div>`;
   return html;
 }
 
