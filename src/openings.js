@@ -142,3 +142,27 @@ function pageAboutHtml(title, bodyHtml, id) {
       <div class="page-about__body body-sm">${bodyHtml}</div>
     </details>`;
 }
+
+// ---------------------------------------------------------------------------
+// Day-pass prices, 2026–27 (P8, 2026-11-21). Adult one-day lift ticket, from
+// the cheapest published price (often online, in advance, or a set weekday
+// deal) to the highest (usually the peak-day window rate). Researched
+// 2026-11-21; sources per row in research/day-pass-2026-27.json. Resorts with
+// no 2026–27 figure are absent and keep the editorial cost tier instead.
+// Refresh before each season, alongside openings.
+// ---------------------------------------------------------------------------
+const DAY_PASS = /*__DAY_PASS_JSON__*/{};
+
+function dayPassLabel(rid) {
+  const p = DAY_PASS[rid];
+  if (!p || p.high == null) return null;
+  const cur = p.cur === "CAD" ? "CA$" : "$";
+  if (p.single) return `${cur}${p.high}`;
+  if (p.low == null) return `Up to ${cur}${p.high}`;
+  return `${cur}${p.low}–$${p.high}`;
+}
+
+// Après scene (P9, 2026-11-21): one line per resort on what happens after the
+// lifts close. Written 2026-11-21 in research/apres.json; venues named are
+// long-standing ones. Refresh alongside openings and day-pass prices.
+const APRES = /*__APRES_JSON__*/{};

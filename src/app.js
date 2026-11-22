@@ -801,10 +801,15 @@ let skiSchoolTileSeq = 0;
 
 function buildStatStrip(resort) {
   let html = "";
-  html += statTile("Vertical drop", fmtNum(resort.vertical_drop_ft), "ft", resort.vertical_drop_ft == null ? "Vertical drop not published by the resort" : "Top to bottom, in one run", resort.vertical_drop_ft == null);
+  html += statTile("Vertical drop", fmtNum(resort.vertical_drop_ft), "ft", resort.vertical_drop_ft == null ? "Vertical drop not published by the resort" : null, resort.vertical_drop_ft == null);
   html += statTile("Skiable acres", fmtNum(resort.skiable_acres), "", resort.skiable_acres == null ? "Skiable acres not published by the resort" : null, resort.skiable_acres == null);
-  html += statTile("Average snowfall", fmtNum(resort.avg_annual_snowfall_in), "in", resort.avg_annual_snowfall_in == null ? "Average snowfall not published by the resort" : "A typical season, not this week", resort.avg_annual_snowfall_in == null);
-  html += `<div class="stat-tile"><span class="data-label">Cost</span><span class="stat-tile__value data-stat">${resort.cost_tier || "—"}</span></div>`;
+  html += statTile("Average snowfall", fmtNum(resort.avg_annual_snowfall_in), "in", resort.avg_annual_snowfall_in == null ? "Average snowfall not published by the resort" : null, resort.avg_annual_snowfall_in == null);
+  // P8: a published 2026–27 day-pass range when there is one; otherwise the
+  // editorial cost tier, labelled as such, rather than a guessed price.
+  const pass = dayPassLabel(resort.id);
+  html += pass
+    ? `<div class="stat-tile"><span class="data-label">Day pass</span><span class="stat-tile__value data-stat">${escapeHtml(pass)}</span></div>`
+    : `<div class="stat-tile"><span class="data-label">Cost</span><span class="stat-tile__value data-stat">${resort.cost_tier || "—"}</span></div>`;
   return html;
 }
 
@@ -850,6 +855,7 @@ function buildDetailNotes(resort) {
     ${notesRow("Crowds", escapeHtml(CROWD_COPY[resort.crowd_level] || "Not published by the resort"))}
     ${notesRow("Pass", escapeHtml(PASS_COPY[resort.pass_affiliation] || resort.pass_affiliation || "Not published by the resort"))}
     ${notesRow("Ski school", skiSchoolNotesValue(resort))}
+    ${APRES[resort.id] ? notesRow("Après", escapeHtml(APRES[resort.id])) : ""}
     ${notesRow("Off the mountain", escapeHtml(ACTIVITIES_COPY[resort.non_ski_activities] || "Not published by the resort"))}
   </dl>`;
 }
@@ -1024,25 +1030,22 @@ function renderResult(main) {
   // navigated into it, there is no list it belongs to, and the screen is
   // already asserted to carry zero nav chrome (verify_share_and_offline) —
   // it is a share artifact, and the app's front door for whoever opened it.
-  // Its two honest destinations are already in the footer, named plainly:
-  // "Make your own pick" and "See more of Nicole's picks". A control at the
+  // Its honest destination is already in the footer, named plainly: "See all"
+  // (P6, 2026-11-21, which also removed "Make your own pick"). A control at the
   // top saying "back" to someone who has never been anywhere would be the
   // dishonest kind of affordance this whole change exists to remove.
   const origin = state.routeParams.origin;
   const backHtml =
     origin === "chase" ? leafBackHtml("result-leaf-back", "Back to Chase", true) :
     origin === "plan" ? leafBackHtml("result-leaf-back", "Back to your answers", true) :
+    origin === "picks" ? leafBackHtml("result-leaf-back", "Back to Picks", true) :
     "";
 
   main.innerHTML = `
     <div class="result-wrap">
       ${backHtml}
       <article class="result-card" id="result-card">
-        <div class="attribution reveal-hidden">
-          <span class="attribution__mark">${ICONS.mountain}</span>
-          <span class="attribution__word label">Rather Be Knee Deep</span>
-        </div>
-        <p class="result-eyebrow label reveal-hidden">${isFreshResult ? "Your pick" : "Their pick"}</p>
+        ${origin === "picks" ? "" : `<p class="result-eyebrow label reveal-hidden">${isFreshResult ? "Your pick" : "Their pick"}</p>`}
         <div class="badge-panel reveal-hidden" role="img" aria-label="${escapeHtml(altText)}">${badge}</div>
         <h1 class="display-hero result-headline reveal-hidden" tabindex="-1">
           <span class="resort-name">${escapeHtml(resort.name)}</span>
@@ -1070,10 +1073,8 @@ function renderResult(main) {
           </div>` : ""}
         ${resortLinksHtml(resort)}
         <div class="footer-cta reveal-hidden" id="footer-cta">
-          <button class="btn btn-primary btn-block" id="share-btn" type="button">${ICONS.share} Share this pick</button>
-          <p class="body-sm" style="text-align:center;color:var(--text-secondary);margin:0">Copies a link with the picture and the why.</p>
-          <button class="btn btn-secondary btn-block" id="make-own-btn" type="button">Make your own pick</button>
-          <button class="btn-text" id="see-nicoles-btn" type="button" style="text-align:center">See more of Nicole's picks →</button>
+          <button class="btn btn-primary btn-block" id="share-btn" type="button">${ICONS.share} Share this resort</button>
+          <button class="btn-text" id="see-nicoles-btn" type="button" style="text-align:center">See all →</button>
         </div>
       </article>
     </div>`;
@@ -1083,10 +1084,10 @@ function renderResult(main) {
   // the destination's own heading with no extra handling here, matching every
   // other route change in the app.
   const leafBack = document.getElementById("result-leaf-back");
-  if (leafBack) leafBack.addEventListener("click", () => navigate(origin === "chase" ? "chase" : "plan"));
+  if (leafBack) leafBack.addEventListener("click", () =>
+    origin === "picks" ? navigate("nicoles", { focusResort: resort.id }) : navigate(origin === "chase" ? "chase" : "plan"));
 
   document.getElementById("share-btn").addEventListener("click", () => shareResult(resort, shared));
-  document.getElementById("make-own-btn").addEventListener("click", () => navigate("splash"));
   document.getElementById("see-nicoles-btn").addEventListener("click", () => navigate("nicoles"));
   main.querySelectorAll(".stat-tile__expand-btn, .notes-row__expand-btn").forEach((btn) => {
     btn.addEventListener("click", () => {
@@ -1172,7 +1173,6 @@ function revealResultCard(card, { hasRangeReadout, hasHotTake }) {
     { duration: 360, easing: "cubic-bezier(.16,1,.3,1)", fill: "both" }
   );
 
-  push(".attribution", [{ opacity: 0 }, { opacity: 1 }], { duration: 160, delay: 0, easing: "cubic-bezier(.2,0,0,1)", fill: "both" });
   push(".result-eyebrow", [{ opacity: 0 }, { opacity: 1 }], { duration: 160, delay: 0, easing: "cubic-bezier(.2,0,0,1)", fill: "both" });
   push(".badge-panel", [{ opacity: 0, transform: "scale(.97)" }, { opacity: 1, transform: "scale(1)" }], { duration: 220, delay: 40, easing: "cubic-bezier(.16,1,.3,1)", fill: "both" });
   push(".result-headline", [{ opacity: 0, transform: "translateY(6px)" }, { opacity: 1, transform: "translateY(0)" }], { duration: 220, delay: 80, easing: "cubic-bezier(.16,1,.3,1)", fill: "both" });
@@ -1241,7 +1241,9 @@ function setOgMeta({ title, description, image }) {
 
 async function shareResult(resort, shared) {
   const token = b64urlEncode(JSON.stringify(shared));
-  const url = `${location.origin}${location.pathname}#result=${token}`;
+  // /r/<id> is a static page whose link preview shows this resort's badge;
+  // it hands the hash straight on to the app (see build.py).
+  const url = `${location.origin}/r/${resort.id}#result=${token}`;
   const shareData = {
     title: `${resort.name} — your ski trip match`,
     text: `${shared.reasonBullets[0] || "A real fit for your crew"} — see the full pick:`,

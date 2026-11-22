@@ -1,12 +1,20 @@
 # Rather Be Knee Deep — Requirements
 
-_Living document. Director: Nicole. Last updated 2026-11-07._
+_Living document. Director: Nicole. Last updated 2026-11-21._
 
 This is the single record of what this app should do — shipped, agreed, and still wanted.
 
 **How this file works.** Anything Nicole describes in a working session becomes an entry here, whether or not she frames it as a requirement. Claude writes it; Nicole edits. This file is mirrored to `docs/requirements.md` in the GitHub repo, where git versions every change. **Nicole edits the project doc copy only** — Claude propagates to the repo, so the two never disagree about who is right.
 
-Entries are tagged: **SHIPPED** (built and live), **AGREED** (decided, not built), **PROPOSED** (raised, not decided), **DEFERRED** (consciously postponed, with a reason).
+Entries are tagged: **SHIPPED** (built and live), **AGREED** (decided, not built), **PROPOSED** (raised, not decided), **DEFERRED** (consciously postponed, with a reason), **PARKED** (Nicole wants it but isn't ready to start; lives in the Parking lot below).
+
+---
+
+## Parking lot
+
+Changes Nicole wants but isn't ready to make. Nothing here is a decision until she promotes it; when she does, it moves to the right section as AGREED and comes out of this list. Add with "park this: …"; review with "what's in the parking lot?". Open items here are listed in the Saturday Weekly Briefing as a reminder until they're promoted or dropped.
+
+Nothing is parked right now. On 2026-11-21 every item was worked through on the canvas: P1, P2 and P5–P10 were built (see *Round of 2026-11-21* below), P4 was promoted and waits on Nicole's Gemini art, and P3 was dropped at the Director's call (see C1).
 
 ---
 
@@ -24,7 +32,7 @@ These came from the original brief and are non-negotiable unless Nicole changes 
 
 **R2 · Mobile and desktop, mobile primary. SHIPPED.** The app arrives in a text message or an Instagram DM. It works at 320px and at 200% zoom.
 
-**R3 · Shareable via text and Instagram DM. SHIPPED.** The result encodes into the URL, so a shared link reproduces the sender's exact recommendation, badge, and reasoning. Link previews carry a share image.
+**R3 · Shareable via text and Instagram DM. SHIPPED.** The result encodes into the URL, so a shared link reproduces the sender's exact recommendation, badge, and reasoning. Link previews carry a share image. **Amended 2026-11-21:** a shared pick's preview shows that resort's badge (see S11).
 
 **R4 · Nicole's ski history is browsable. SHIPPED.** 44 places, sourced from her Google Sheet, filterable. Renamed **Nicole's picks** (nav: *Picks*) 2026-10-26.
 
@@ -58,7 +66,7 @@ These came from the original brief and are non-negotiable unless Nicole changes 
 
 ## Outstanding — content
 
-**C1 · Write the remaining hot takes. AGREED, not started.** Nine of 47 written. Every additional one strengthens the app's whole credibility premise. Input is the `nicoles_take_template` Google Sheet; they flow through on rebuild.
+**C1 · Hot takes are added as the season goes. ONGOING, Director's call 2026-11-21.** *"I don't need a 'hot take' on every resort. I can add them as the season goes on."* Not every place needs a take, so the missing ones are not a gap to close. Nine are written. New ones go in the `nicoles_take_template` Google Sheet and flow through on rebuild. Supersedes the earlier "write the remaining 38" target and parking-lot item P3; Crested Butte's short take can be expanded whenever Nicole likes.
 
 **C2 · Sentiment ratings on takes. DEFERRED by Director, explicitly post-launch.** An "Overall Rating" column already exists empty in the sheet. Once populated, the app could surface how strongly Nicole rates a place. Deferred deliberately: takes are commentary, and ranking stays on the data.
 
@@ -70,11 +78,13 @@ These came from the original brief and are non-negotiable unless Nicole changes 
 
 ## Outstanding — design
 
-**D1 · Two badges read tonally soft. AGREED (debt DD-9).** Bridger Bowl and Beaver Creek got weaker characters because the regional dedupe pass used the better-fitting motifs on neighbours. Both render correctly; neither is wrong, both are duller than they should be.
+**D1 · Two badges read tonally soft. RESOLVED by the artwork.** Bridger Bowl and Beaver Creek both now carry Gemini artwork (a lynx ski patroller; a beaver carrying fresh cookies).
 
-**D2 · Several badges still read as ambiguous shapes. PROPOSED.** Big Sky, Telluride and Wolf Creek were flagged in review as reading like blobs rather than characters at a glance. Nicole deferred this: *"I'll come back to any revisions on the badges."*
+**D2 · Several badges still read as ambiguous shapes. IN PROGRESS (see P4 below).** Big Sky now has artwork. Telluride and Wolf Creek are among the 43 still on vector motifs; both have new subjects waiting for art.
 
-**D3 · Most badges are busts rather than characters mid-gesture. PROPOSED.** The reference stickers work because each subject is caught doing something — the pigeon mid-point, the apple mid-stride, Liberty lowering her sunglasses. Ours improved but remain largely front-facing. This is the gap between good and memorable.
+**D3 · Most badges are busts rather than characters mid-gesture. IN PROGRESS (see P4 below).** The 43 new subjects are each written as a moment, and the Gemini prompt now asks for the character caught mid-action.
+
+**P4 · Finish the resort badges. AGREED 2026-11-21, waiting on Nicole's art.** 28 of 71 resorts have Gemini artwork. The other 43 have fresh subjects in `tools/badge-subjects-43.json` and the project doc `claude/Badges - remaining 43.md`: none repeats a shipped artwork, and the old duplicates (three bros, three retrievers, two foxes in beanies) are gone. Nicole generates in Gemini and saves each image as `badges-in/<resort-id>.png`; `tools/ingest_badges.py` crops to the coloured field, encodes 420px WebP and adds it with alt text. Partial batches are fine. After a batch, re-run `tools/render_og.js` so share previews pick up the new art. Check every image for real brand marks before shipping.
 
 **D4 · Nicole's List sort-by-rating control is absent. DEFERRED (debt DD-1).** Depends on C2 — there's nothing to sort by until ratings exist.
 
@@ -100,13 +110,15 @@ These came from the original brief and are non-negotiable unless Nicole changes 
 
 **T6 · Refresh opening dates before each season. AGREED, recurring.** `research/openings-2026-27.json` holds each resort's published 2026–27 opening day with its source, researched 2026-10-26: 45 of 71 published, 26 not yet announced, none confirmed open. Several dates came from Ikon/Vail press lists or local news because resort sites blocked fetching; conflicts are noted per row. A scheduled date flips the resort to Open on that day automatically. A slipped opening isn't modelled yet (see H5).
 
+**T7 · Refresh day-pass prices and après lines before each season. AGREED, recurring (added 2026-11-21).** `research/day-pass-2026-27.json` (31 of 71 resorts had published 2026–27 figures on 2026-11-21; sources per row) and `research/apres.json`. Resorts that publish prices later in the season can be added any time.
+
 **T5 · `terrain_pct` is null for 17 resorts. ACCEPTED, not a gap to close.** The matching model falls back to editorial fields rather than treating this as required input. Documented as permanent partial coverage.
 
 ---
 
 ## Outstanding — infrastructure
 
-**I1 · Custom domain. PROPOSED.** Currently `rather-be-knee-deep.web.app`. Firebase provisions and renews SSL free for a custom domain; it needs buying one and a DNS change.
+**I1 · Custom domain. PROPOSED.** Currently `rather-be-knee-deep.web.app`. Firebase provisions and renews SSL free for a custom domain; it needs buying one and a DNS change. If it happens, update `SITE` in `build.py` so share previews point at the new domain.
 
 **I2 · Snowriver split. PROPOSED.** Michigan's Indianhead and Blackjack merged into one resort in 2022 and are stored as one record carrying both names. Nicole chose to keep them separate; per-base-area stats are already sourced and the change is unimplemented.
 
@@ -160,7 +172,7 @@ Added 2026-08-05. The 2.0 draft's third item, and the first of that list to be b
 
 **Q12 · 17 resorts have no `terrain_pct`. ACCEPTED (see T5).** Those resorts get the call from tags and scale alone, and are excluded from the bump inference. Killington is the notable casualty — it has one of the most famous mogul runs in the east and no published terrain breakdown in this dataset, so it reads as a groomer day.
 
-**D9 · A sticker per ski type. DEFERRED by Director.** *"No new visuals for now, just an answer, we can get to visuals later."* Eight badges in the SummitSticker style would make the call as shareable as a resort match is. Sits behind the open badge debt (D1–D3).
+**D9 · A sticker per ski type. DEFERRED by Director.** *"No new visuals for now, just an answer, we can get to visuals later."* Eight badges in the SummitSticker style would make the call as shareable as a resort match is. Sits behind the open badge work (P4).
 
 ---
 
@@ -208,13 +220,15 @@ Booking, live pricing, or inventory. Accounts, saved trips, or cross-session per
 
 **Lane 3 — a net-new feature.** The full pipeline, but with discovery scoped to just the new thing, since personas, principles, the visual system, tokens, badges and the copy register already exist.
 
+**Reviewing on the canvas. Added 2026-11-21.** The Design canvas "Rather Be Knee Deep" holds artboards of Home, Chase, Picks, Buzz and a resort page, converted from the real build rather than redrawn. Nicole comments on any spot and sends it to Claude; Claude makes the change in code, tests it, re-captures the screen and replies in the thread. Picks shows only its first 8,000px (the canvas's frame limit). The canvas doesn't run the app.
+
 Deploy is the same in all three: commit and push in GitHub Desktop, GitHub Actions rebuilds and deploys, live in about 90 seconds.
 
 ---
 
 ## Round of 2026-11-07 (branch `claude/buzz-subreddit-directory`)
 
-**B1 · Buzz is a subreddit directory, not a feed. SHIPPED on branch, Director's call.** Rants & Raves needed a Reddit Data API pipeline that was never built, and Reddit now requires explicit approval for that access. Buzz now lists plain links to public subreddits, by region, then resort, then general. Nothing is read from Reddit. A resort with no verified subreddit is listed under "No subreddit of its own" rather than linked to a guess; town subreddits stand in only where the town is the ski destination, labelled "the town's". Evidence per row: `research/resort-links.json`. Old `#rants=` links land on Buzz. Supersedes the Rants & Raves entries and their open items (takedown route, pipeline, floor figure).
+**B1 · Buzz is a subreddit directory, not a feed. SHIPPED on branch, Director's call.** Rants & Raves needed a Reddit Data API pipeline that was never built, and Reddit now requires explicit approval for that access. Buzz now lists plain links to public subreddits, by region, then resort, then general. Nothing is read from Reddit. A resort with no verified subreddit is left off rather than linked to a guess (amended 2026-11-21, see B3); town subreddits stand in only where the town is the ski destination, labelled "the town's". Evidence per row: `research/resort-links.json`. Old `#rants=` links land on Buzz. Supersedes the Rants & Raves entries and their open items (takedown route, pipeline, floor figure).
 
 **B2 · Resort result screen links out. SHIPPED on branch.** A Links block with the official site and the resort's subreddit, falling back to the region's subreddit, then r/skiing, each labelled so it isn't mistaken for the resort's own.
 
@@ -225,3 +239,29 @@ Deploy is the same in all three: commit and push in GitHub Desktop, GitHub Actio
 **R5a amended 2026-11-07.** The coverage count is gone at the Director's call. Page-level attribution on Picks is now carried by the first-person intro line alone plus the visually-hidden per-row prefix.
 
 **H7 · New home page. SHIPPED on branch, Director's call (option A of three from a competitive audit and design exploration).** The app's own sticker (new: the app-icon mountain as a wry character, goggles up, knee deep in powder, `BRAND_STICKER_SVG` in `src/icons.js`), the headline "Where should we ski?", then one tile per section in the same style: Chase, Quiver, Buzz, Picks, and Plan last at full width so no tile reads as the one main action. Picks finally has a tile. The bottom nav now shows on home too, with nothing marked current. Options considered and not taken: a sticker wall (browse-first, no clear start) and a "this week's call" editorial card (needs weekly upkeep and a reliable live forecast; a candidate to add later).
+
+---
+
+## Round of 2026-11-21 (branch `claude/chase-no-rank-numbers`, built on the canvas)
+
+All committed on Nicole's Mac and passing the full suite; live once the branch is pushed and merged.
+
+**P5 · Chase has no rank numbers. BUILT, Director's call.** The list markers and the number pill on each badge are gone, in both the open list and the typical-season list. The order already carries the ranking; it's still an `<ol>`, so screen readers keep the order.
+
+**P10 · "The numbers" are top-aligned and uncaptioned. BUILT, Director's call.** Stat tiles align to the top. "Top to bottom, in one run" and "A typical season, not this week" are removed; "not published" captions stay.
+
+**P6 · The resort page ends in one action. BUILT, Director's call.** One "Share this resort" button and a "See all →" link to Picks. The explainer line and "Make your own pick" are gone. Known cost: a cold-landed shared link now has "See all" as its only way into the app.
+
+**Brand line removed from the resort card. BUILT, Director's call.** The "Rather Be Knee Deep" attribution row at the top of the card is gone. It existed so a screenshot of the card still said where it came from; the share preview (S11) now carries that job for links.
+
+**P7 · Picks open the resort page, with badges. BUILT, Director's call.** Each place shows its badge at the same 44px list scale Chase uses and opens that resort's full page, with the same published-facts reason set as a Chase row. "Back to Picks" returns to the same row. All 44 places have a resort record. Reached from Picks, the page has no "Your pick" label (Director's call): "Back to Picks" already says where you came from, and "Nicole's pick" would read as an endorsement of places she pans.
+
+**P8 · Day pass as a price range. BUILT, Director's call.** The Cost tile becomes "Day pass": adult one-day tickets for 2026–27, cheapest published price (often online, in advance, or a set weekday deal) to the peak window rate, e.g. Big Sky "$84–$289". "Up to $X" where only a peak is published; CA$ for Canadian resorts. 31 of 71 resorts had 2026–27 figures on 2026-11-21; the rest keep the editorial cost tier, labelled Cost, rather than a guess or last season's price (R8). Sources per row in `research/day-pass-2026-27.json` (see T7).
+
+**P9 · Après line on resort pages. BUILT, Director's call.** One line per resort, above "Off the mountain", on all 71: the type of scene plus a long-standing spot where there's an obvious one. Not labelled editorial, at the Director's call. Lesser-known hills were checked against current sources; where a bar couldn't be confirmed, the line says food in the chalet. Text in `research/apres.json`.
+
+**P2 / B3 · Buzz lists only what it can link. BUILT, Director's call.** *"No need to over explain exclusions."* The "No subreddit of its own" lists and the About note explaining them are removed. Resorts without a subreddit are simply left off; a region with nothing to link is skipped.
+
+**P1 · Favicon and app icons from the brand sticker. BUILT, Director's call.** Browser tab: a round crop of the sticker's face and goggles, which still reads at 32px. Home-screen and install icons: the full sticker on the dark ground, inside the maskable safe zone. The manifest's colours now match the always-dark theme.
+
+**S11 · Shared picks preview with the resort's badge. BUILT, Director's call.** *"When these are shared, ensure the resort badge is the image that is seen in the text summary."* "Share this resort" links to `/r/<id>#result=…`. Link crawlers don't run JavaScript or see the hash, so `build.py` writes a small static page per resort carrying its own `og:image` — the badge on the dark ground at 1200×630 (`public/og/<id>.jpg`, rendered by `tools/render_og.js`). A person who taps the link goes straight on to the app with the hash intact. Verified end to end against an emulation of Firebase's cleanUrls and rewrite. Old `/#result=` links still work, with the generic preview. Re-render after badge art changes (P4).

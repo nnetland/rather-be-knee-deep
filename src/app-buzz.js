@@ -31,7 +31,7 @@ function renderBuzz(main) {
       ${pageAboutHtml("About these links", `
         <p>Links only. The app doesn't read, copy or show anything from Reddit, and opening a link takes you to Reddit itself.</p>
         <p>Each subreddit is run by its own moderators. None of them are connected to this app, to the resorts, or to Nicole.</p>
-        <p>A resort listed under "No subreddit of its own" gets talked about in its region's subreddit instead. Links checked ${escapeHtml(BUZZ_CHECKED)}.</p>`)}
+        <p>Links checked ${escapeHtml(BUZZ_CHECKED)}.</p>`)}
     </div>`;
 
   wireAreaChips("buzz", (id) => {
@@ -53,7 +53,10 @@ function renderBuzzRoute(main) {
 function buzzRegionHtml(region) {
   const resorts = buzzResortsIn(region);
   const withSub = resorts.filter((r) => RESORT_LINKS[r.id] && RESORT_LINKS[r.id].sub);
-  const without = resorts.filter((r) => !(RESORT_LINKS[r.id] && RESORT_LINKS[r.id].sub));
+  // Resorts with no subreddit of their own are simply not listed (Director's
+  // call 2026-11-21: no need to explain exclusions). A region with nothing to
+  // link is skipped.
+  if (!region.subs.length && !withSub.length) return "";
   const hId = `buzz-h-${region.id}`;
   return `
     <section class="buzz-region" aria-labelledby="${hId}">
@@ -67,10 +70,6 @@ function buzzRegionHtml(region) {
         <ul class="buzz-links" role="list">
           ${withSub.map((r) => buzzLinkHtml(r.name, buzzSubLabel(RESORT_LINKS[r.id]), RESORT_LINKS[r.id].sub)).join("")}
         </ul>` : ""}
-      ${without.length ? `
-        <p class="buzz-none body-sm"><span class="buzz-none__label">No subreddit of its own:</span> ${without.map((r) => escapeHtml(r.name)).join(", ")}.${
-          region.subs.length ? "" : ` These come up in <a href="${redditUrl(BUZZ_GENERAL[0].sub)}" target="_blank" rel="noopener noreferrer">r/${escapeHtml(BUZZ_GENERAL[0].sub)}<span class="visually-hidden"> (opens Reddit in a new tab)</span></a>.`
-        }</p>` : ""}
     </section>`;
 }
 

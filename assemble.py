@@ -24,6 +24,26 @@ def openings_json():
     slim = {r["id"]: {"date": r.get("date"), "status": r.get("status")} for r in rows}
     return json.dumps(slim, separators=(",", ":"), sort_keys=True)
 
+def day_pass_json():
+    """research/day-pass-2026-27.json -> {id: {low, high, cur, single}}.
+    Adult one-day tickets for 2026-27 only; sources stay in the research file.
+    A resort with no 2026-27 figure is absent and keeps its cost tier (P8)."""
+    import json
+    path = os.path.join(BASE, "research", "day-pass-2026-27.json")
+    if not os.path.exists(path):
+        return "{}"
+    rows = json.load(open(path))
+    slim = {r["id"]: {"low": r.get("low"), "high": r["high"], "cur": r["currency"], "single": bool(r.get("single"))} for r in rows}
+    return json.dumps(slim, separators=(",", ":"), sort_keys=True)
+
+def apres_json():
+    """research/apres.json -> {id: "one-line apres summary"} (P9)."""
+    path = os.path.join(BASE, "research", "apres.json")
+    if not os.path.exists(path):
+        return "{}"
+    import json
+    return json.dumps(json.load(open(path)), separators=(",", ":"), sort_keys=True, ensure_ascii=False)
+
 shell = read("shell.html")
 replacements = {
     "/*__STYLES__*/": read("styles.css"),
@@ -34,7 +54,9 @@ replacements = {
     "/*__ENGINE_JS__*/": read("engine.js"),
     "/*__NOAA_JS__*/": read("noaa.js"),
     "/*__OPENINGS_JS__*/": read("openings.js").replace(
-        "/*__OPENINGS_JSON__*/{}", openings_json()),
+        "/*__OPENINGS_JSON__*/{}", openings_json()).replace(
+        "/*__DAY_PASS_JSON__*/{}", day_pass_json()).replace(
+        "/*__APRES_JSON__*/{}", apres_json()),
     "/*__REGIONS_JS__*/": read("regions.js"),
     "/*__QUIVER_JS__*/": read("quiver.js"),
     "/*__BUZZ_JS__*/": read("buzz.js"),

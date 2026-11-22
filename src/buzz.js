@@ -3,7 +3,7 @@
 // Source of truth with evidence for every row: research/resort-links.json.
 // Rule for a resort subreddit: it exists, is public and has had posts this
 // past year. If that couldn't be confirmed the value is null, and the resort
-// is listed under "No subreddit of its own" rather than linked to a guess.
+// is left off the list rather than linked to a guess.
 // A town subreddit stands in only where the town IS the ski destination and
 // the mountain gets discussed there (kind: "town"); it is labelled as the town's.
 
