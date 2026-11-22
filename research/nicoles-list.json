@@ -4,12 +4,12 @@
     "resort_place": "Alyeska Resort",
     "overall_rating": null,
     "best_for": null,
-    "nicoles_verdict": null,
-    "nicoles_take": null,
+    "nicoles_verdict": "A true Alaska escape.",
+    "nicoles_take": "Tram straight up from the resort. Heli and cat options to explore huge terrain with guides.",
     "property_hotel_notes": null,
     "resort_id": "alyeska-ak",
-    "take_combined": null,
-    "take_original": null
+    "take_combined": "Alaska escape, tram directly into resort, heli and snow cat options all around to explore expansive terrain with guides.",
+    "take_original": "Alaska escape, tram directly into resort, heli and snow cat options all around to explore expansive terrain with guides."
   },
   {
     "region_state": "Pacific Northwest",
@@ -40,36 +40,36 @@
     "resort_place": "Mt. Baker Resort",
     "overall_rating": null,
     "best_for": null,
-    "nicoles_verdict": null,
-    "nicoles_take": null,
+    "nicoles_verdict": "Gobs of snow, no lodging.",
+    "nicoles_take": "RVs in the lot, nowhere to stay on the mountain. Side-country focus.",
     "property_hotel_notes": null,
     "resort_id": "mt-baker-wa",
-    "take_combined": null,
-    "take_original": null
+    "take_combined": "RVS, no lodging. Side-country focus with gobs of snow.",
+    "take_original": "RVS, no lodging. Side-country focus with gobs of snow."
   },
   {
     "region_state": "Pacific Northwest",
     "resort_place": "Mount Hood",
     "overall_rating": null,
     "best_for": null,
-    "nicoles_verdict": null,
-    "nicoles_take": null,
+    "nicoles_verdict": "Built for summer camp laps.",
+    "nicoles_take": "Competitive camps lap it all summer. Isolated, small village, nearly all above treeline.",
     "property_hotel_notes": null,
     "resort_id": "timberline-or",
-    "take_combined": null,
-    "take_original": null
+    "take_combined": "Great for ski or snowboarder competitive campers to get in laps, especially in the summer time. But isolated, limited village area, nearly all above treeline.",
+    "take_original": "Great for ski or snowboarder competitive campers to get in laps, especially in the summer time. But isolated, limited village area, nearly all above treeline."
   },
   {
     "region_state": "British Columbia",
     "resort_place": "Whistler Blackcomb",
     "overall_rating": null,
     "best_for": null,
-    "nicoles_verdict": null,
-    "nicoles_take": null,
+    "nicoles_verdict": "Huge, with Vail-sized lines.",
+    "nicoles_take": "Big enough that you need some orientation to make good use of your time.",
     "property_hotel_notes": null,
     "resort_id": "whistler-blackcomb-bc",
-    "take_combined": null,
-    "take_original": null
+    "take_combined": "Despite the size, still has Vail Resort sized crowds and lines. So large requires some orientation to make great use of your time.",
+    "take_original": "Despite the size, still has Vail Resort sized crowds and lines. So large requires some orientation to make great use of your time."
   },
   {
     "region_state": "Montana",
@@ -88,108 +88,108 @@
     "resort_place": "Bridger Bowl Ski Area",
     "overall_rating": null,
     "best_for": null,
-    "nicoles_verdict": null,
-    "nicoles_take": null,
+    "nicoles_verdict": "Beards, dogs, college students.",
+    "nicoles_take": "Enjoy the parking lot après.",
     "property_hotel_notes": null,
     "resort_id": "bridger-bowl-mt",
-    "take_combined": null,
-    "take_original": null
+    "take_combined": "Beards, dogs, college students. Enjoy the parking lot apres.",
+    "take_original": "Beards, dogs, college students. Enjoy the parking lot apres."
   },
   {
     "region_state": "Montana",
     "resort_place": "Red Lodge Mountain",
     "overall_rating": null,
     "best_for": null,
-    "nicoles_verdict": null,
-    "nicoles_take": null,
+    "nicoles_verdict": "Old school and local.",
+    "nicoles_take": "Family-friendly, local mountain vibes.",
     "property_hotel_notes": null,
     "resort_id": "red-lodge-mt",
-    "take_combined": null,
-    "take_original": null
+    "take_combined": "Old school, family, local mountain vibes.",
+    "take_original": "Old school, family, local mountain vibes."
   },
   {
     "region_state": "Wyoming",
     "resort_place": "Jackson Hole Mountain Resort",
     "overall_rating": null,
     "best_for": null,
-    "nicoles_verdict": null,
-    "nicoles_take": null,
+    "nicoles_verdict": "Impressive, and hard to get to.",
+    "nicoles_take": "Great terrain mix. Tries really hard to be cowboy, but realistically it's quite bougie.",
     "property_hotel_notes": null,
     "resort_id": "jackson-hole-wy",
-    "take_combined": null,
-    "take_original": null
+    "take_combined": "Impressive. Hard to get to. Great terrain mix. Tries really hard to be cowboy but realistically quite bougie.",
+    "take_original": "Impressive. Hard to get to. Great terrain mix. Tries really hard to be cowboy but realistically quite bougie."
   },
   {
     "region_state": "Utah",
     "resort_place": "Park City Mountain",
     "overall_rating": null,
     "best_for": null,
-    "nicoles_verdict": null,
-    "nicoles_take": null,
+    "nicoles_verdict": "Last choice in Utah.",
+    "nicoles_take": "Vail Resorts' Utah heartbeat. Massive crowds, and so many other options nearby.",
     "property_hotel_notes": null,
     "resort_id": "park-city-ut",
-    "take_combined": null,
-    "take_original": null
+    "take_combined": "Vail Resorts Utah heartbeat. Massive crowds. Last choice in Utah amongst so many other options.",
+    "take_original": "Vail Resorts Utah heartbeat. Massive crowds. Last choice in Utah amongst so many other options."
   },
   {
     "region_state": "Utah",
     "resort_place": "Canyons Village at Park City",
     "overall_rating": null,
     "best_for": null,
-    "nicoles_verdict": null,
-    "nicoles_take": null,
+    "nicoles_verdict": "Last choice in Utah.",
+    "nicoles_take": "Vail Resorts' Utah heartbeat. Massive crowds, and so many other options nearby.",
     "property_hotel_notes": null,
     "resort_id": "park-city-ut",
-    "take_combined": null,
-    "take_original": null
+    "take_combined": "",
+    "take_original": ""
   },
   {
     "region_state": "Utah",
     "resort_place": "Snowbird Ski Area",
     "overall_rating": null,
     "best_for": null,
-    "nicoles_verdict": null,
-    "nicoles_take": null,
+    "nicoles_verdict": "A sunny-day masterpiece.",
+    "nicoles_take": "Massive terrain, epic steep open bowls, strong lifts. Can be quite crowded.",
     "property_hotel_notes": null,
     "resort_id": "snowbird-ut",
-    "take_combined": null,
-    "take_original": null
+    "take_combined": "Massive terrain. Epic and steep open bowls. Sunny day masterpiece with strong lift infrastructure. Can be quite crowded.",
+    "take_original": "Massive terrain. Epic and steep open bowls. Sunny day masterpiece with strong lift infrastructure. Can be quite crowded."
   },
   {
     "region_state": "Utah",
     "resort_place": "Solitude Mountain Resort",
     "overall_rating": null,
     "best_for": null,
-    "nicoles_verdict": null,
-    "nicoles_take": null,
+    "nicoles_verdict": "Local, steep, narrow.",
+    "nicoles_take": "Odd lift layout. You can't lap the best terrain efficiently.",
     "property_hotel_notes": null,
     "resort_id": "solitude-ut",
-    "take_combined": null,
-    "take_original": null
+    "take_combined": "Local, steep, narrow. Odd lift layout. Can't lap the best terrain efficiency.",
+    "take_original": "Local, steep, narrow. Odd lift layout. Can't lap the best terrain efficiency."
   },
   {
     "region_state": "Utah",
     "resort_place": "Alta Ski Area",
     "overall_rating": null,
     "best_for": null,
-    "nicoles_verdict": null,
-    "nicoles_take": null,
+    "nicoles_verdict": "A core skier's mountain.",
+    "nicoles_take": "Steep. If you're willing to hike, the steeps are awesome.",
     "property_hotel_notes": null,
     "resort_id": "alta-ut",
-    "take_combined": null,
-    "take_original": null
+    "take_combined": "Core skier. Steep. If you are willing to hike, awesome steeps.",
+    "take_original": "Core skier. Steep. If you are willing to hike, awesome steeps."
   },
   {
     "region_state": "Colorado",
     "resort_place": "Vail Ski Resort",
     "overall_rating": null,
     "best_for": null,
-    "nicoles_verdict": null,
-    "nicoles_take": null,
+    "nicoles_verdict": "Bring your wallet.",
+    "nicoles_take": "Massive, nothing too steep. Quintessential CO family trip, Bavarian copycat village and all.",
     "property_hotel_notes": null,
     "resort_id": "vail-co",
-    "take_combined": null,
-    "take_original": null
+    "take_combined": "Massive with decent diversity. Nothing too challenging or steep. The quientsial CO family trip complete with the Bravarian copycat village. Bring your wallet.",
+    "take_original": "Massive with decent diversity. Nothing too challenging or steep. The quientsial CO family trip complete with the Bravarian copycat village. Bring your wallet."
   },
   {
     "region_state": "Colorado",
