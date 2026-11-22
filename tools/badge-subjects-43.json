@@ -1,0 +1,217 @@
+{
+ "telluride-co": {
+  "hex": "#1AA3DC",
+  "gag": "a mountain goat in a fur-trimmed coat stepping off a gondola mid-stride, one hoof raised",
+  "alt": "a mountain goat in a fur-trimmed coat stepping off a gondola mid-stride, one hoof raised"
+ },
+ "arapahoe-basin-co": {
+  "hex": "#1AA3DC",
+  "gag": "a marmot in sunglasses sitting on a truck tailgate, raising a beer can in a cheers",
+  "alt": "a marmot in sunglasses sitting on a truck tailgate, raising a beer can in a cheers"
+ },
+ "wolf-creek-co": {
+  "hex": "#00B39A",
+  "gag": "a wolf in a vintage wool sweater mid-shovel, digging out a buried chairlift seat, snow flying",
+  "alt": "a wolf in a vintage wool sweater mid-shovel, digging out a buried chairlift seat, snow flying"
+ },
+ "deer-valley-ut": {
+  "hex": "#FF4C34",
+  "gag": "a swan in a white turtleneck and pearls politely handing back a snowboard with one wing",
+  "alt": "a swan in a white turtleneck and pearls politely handing back a snowboard with one wing"
+ },
+ "powder-mountain-ut": {
+  "hex": "#1AA3DC",
+  "gag": "a pika in a vintage anorak striding along with ski poles, looking smug about the empty slope",
+  "alt": "a pika in a vintage anorak striding along with ski poles, looking smug about the empty slope"
+ },
+ "snowbasin-ut": {
+  "hex": "#FF4C34",
+  "gag": "a coyote in a downhill race suit with a gold medal on a lanyard, tucked into a racing crouch",
+  "alt": "a coyote in a downhill race suit with a gold medal on a lanyard, tucked into a racing crouch"
+ },
+ "grand-targhee-wy": {
+  "hex": "#00B39A",
+  "gag": "a black bear in goggles riding a chairlift alone, both paws thrown up in a powder cheer",
+  "alt": "a black bear in goggles riding a chairlift alone, both paws thrown up in a powder cheer"
+ },
+ "whitefish-mt": {
+  "hex": "#1AA3DC",
+  "gag": "an otter in a toque coated in rime frost like a snow ghost, catching snowflakes on its tongue",
+  "alt": "an otter in a toque coated in rime frost like a snow ghost, catching snowflakes on its tongue"
+ },
+ "sun-valley-id": {
+  "hex": "#1AA3DC",
+  "gag": "a fox in a camel coat sliding round old-Hollywood sunglasses down its snout",
+  "alt": "a fox in a camel coat sliding round old-Hollywood sunglasses down its snout"
+ },
+ "schweitzer-id": {
+  "hex": "#16A974",
+  "gag": "a St. Bernard in a ski patrol vest trotting with a tiny barrel on its collar",
+  "alt": "a St. Bernard in a ski patrol vest trotting with a tiny barrel on its collar"
+ },
+ "taos-nm": {
+  "hex": "#F0982A",
+  "gag": "a roadrunner in a bandana and hiking pack sprinting uphill with skis on its back",
+  "alt": "a roadrunner in a bandana and hiking pack sprinting uphill with skis on its back"
+ },
+ "heavenly-ca": {
+  "hex": "#00B39A",
+  "gag": "a Steller's jay in a sequined vest stepping off a gondola, fanning a hand of casino chips",
+  "alt": "a Steller's jay in a sequined vest stepping off a gondola, fanning a hand of casino chips"
+ },
+ "kirkwood-ca": {
+  "hex": "#00B39A",
+  "gag": "a pine marten in goggles and a snorkel diving headfirst into deep snow",
+  "alt": "a pine marten in goggles and a snorkel diving headfirst into deep snow"
+ },
+ "mt-bachelor-or": {
+  "hex": "#F0982A",
+  "gag": "a chipmunk in a windbreaker leaning hard into a gale, cheeks puffed with snow",
+  "alt": "a chipmunk in a windbreaker leaning hard into a gale, cheeks puffed with snow"
+ },
+ "stowe-vt": {
+  "hex": "#16A974",
+  "gag": "a mink in a tweed blazer and argyle sweater pouring maple syrup from a tin",
+  "alt": "a mink in a tweed blazer and argyle sweater pouring maple syrup from a tin"
+ },
+ "killington-vt": {
+  "hex": "#F0982A",
+  "gag": "a wild boar in a hockey jersey launching off a mogul, tusks out",
+  "alt": "a wild boar in a hockey jersey launching off a mogul, tusks out"
+ },
+ "sugarbush-vt": {
+  "hex": "#16A974",
+  "gag": "a woodchuck in a plaid flannel tapping a maple spout into a bucket",
+  "alt": "a woodchuck in a plaid flannel tapping a maple spout into a bucket"
+ },
+ "jay-peak-vt": {
+  "hex": "#00B39A",
+  "gag": "a snowshoe hare buried to its ears in powder, goggles fogged, grinning",
+  "alt": "a snowshoe hare buried to its ears in powder, goggles fogged, grinning"
+ },
+ "stratton-vt": {
+  "hex": "#FF4C34",
+  "gag": "a Bernese mountain dog in a Tyrolean hat mid-yodel, one paw cupped to its mouth",
+  "alt": "a Bernese mountain dog in a Tyrolean hat mid-yodel, one paw cupped to its mouth"
+ },
+ "okemo-vt": {
+  "hex": "#16A974",
+  "gag": "a mother duck in a ski-school vest leading a line of ducklings on tiny skis",
+  "alt": "a mother duck in a ski-school vest leading a line of ducklings on tiny skis"
+ },
+ "sunday-river-me": {
+  "hex": "#1AA3DC",
+  "gag": "a puffin bracing to fire a snow gun, a blast of snow shooting out",
+  "alt": "a puffin bracing to fire a snow gun, a blast of snow shooting out"
+ },
+ "sugarloaf-me": {
+  "hex": "#5B3DF0",
+  "gag": "a lobster in a striped scarf with both claws raised in a cheer",
+  "alt": "a lobster in a striped scarf with both claws raised in a cheer"
+ },
+ "loon-mountain-nh": {
+  "hex": "#16A974",
+  "gag": "a loon in a racing helmet pushing out of a start gate",
+  "alt": "a loon in a racing helmet pushing out of a start gate"
+ },
+ "revelstoke-bc": {
+  "hex": "#5B3DF0",
+  "gag": "a caribou in a puffy jacket unrolling a very long tape measure downhill",
+  "alt": "a caribou in a puffy jacket unrolling a very long tape measure downhill"
+ },
+ "big-white-bc": {
+  "hex": "#16A974",
+  "gag": "an arctic fox in fogged-up goggles feeling its way forward with a ski pole",
+  "alt": "an arctic fox in fogged-up goggles feeling its way forward with a ski pole"
+ },
+ "sun-peaks-bc": {
+  "hex": "#F0982A",
+  "gag": "a chickadee in a pom-pom toque mid-stride on cross-country skis",
+  "alt": "a chickadee in a pom-pom toque mid-stride on cross-country skis"
+ },
+ "fernie-bc": {
+  "hex": "#16A974",
+  "gag": "a bighorn sheep with curled ram horns, mid-leap between two rocks",
+  "alt": "a bighorn sheep with curled ram horns, mid-leap between two rocks"
+ },
+ "lake-louise-ab": {
+  "hex": "#5B3DF0",
+  "gag": "an elk in a park ranger hat snapping a photo with a vintage camera",
+  "alt": "an elk in a park ranger hat snapping a photo with a vintage camera"
+ },
+ "banff-sunshine-ab": {
+  "hex": "#1AA3DC",
+  "gag": "a wolverine in an avalanche-beacon harness peering over a cornice edge",
+  "alt": "a wolverine in an avalanche-beacon harness peering over a cornice edge"
+ },
+ "kicking-horse-bc": {
+  "hex": "#5B3DF0",
+  "gag": "a horse in goggles mid-kick, both back hooves in the air",
+  "alt": "a horse in goggles mid-kick, both back hooves in the air"
+ },
+ "panorama-bc": {
+  "hex": "#F0982A",
+  "gag": "a mountain lion in goggles lounging in a steaming hot tub, one paw waving",
+  "alt": "a mountain lion in goggles lounging in a steaming hot tub, one paw waving"
+ },
+ "mont-tremblant-qc": {
+  "hex": "#5B3DF0",
+  "gag": "a skunk in a beret holding a croissant up for a selfie",
+  "alt": "a skunk in a beret holding a croissant up for a selfie"
+ },
+ "lutsen-mn": {
+  "hex": "#F0982A",
+  "gag": "a walleye in a buffalo-plaid toque riding a gondola cabin, fins on the window",
+  "alt": "a walleye in a buffalo-plaid toque riding a gondola cabin, fins on the window"
+ },
+ "giants-ridge-mn": {
+  "hex": "#1AA3DC",
+  "gag": "a blue ox in buffalo plaid hoisting a pair of skis onto its shoulder",
+  "alt": "a blue ox in buffalo plaid hoisting a pair of skis onto its shoulder"
+ },
+ "welch-village-mn": {
+  "hex": "#16A974",
+  "gag": "a gopher in a varsity jacket mid-air off a small park jump",
+  "alt": "a gopher in a varsity jacket mid-air off a small park jump"
+ },
+ "wild-mountain-mn": {
+  "hex": "#1AA3DC",
+  "gag": "a kid riding a magic-carpet lift with both arms flung up",
+  "alt": "a kid riding a magic-carpet lift with both arms flung up"
+ },
+ "andes-tower-hills-mn": {
+  "hex": "#F0982A",
+  "gag": "a jackalope mid-bound, winking",
+  "alt": "a jackalope mid-bound, winking"
+ },
+ "mount-bohemia-mi": {
+  "hex": "#00B39A",
+  "gag": "a bearded lumberjack in a Viking helmet dropping off a cliff, skis crossed",
+  "alt": "a bearded lumberjack in a Viking helmet dropping off a cliff, skis crossed"
+ },
+ "big-powderhorn-mi": {
+  "hex": "#16A974",
+  "gag": "a red squirrel in a flannel shirt biting into a hot pasty",
+  "alt": "a red squirrel in a flannel shirt biting into a hot pasty"
+ },
+ "whitecap-mountains-wi": {
+  "hex": "#00B39A",
+  "gag": "a muskie in a cheese-wedge hat riding a snowboard",
+  "alt": "a muskie in a cheese-wedge hat riding a snowboard"
+ },
+ "powder-ridge-ct": {
+  "hex": "#F0982A",
+  "gag": "a lift operator in a beanie mid-toss with a shovel, snow flying",
+  "alt": "a lift operator in a beanie mid-toss with a shovel, snow flying"
+ },
+ "indianhead-mi": {
+  "hex": "#1AA3DC",
+  "gag": "a hockey player in a toque skating hard with a stick, ice chips flying",
+  "alt": "a hockey player in a toque skating hard with a stick, ice chips flying"
+ },
+ "blackjack-mi": {
+  "hex": "#16A974",
+  "gag": "a jackrabbit in a card dealer's visor fanning a hand of playing cards",
+  "alt": "a jackrabbit in a card dealer's visor fanning a hand of playing cards"
+ }
+}
