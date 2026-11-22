@@ -121,10 +121,20 @@ function updatedStamp(ms, now) {
 // The one page header, every surface (Director, 2026-11-07): the h1 is the
 // bottom-nav word, exactly, and one short line says what to do here. Anything
 // else (a forecast stamp, a status) follows in pageMetaHtml, only when needed.
+// Home button (2026-11-21 canvas round): the home sticker, small, top-right
+// of every section page and the resort page. Shared links land deep in the
+// app, so this is the way back to the front door.
+function homeLinkHtml() {
+  return `<a class="home-link" href="/" aria-label="Rather Be Knee Deep home"><img src="${BRAND_STICKER_ART}" alt="" width="44" height="44" decoding="async"></a>`;
+}
+
 function pageHeaderHtml(title, introHtml) {
   return `
     <header class="page-header">
-      <h1 class="display-h1">${escapeHtml(title)}</h1>
+      <div class="page-header__row">
+        <h1 class="display-h1">${escapeHtml(title)}</h1>
+        ${homeLinkHtml()}
+      </div>
       ${introHtml ? `<p class="page-intro body-md">${introHtml}</p>` : ""}
     </header>`;
 }

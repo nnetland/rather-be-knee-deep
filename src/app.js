@@ -1043,7 +1043,7 @@ function renderResult(main) {
 
   main.innerHTML = `
     <div class="result-wrap">
-      ${backHtml}
+      <div class="result-topbar">${backHtml || "<span></span>"}${homeLinkHtml()}</div>
       <article class="result-card" id="result-card">
         ${origin === "picks" ? "" : `<p class="result-eyebrow label reveal-hidden">${isFreshResult ? "Your pick" : "Their pick"}</p>`}
         <div class="badge-panel reveal-hidden" role="img" aria-label="${escapeHtml(altText)}">${badge}</div>
@@ -1278,3 +1278,12 @@ function showToast(text) {
     toast.classList.add("toast--dismissing");
   }, 2000);
 }
+
+// Home button: one delegated listener for every .home-link (section headers
+// and the resort page). Modified clicks fall through to the real href="/".
+document.addEventListener("click", (e) => {
+  const a = e.target.closest && e.target.closest(".home-link");
+  if (!a || e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+  e.preventDefault();
+  navigate("splash");
+});
