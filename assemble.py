@@ -36,6 +36,14 @@ def day_pass_json():
     slim = {r["id"]: {"low": r.get("low"), "high": r["high"], "cur": r["currency"], "single": bool(r.get("single"))} for r in rows}
     return json.dumps(slim, separators=(",", ":"), sort_keys=True)
 
+def apres_json():
+    """research/apres.json -> {id: "one-line apres summary"} (P9)."""
+    path = os.path.join(BASE, "research", "apres.json")
+    if not os.path.exists(path):
+        return "{}"
+    import json
+    return json.dumps(json.load(open(path)), separators=(",", ":"), sort_keys=True, ensure_ascii=False)
+
 shell = read("shell.html")
 replacements = {
     "/*__STYLES__*/": read("styles.css"),
@@ -47,7 +55,8 @@ replacements = {
     "/*__NOAA_JS__*/": read("noaa.js"),
     "/*__OPENINGS_JS__*/": read("openings.js").replace(
         "/*__OPENINGS_JSON__*/{}", openings_json()).replace(
-        "/*__DAY_PASS_JSON__*/{}", day_pass_json()),
+        "/*__DAY_PASS_JSON__*/{}", day_pass_json()).replace(
+        "/*__APRES_JSON__*/{}", apres_json()),
     "/*__REGIONS_JS__*/": read("regions.js"),
     "/*__QUIVER_JS__*/": read("quiver.js"),
     "/*__BUZZ_JS__*/": read("buzz.js"),

@@ -161,3 +161,8 @@ function dayPassLabel(rid) {
   if (p.low == null) return `Up to ${cur}${p.high}`;
   return `${cur}${p.low}–$${p.high}`;
 }
+
+// Après scene (P9, 2026-11-21): one line per resort on what happens after the
+// lifts close. Written 2026-11-21 in research/apres.json; venues named are
+// long-standing ones. Refresh alongside openings and day-pass prices.
+const APRES = /*__APRES_JSON__*/{};

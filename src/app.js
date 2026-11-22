@@ -855,6 +855,7 @@ function buildDetailNotes(resort) {
     ${notesRow("Crowds", escapeHtml(CROWD_COPY[resort.crowd_level] || "Not published by the resort"))}
     ${notesRow("Pass", escapeHtml(PASS_COPY[resort.pass_affiliation] || resort.pass_affiliation || "Not published by the resort"))}
     ${notesRow("Ski school", skiSchoolNotesValue(resort))}
+    ${APRES[resort.id] ? notesRow("Après", escapeHtml(APRES[resort.id])) : ""}
     ${notesRow("Off the mountain", escapeHtml(ACTIVITIES_COPY[resort.non_ski_activities] || "Not published by the resort"))}
   </dl>`;
 }
