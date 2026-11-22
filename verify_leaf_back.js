@@ -306,8 +306,8 @@ async function checkAboveHeading(page, id, headingSel, where) {
       "no back control is rendered — there is nothing behind this reader to return to");
     assert(await page.evaluate(() => document.getElementById("bottom-nav").hidden) === true,
       "and the screen's zero-nav-chrome rule is intact");
-    assert(await page.locator("#make-own-btn").count() === 1 && await page.locator("#see-nicoles-btn").count() === 1,
-      "its two honest destinations are still named in the footer");
+    assert(await page.locator("#see-nicoles-btn").count() === 1,
+      "its honest destination is still named in the footer (\"See all\", P6)");
     await page.close();
   }
 

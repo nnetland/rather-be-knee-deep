@@ -801,9 +801,9 @@ let skiSchoolTileSeq = 0;
 
 function buildStatStrip(resort) {
   let html = "";
-  html += statTile("Vertical drop", fmtNum(resort.vertical_drop_ft), "ft", resort.vertical_drop_ft == null ? "Vertical drop not published by the resort" : "Top to bottom, in one run", resort.vertical_drop_ft == null);
+  html += statTile("Vertical drop", fmtNum(resort.vertical_drop_ft), "ft", resort.vertical_drop_ft == null ? "Vertical drop not published by the resort" : null, resort.vertical_drop_ft == null);
   html += statTile("Skiable acres", fmtNum(resort.skiable_acres), "", resort.skiable_acres == null ? "Skiable acres not published by the resort" : null, resort.skiable_acres == null);
-  html += statTile("Average snowfall", fmtNum(resort.avg_annual_snowfall_in), "in", resort.avg_annual_snowfall_in == null ? "Average snowfall not published by the resort" : "A typical season, not this week", resort.avg_annual_snowfall_in == null);
+  html += statTile("Average snowfall", fmtNum(resort.avg_annual_snowfall_in), "in", resort.avg_annual_snowfall_in == null ? "Average snowfall not published by the resort" : null, resort.avg_annual_snowfall_in == null);
   html += `<div class="stat-tile"><span class="data-label">Cost</span><span class="stat-tile__value data-stat">${resort.cost_tier || "—"}</span></div>`;
   return html;
 }
@@ -1024,8 +1024,8 @@ function renderResult(main) {
   // navigated into it, there is no list it belongs to, and the screen is
   // already asserted to carry zero nav chrome (verify_share_and_offline) —
   // it is a share artifact, and the app's front door for whoever opened it.
-  // Its two honest destinations are already in the footer, named plainly:
-  // "Make your own pick" and "See more of Nicole's picks". A control at the
+  // Its honest destination is already in the footer, named plainly: "See all"
+  // (P6, 2026-11-21, which also removed "Make your own pick"). A control at the
   // top saying "back" to someone who has never been anywhere would be the
   // dishonest kind of affordance this whole change exists to remove.
   const origin = state.routeParams.origin;
@@ -1070,10 +1070,8 @@ function renderResult(main) {
           </div>` : ""}
         ${resortLinksHtml(resort)}
         <div class="footer-cta reveal-hidden" id="footer-cta">
-          <button class="btn btn-primary btn-block" id="share-btn" type="button">${ICONS.share} Share this pick</button>
-          <p class="body-sm" style="text-align:center;color:var(--text-secondary);margin:0">Copies a link with the picture and the why.</p>
-          <button class="btn btn-secondary btn-block" id="make-own-btn" type="button">Make your own pick</button>
-          <button class="btn-text" id="see-nicoles-btn" type="button" style="text-align:center">See more of Nicole's picks →</button>
+          <button class="btn btn-primary btn-block" id="share-btn" type="button">${ICONS.share} Share this resort</button>
+          <button class="btn-text" id="see-nicoles-btn" type="button" style="text-align:center">See all →</button>
         </div>
       </article>
     </div>`;
@@ -1086,7 +1084,6 @@ function renderResult(main) {
   if (leafBack) leafBack.addEventListener("click", () => navigate(origin === "chase" ? "chase" : "plan"));
 
   document.getElementById("share-btn").addEventListener("click", () => shareResult(resort, shared));
-  document.getElementById("make-own-btn").addEventListener("click", () => navigate("splash"));
   document.getElementById("see-nicoles-btn").addEventListener("click", () => navigate("nicoles"));
   main.querySelectorAll(".stat-tile__expand-btn, .notes-row__expand-btn").forEach((btn) => {
     btn.addEventListener("click", () => {

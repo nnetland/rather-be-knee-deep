@@ -31,7 +31,7 @@ function renderBuzz(main) {
       ${pageAboutHtml("About these links", `
         <p>Links only. The app doesn't read, copy or show anything from Reddit, and opening a link takes you to Reddit itself.</p>
         <p>Each subreddit is run by its own moderators. None of them are connected to this app, to the resorts, or to Nicole.</p>
-        <p>A resort listed under "No subreddit of its own" gets talked about in its region's subreddit instead. Links checked ${escapeHtml(BUZZ_CHECKED)}.</p>`)}
+        <p>A resort listed under "No subreddit" gets talked about in its region's subreddit instead. Links checked ${escapeHtml(BUZZ_CHECKED)}.</p>`)}
     </div>`;
 
   wireAreaChips("buzz", (id) => {
@@ -68,9 +68,7 @@ function buzzRegionHtml(region) {
           ${withSub.map((r) => buzzLinkHtml(r.name, buzzSubLabel(RESORT_LINKS[r.id]), RESORT_LINKS[r.id].sub)).join("")}
         </ul>` : ""}
       ${without.length ? `
-        <p class="buzz-none body-sm"><span class="buzz-none__label">No subreddit of its own:</span> ${without.map((r) => escapeHtml(r.name)).join(", ")}.${
-          region.subs.length ? "" : ` These come up in <a href="${redditUrl(BUZZ_GENERAL[0].sub)}" target="_blank" rel="noopener noreferrer">r/${escapeHtml(BUZZ_GENERAL[0].sub)}<span class="visually-hidden"> (opens Reddit in a new tab)</span></a>.`
-        }</p>` : ""}
+        <p class="buzz-none body-sm"><span class="buzz-none__label">No subreddit:</span> ${without.map((r) => escapeHtml(r.name)).join(", ")}</p>` : ""}
     </section>`;
 }
 
