@@ -818,8 +818,8 @@ function buildStatStrip(resort) {
 function buildTerrainMixStrip(resort) {
   let html = "";
   if (resort.terrain_pct) {
-    html += statTile("Beginner terrain", resort.terrain_pct.beginner, "%", null, false);
-    html += statTile("Intermediate terrain", resort.terrain_pct.intermediate, "%", null, false);
+    html += statTile("Beginner", resort.terrain_pct.beginner, "%", null, false);
+    html += statTile("Intermediate", resort.terrain_pct.intermediate, "%", null, false);
     html += statTile("Advanced &amp; expert", resort.terrain_pct.advanced_expert, "%", null, false);
   } else {
     html += statTile("Terrain mix", null, null, "Terrain breakdown not published by the resort", true);
