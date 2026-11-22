@@ -24,7 +24,7 @@ function renderBuzz(main) {
 
   main.innerHTML = `
     <div class="page-column buzz-view">
-      ${pageHeaderHtml("Buzz", "Where skiers talk about each resort on Reddit.")}
+      ${pageHeaderHtml("Buzz", "Catch up on the resort Reddit chatter.")}
       ${areaChipsHtml("buzz", active, new Set(regions.map((r) => r.id)), { id: "general", label: "General" })}
       ${active === "general" ? "" : shown.map(buzzRegionHtml).join("")}
       ${active === "all" || active === "general" ? buzzGeneralHtml() : ""}

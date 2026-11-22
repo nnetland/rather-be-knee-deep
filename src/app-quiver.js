@@ -112,6 +112,7 @@ function renderQuiverResortStep(body) {
   body.innerHTML = `
     ${pageHeaderHtml("Quiver", "Pick a resort and a day. Get the right skis.")}
     ${quiverPool().length ? "" : pageMetaHtml(["Nothing's open yet", quiverFirstUnlockText()], "quiver-unlock")}
+    ${areaChipsHtml("quiver", state.quiver.area || "all", new Set(quiverPool().concat(quiverUpcoming()).map((r) => (areaOfResort(r) || {}).id).filter(Boolean)))}
     <div class="quiver-search">
       <label class="visually-hidden" for="quiver-search-input">Search by name or state</label>
       <div class="quiver-search__field">
@@ -120,7 +121,6 @@ function renderQuiverResortStep(body) {
                placeholder="Alta, Vermont, Jackson…" value="${escapeHtml(state.quiver.search || "")}">
       </div>
     </div>
-    ${areaChipsHtml("quiver", state.quiver.area || "all", new Set(quiverPool().concat(quiverUpcoming()).map((r) => (areaOfResort(r) || {}).id).filter(Boolean)))}
     <p class="visually-hidden" aria-live="polite" id="quiver-search-count"></p>
     <div id="quiver-resort-list"></div>
     ${pageAboutHtml("About this data", `

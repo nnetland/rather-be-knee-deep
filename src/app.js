@@ -818,8 +818,8 @@ function buildStatStrip(resort) {
 function buildTerrainMixStrip(resort) {
   let html = "";
   if (resort.terrain_pct) {
-    html += statTile("Beginner terrain", resort.terrain_pct.beginner, "%", null, false);
-    html += statTile("Intermediate terrain", resort.terrain_pct.intermediate, "%", null, false);
+    html += statTile("Beginner", resort.terrain_pct.beginner, "%", null, false);
+    html += statTile("Intermediate", resort.terrain_pct.intermediate, "%", null, false);
     html += statTile("Advanced &amp; expert", resort.terrain_pct.advanced_expert, "%", null, false);
   } else {
     html += statTile("Terrain mix", null, null, "Terrain breakdown not published by the resort", true);
@@ -1055,7 +1055,6 @@ function renderResult(main) {
         <ul class="reason-list">
           ${displayBullets.map((b) => `<li class="reason-bullet reveal-hidden"><span class="reason-bullet__icon">${ICONS.checkCircle}</span><span class="reason-bullet__text body-md">${escapeHtml(b)}</span></li>`).join("")}
         </ul>
-        <h2 class="display-h3 reveal-hidden" style="margin-bottom:var(--space-3)">The numbers</h2>
         <div class="stat-strip stat-strip--quad reveal-hidden" id="stat-strip">${buildStatStrip(resort)}</div>
         ${buildTerrainMixStrip(resort)}
         ${buildDetailNotes(resort)}
@@ -1073,8 +1072,8 @@ function renderResult(main) {
           </div>` : ""}
         ${resortLinksHtml(resort)}
         <div class="footer-cta reveal-hidden" id="footer-cta">
-          <button class="btn btn-primary btn-block" id="share-btn" type="button">${ICONS.share} Share this resort</button>
-          <button class="btn-text" id="see-nicoles-btn" type="button" style="text-align:center">See all →</button>
+          <button class="btn btn-primary btn-block" id="share-btn" type="button">${ICONS.share} Share this pick</button>
+          <button class="btn-text" id="see-nicoles-btn" type="button" style="text-align:center">See all picks →</button>
         </div>
       </article>
     </div>`;
