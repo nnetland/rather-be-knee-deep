@@ -1,0 +1,542 @@
+{
+ "afton-alps-mn": null,
+ "alta-ut": null,
+ "alyeska-ak": {
+  "line": "Sourdough pancakes at the Bake Shop, from a gold miner's starter.",
+  "name": "The Bake Shop, Girdwood",
+  "url": "https://sfe-visitgirdwood.squarespace.com/explore/the-bake-shop",
+  "confidence": "medium",
+  "note": "Visit Girdwood listing: sourdough starter nearly 100 years old, 'mothered' from a miner who mined gold in the valley, fed daily by the shop for 40+ years; famous sweet/cinnamon rolls. Alaska.org: famous sourdough pancakes, does steady business year-round. Note: closed Nov 1 - Dec 8 (annual break), so open for the core Dec-Mar season. Current hours (owner-type site thebakeshop-com.pages.dev): Wed-Sun 8am-2pm - that site could not be confirmed as official. At the Alyeska base in Girdwood.",
+  "checked": "2026-11-23"
+ },
+ "andes-tower-hills-mn": {
+  "line": "Caramel rolls at Travs, downtown Alexandria's oldest café.",
+  "name": "Traveler's Inn Cafe",
+  "url": "https://centrallakestrail.com/?p=1704",
+  "confidence": "medium",
+  "note": "Central Lakes Trail calls it Alexandria's oldest eating establishment at 511 Broadway: locals call it 'Travs,' and it is known for all-day breakfast and fresh caramel rolls, open 7 days. Explore Alexandria's current listing (explorealex.com/listing/travelers-inn-restaurant/) confirms it is operating. The founding year conflicts (1925 vs 1928), so the line leaves it out. It is about 20 min from Kensington.",
+  "checked": "2026-11-23"
+ },
+ "arapahoe-basin-co": null,
+ "aspen-snowmass-co": {
+  "line": "Skate 60-plus miles of free groomed Nordic, Aspen to Basalt.",
+  "name": "Aspen Snowmass Nordic Trail System",
+  "url": "https://aspensnowmass.com/visit/activities/winter/cross-country-skiing",
+  "confidence": "high",
+  "note": "Aspen Snowmass page: more than 60 miles of trails linking Aspen, Snowmass and Basalt, 'one of the largest free groomed cross-country ski systems in North America'; trail reports via aspennordic.com. Aspen Times quotes '90 kilometers of free trails' with loops typically opening around Thanksgiving. 'Skate' implies skate-skiing; classic tracks also exist.",
+  "checked": "2026-11-23"
+ },
+ "banff-sunshine-ab": {
+  "line": "Weekend night laps under the lights at Norquay, above Banff.",
+  "name": "Mt Norquay night skiing",
+  "url": "https://banffnorquay.com/night-skiing/",
+  "confidence": "medium",
+  "note": "Norquay's page: night skiing Fridays and Saturdays 6-9:30pm, Cascade Chair and Magic Carpet; ends Mar 13, 2027. The page's banner says night skiing opens Jan 1, 2027 (body text has a typo saying Jan 1, 2026), so this works for Jan to mid-Mar trips only. Night ticket prices TBD. Norquay is a separate ski hill (not in the app's resort list), allowed under the 'different local hill' rule. Replaces the tour-book Upper Hot Springs/Gondola.",
+  "checked": "2026-11-23"
+ },
+ "beaver-creek-co": {
+  "line": "Skin Meadow Mountain, the lost 1960s ski hill locals still lap.",
+  "name": "Meadow Mountain (Minturn)",
+  "url": "https://www.vailmag.com/best-of-vail/a-quick-guide-to-meadow-mountain",
+  "confidence": "high",
+  "note": "Vail Magazine: a locals' favourite for non-lift-served backcountry ski terrain and sledding; a chairlift and T-bar ran in the mid-1960s and stopped in 1969; land deeded to the US Forest Service in 1979; summit views of Beaver Creek. Vail Daily confirms winter skinning, snowshoeing to the Line Shack (~2,000 ft gain). White River NF winter-sports page lists Meadow Mountain TH #2124 for XC/snowshoe (https://www.fs.usda.gov/r02/whiteriver/recreation/opportunities/winter-sports). Public USFS land, no season dates. Minturn sits between Vail and Avon; assigned to Beaver Creek so Vail could take Shrine Pass.",
+  "checked": "2026-11-23"
+ },
+ "big-powderhorn-mi": {
+  "line": "Classic laps at ABR, Nordic trails on an Ironwood homestead.",
+  "name": "ABR Trails (Anderson Bluffs and River Trails)",
+  "url": "https://www.wxpr.org/outdoors-leisure-and-sports/2025-12-02/abr-trails-in-ironwood-enjoys-mid-winter-conditions-after-thanksgiving-blizzard",
+  "confidence": "high",
+  "note": "WXPR (Dec 2025) says Eric Anderson and his father started ABR in 1995 on the family homestead. It is now run by the nonprofit ABR Trails Foundation, which had 40+ km groomed by early December 2025. Cross Country Skier magazine notes about 100 km of trails along the Montreal River, plus ski-in cabins. It is about 15-20 min from Bessemer. Day-pass details for 2026-27 were not checked.",
+  "checked": "2026-11-23"
+ },
+ "big-sky-mt": {
+  "line": "Pickup hockey at the Pavelich rink, named for an ex-Red Wing.",
+  "name": "Marty Pavelich Ice Rink",
+  "url": "https://www.bsco.org/park/marty-pavelich-ice-rink",
+  "confidence": "medium",
+  "note": "BSCO: outdoor regulation community rink in Big Sky Community Park, weekly adult pickup hockey, open skate; named for former NHL player and four-time Stanley Cup champion Marty Pavelich. Explore Big Sky (2019): Pavelich is a Big Sky local and ex-Detroit Red Wing; volunteer-built by Big Sky Skating and Hockey Association. Fees and 2026-27 schedule not shown. Alternative: Lone Mountain Ranch Nordic (85 km).",
+  "checked": "2026-11-23"
+ },
+ "big-white-bc": {
+  "line": "Woodstove cabins on Kelowna Nordic's club-run trails.",
+  "name": "Kelowna Nordic Ski & Snowshoe Club (McCulloch Rd)",
+  "url": "https://kelowna.cioc.ca/record/KNA2102?PrintMd=on",
+  "confidence": "medium",
+  "note": "Kelowna community directory: club founded 1977, McCulloch Rd at the Kettle Valley Rail Trail, 75 km of trails, four cabins with woodstoves; Tourism Kelowna confirms 75 km groomed and warming cabins. McCulloch Rd is off Hwy 33, the same highway as the Big White turnoff, but drive time not sourced. 2026-27 opening date not confirmed (season is snow-dependent).",
+  "checked": "2026-11-23"
+ },
+ "blackjack-mi": {
+  "line": "Night laps at Mt. Zion, Ironwood's college hill and ski-ops lab.",
+  "name": "Mt. Zion (Gogebic Community College)",
+  "url": "https://gogebic.edu/community/mtzion.html",
+  "confidence": "high",
+  "note": "The Gogebic Community College page says Mt. Zion is open to the public and run by GCC's Ski Area Management program as its on-campus lab. It has 10 slopes and 300 ft of vertical, and night skiing is listed. The tentative opening is Dec 19, 2026. From Jan 11, 2027 it runs Tue/Thu/Fri 2-8pm, Sat 9-4 and Sun 12-4, with tickets at $55/day. It is in Ironwood, about 10 min from Blackjack.",
+  "checked": "2026-11-23"
+ },
+ "breckenridge-co": {
+  "line": "A night at Francie's Cabin, a ski-in hut with a wood-fired sauna.",
+  "name": "Francie's Cabin",
+  "url": "https://summithuts.org/francies-cabin",
+  "confidence": "medium",
+  "note": "Summit Huts page: south of Breckenridge, winter season Nov-Apr, wood-burning Herb's Sauna; overnight only. 2026-27 bookings not separately confirmed. Replaced Ullr Fest (Dec 17-19 only).",
+  "checked": "2026-11-23"
+ },
+ "bridger-bowl-mt": {
+  "line": "Hyalite's frozen falls, up a road plowed only for recreation.",
+  "name": "Hyalite Canyon ice climbing",
+  "url": "https://www.seattlemet.com/travel-and-outdoors/bozeman-s-frozen-waterfalls-are-a-winter-playground/",
+  "confidence": "medium",
+  "note": "Seattle Met: the 9-mile Hyalite road is 'the longest plowed stretch in the country cleared solely for recreation', funded partly by the Ice Fest. Bozeman Ice Festival 30th edition Dec 9-13, 2026 (outsidebozeman.com). Beginners go with a guide (Montana Alpine Guides, per first pass). Hyalite is south of Bozeman, so ~50-60 min from Bridger Bowl; fine from a Bozeman base.",
+  "checked": "2026-11-23"
+ },
+ "buck-hill-mn": null,
+ "copper-mountain-co": {
+  "line": "Ski Cooper, the hill where the 10th Mountain trained for WWII.",
+  "name": "Ski Cooper",
+  "url": "https://www.skicooper.com/events/list",
+  "confidence": "high",
+  "note": "Ski Cooper events page: 2026-27 opening day Dec 9, 2026, closing Apr 4, 2027; 10th Mountain Day Feb 26, 2027 honours 10th Mountain Division soldiers who trained at Cooper before fighting in WWII. Near Leadville over Fremont Pass from Copper (roughly 30-35 min). It is a different, small ski hill, allowed under the 'different local hill' rule.",
+  "checked": "2026-11-23"
+ },
+ "crested-butte-co": {
+  "line": "Ski the car-free road to Gothic, an 1879 silver town turned lab.",
+  "name": "Gothic Road to Gothic",
+  "url": "https://coloradosun.com/2023/03/19/snow-research-gothic-colorado/",
+  "confidence": "high",
+  "note": "Colorado Sun (2023): Gothic founded 1879 as a silver town, Rocky Mountain Biological Lab HQ since 1928; road closes to motor vehicles late Oct to mid-May, reached by skis, snowshoes or bike over ~3 mi of snowy road. Travel Crested Butte (c.2026) lists it as a winter Nordic/snowshoe/fat-bike destination, trailhead ~3 min from Mt. Crested Butte, snowmobiles forbidden. Upper route beyond Gothic is avalanche terrain; the road itself is the mellow outing.",
+  "checked": "2026-11-23"
+ },
+ "crystal-mountain-wa": {
+  "line": "Coffee at Wapiti Outdoors in Greenwater's old general store.",
+  "name": "Wapiti Outdoors (formerly Wapiti Woolies), Greenwater",
+  "url": "https://visitrainier.com/wapiti-outdoors-more-than-a-shop/",
+  "confidence": "medium",
+  "note": "Visit Rainier (2020, modified 2023): 'Wapiti Woolies is now Wapiti Outdoors'; started as a knitting factory; building is Greenwater's original general store, moved to the highway after a 1977 flood; owners John and Karlyn Clark since 2018; described as 'a destination, for many, it's a tradition'. Current Visit Rainier listing: open 7 days 8am-6pm, winter coffee/lattes, ski and snowshoe rentals, sells Sno-Park permits; on SR 410, the only road to Crystal. No 2026-dated source confirming operation; listing is undated but current. Naches Tavern (Greenwater) skipped as an apres bar.",
+  "checked": "2026-11-23"
+ },
+ "deer-valley-ut": {
+  "line": "Round Valley, groomed open space for fat bikes, skis and dogs.",
+  "name": "Round Valley",
+  "url": "https://mountaintrails.org/round-valley-in-the-winter",
+  "confidence": "medium",
+  "note": "Mountain Trails Foundation (Jan 2023) grooms ~20 km daily with the City of Park City, calls it 'the world's largest dog park', grooms singletrack for fat bikes. Visit Park City (Mar 2025): 25+ miles groomed, dog rules by zone. No 2026-27-specific post found, but it is a standing city/nonprofit program. Near Quinn's Junction, east side of town.",
+  "checked": "2026-11-23"
+ },
+ "fernie-bc": {
+  "line": "Griz Days in March: bed races and a musket fired at the clouds.",
+  "name": "Griz Days",
+  "url": "https://tourismfernie.com/events/griz-days",
+  "confidence": "medium",
+  "note": "Tourism Fernie events list: 50th Annual Griz Days, Fri Mar 5 to Sun Mar 7, 2027. Tourism Fernie 'Legend of the Griz' (https://tourismfernie.com/article/legend-griz): Fernie's biggest annual festival, held every March; bed races, parade, fireworks; the Griz legend fires a musket into the clouds to bring snow. Caveat: it is a single weekend, so it only helps visitors there Mar 5-7. If a year-round pick is required, fall back to Fernie Golf Club XC trails (volunteer-groomed by Fernie Nordic Society, ~8 km) but that is weaker on character.",
+  "checked": "2026-11-23"
+ },
+ "giants-ridge-mn": {
+  "line": "Potica from Pep's in Virginia, the Iron Range's walnut bread.",
+  "name": "Pep's Bake Shop",
+  "url": "https://ironrange.org/?p=37049",
+  "confidence": "medium",
+  "note": "The Iron Range Tourism page lists Pep's Bake Shop, a family-owned bakery at 318 Chestnut St, Virginia, for potica, 'a sweet walnut bread ... that is an Iron Range staple,' plus a lunch counter. It is about 25 min from Biwabik. Hours are not posted there. A late-2026 web article says it opens Tue-Sat from 5am, but that source is low quality. The old Italian Bakery in Virginia has closed.",
+  "checked": "2026-11-23"
+ },
+ "grand-targhee-wy": {
+  "line": "Teton Canyon's free groomed track, the Tetons from Idaho.",
+  "name": "Teton Canyon groomed trail (TVTAP)",
+  "url": "https://jhnordic.com/teton-canyon-trail-of-the-month",
+  "confidence": "high",
+  "note": "JH Nordic: 7.6 mi out-and-back up Ski Hill Rd from Driggs near Grand Targhee, $0, groomed by Teton Valley Trails and Pathways, dogs and fat bikes welcome, west-side Teton views. JH Nordic report Jan 13, 2026 shows it groomed. Victor Emporium huckleberry shakes considered, but winter hours couldn't be confirmed.",
+  "checked": "2026-11-23"
+ },
+ "heavenly-ca": {
+  "line": "Breakfast at Ernie's, South Lake Tahoe's coffee shop since 1968.",
+  "name": "Ernie's Coffee Shop",
+  "url": "https://southtahoenow.com/08/11/2026/ernies-coffee-shop-in-south-lake-tahoe-celebrates-11-years-of-serving-the-community",
+  "confidence": "high",
+  "note": "South Tahoe Now, Aug 2026: 'a staple in the South Lake Tahoe community since 1968'; current owners Kent Baer and Nate Bergner (since 2015) marked 11 years; menu honours former owners. 1207 Emerald Bay Rd (Y area), breakfast and lunch. Article does not state hours or explicitly say year-round; tahoe.com listing shows it as an ongoing daily business. Not an apres bar.",
+  "checked": "2026-11-23"
+ },
+ "indianhead-mi": {
+  "line": "Snowshoe to frozen falls on the Presque Isle, among old growth.",
+  "name": "Porcupine Mountains, Presque Isle unit",
+  "url": "https://www.michigan.gov/skitheporkies/events/2026/02/06/feb-6-presque-isle-snowshoeing-with-the-giants",
+  "confidence": "medium",
+  "note": "The MI DNR ran a guided snowshoe on Feb 6, 2026 to 'hidden frozen waterfalls' and old-growth giants, meeting at the Presque Isle entrance via CR 519 north from US 28 east of Wakefield. South Boundary Road is closed in winter, and a Recreation Passport is required. This is a state park, so it is the most tour-book pick of the set. It suits Indianhead because Wakefield is the gateway town, but nothing more local was found there.",
+  "checked": "2026-11-23"
+ },
+ "jackson-hole-wy": {
+  "line": "Night laps at Snow King, the town hill and Wyoming's first.",
+  "name": "Snow King Mountain",
+  "url": "https://www.jacksonholewy.com/things-to-do/snow-king-resort/",
+  "confidence": "high",
+  "note": "Jackson Hole Chamber page: founded 1939, 'Wyoming's first ski area', known as 'the town hill', night skiing Tue-Sat 4pm-close on 110 acres. Buckrail confirms 2026-27 season passes on sale. Direct analogue of the Howelsen example.",
+  "checked": "2026-11-23"
+ },
+ "jay-peak-vt": {
+  "line": "Hazen's Notch trails: free, ungroomed and made for wide skis.",
+  "name": "Hazen's Notch Association trails (Montgomery Center)",
+  "url": "https://hazensnotch.org/hazens-notch-trails.php",
+  "confidence": "high",
+  "note": "Trails open to XC skiing and snowshoeing Dec 14, 2026 - Apr 1, 2027 (closed Dec 5-13 for deer season); no charge for individuals (donations welcome); not groomed, wider backcountry skis recommended; no dogs in winter; limited parking.",
+  "checked": "2026-11-23"
+ },
+ "keystone-co": {
+  "line": "Dinner at Ski Tip, the 1800s stage stop the Dercums called home.",
+  "name": "Ski Tip Lodge",
+  "url": "https://www.keystoneresort.com/explore-the-resort/during-your-stay/dining/ski-tip-lodge",
+  "confidence": "high",
+  "note": "Keystone Resort page: an 1800s stagecoach stop that became the home of Keystone founders Max and Edna Dercum; stone fireplaces, hand-hewn beams. Winter season opens Nov 26, 2026; dinner Wed-Sun 5-9pm, reservations required on Tock; apres Fri-Sat Jan 8-Mar 26, 2027. Caveat: it is a resort-owned restaurant, included because the building and its history are the Keystone institution, not just a good meal.",
+  "checked": "2026-11-23"
+ },
+ "kicking-horse-bc": {
+  "line": "Tea among the stacks at Bacchus, Golden's bohemian bookshop.",
+  "name": "Bacchus Books & Cafe",
+  "url": "https://www.kootenayrockies.com/partner/bacchus-books-cafe",
+  "confidence": "medium",
+  "note": "Kootenay Rockies listing (current): 409 9th Ave N, Golden; new and used books, maps, local art; Mon-Sat 9-5:30, Sun 10-4. Lonely Planet describes it as a bohemian spot popular with Golden's artsy crowd, bookstore downstairs and tea upstairs among higgledy-piggledy shelves (LP page undated). Alternate if a non-café pick is preferred: Dawn Mountain Nordic Centre, 33 km of trails maintained by the Golden Nordic Ski Club about 1 km from the resort (https://www.tourismgolden.com/activities/winter/x-country/dawn-mountain-nordic-centre).",
+  "checked": "2026-11-23"
+ },
+ "killington-vt": {
+  "line": "Saskadena Six, the hill that grew from the first US rope tow.",
+  "name": "Saskadena Six (South Pomfret)",
+  "url": "https://www.saskadenasix.com/winter/skiing-snowboarding",
+  "confidence": "high",
+  "note": "Ticket page shows 2026-2027 day tickets and passes, 'Preparing for our 91st Season'. History per Wikipedia (https://en.wikipedia.org/wiki/Suicide_Six): first US rope tow Jan 1934 on Gilbert's farm; Bunny Bertram took it over and moved it to nearby Hill 6, which became Suicide Six (renamed Saskadena Six in 2022). Also hosts the Fisk Trophy (since 1937). About 30-35 min from Killington.",
+  "checked": "2026-11-23"
+ },
+ "kirkwood-ca": {
+  "line": "Post-ski soak at Grover Hot Springs, outside Markleeville.",
+  "name": "Grover Hot Springs State Park",
+  "url": "https://www.parks.ca.gov/?page_id=508",
+  "confidence": "medium",
+  "note": "CA State Parks page checked 11/15/2026: pool complex open Fri-Mon, first come first served ($10 adult); winter campground open to mid-spring 2027; chains advised. Kept from first pass because it is the real Hwy 88 soak and Kirkwood has little else nearby. Distance is roughly 45-50 min (Hwy 88 to 89, Markleeville) - at the edge of the 45-min rule. Considered and rejected: Kirkwood Inn (reads as apres), Sorensen's Cafe in Hope Valley (resort renamed three times since 2020; current hours page last updated 2023, could not confirm 2026-27 winter service).",
+  "checked": "2026-11-23"
+ },
+ "lake-louise-ab": {
+  "line": "A health cookie from Laggan's, Lake Louise's bakery since 1987.",
+  "name": "Laggan's Mountain Bakery & Delicatessen (Samson Mall)",
+  "url": "https://www.rmotoday.com/mountain-guide/bake-it-yourself-tips-from-the-locals-1566982",
+  "confidence": "high",
+  "note": "RMO Today: established Feb 1987, named after Laggan's Siding (the old CPR name for Lake Louise station); its health cookie is its most popular item, valued as sturdy enough to take skiing. Banff & Lake Louise Tourism listing (https://www.banfflakelouise.com/dining-nightlife/laggans-mountain-bakery-and-deli) shows it open every month of the year. Daily hours not posted.",
+  "checked": "2026-11-23"
+ },
+ "loon-mountain-nh": {
+  "line": "Fadden's, run by one family in the same building since 1896.",
+  "name": "Fadden's General Store (North Woodstock)",
+  "url": "https://assets.simpleviewinc.com/simpleview/image/upload/v1/clients/whitemountainsnh/Faddens_3f98cfa2-11f3-4c79-9458-234273e093a3.pdf",
+  "confidence": "medium",
+  "note": "White Mountains tourism sheet: family-owned in the same building since 1896, open daily 8-7 year-round, makes its own maple syrup, small museum of sugaring artifacts. Sheet is undated; generation count conflicts between sources (5th vs 7th), so the line avoids it. Weakest pick of the set: Lincoln has little genuinely local non-ski winter content; a sugarhouse-store is close to the generic category.",
+  "checked": "2026-11-23"
+ },
+ "loveland-co": {
+  "line": "Dip your crust in honey at Beau Jo's, home of the mountain pie.",
+  "name": "Beau Jo's (Idaho Springs)",
+  "url": "https://www.beaujos.com/pizza-locations/idaho-springs",
+  "confidence": "high",
+  "note": "Beau Jo's site: Idaho Springs location serving Colorado-style pizza since the 1970s (first shop was across the street), Colorado honey as the finishing touch on the crust; hours Sun-Thu 11-8, Fri-Sat 11-9. Colorado Sun: founder Chip Bair created the Colorado-style mountain pie in Idaho Springs in the 1970s. It is a restaurant, included as the I-70 ski-day institution; swap if the reviewer wants no food picks.",
+  "checked": "2026-11-23"
+ },
+ "lutsen-mn": {
+  "line": "Pizza at Sven & Ole's, Grand Marais's Scandinavian-themed joint.",
+  "name": "Sven & Ole's",
+  "url": "https://www.lutsen.com/mountain-info/resort-dining/sven-oles-pizza",
+  "confidence": "medium",
+  "note": "The current Lutsen Mountains site lists Sven & Ole's at 9 W Wisconsin St, Grand Marais. Explore MN (exploreminnesota.com/profile/sven-oles/4194) describes it as a Scandinavian-themed pizzeria serving lunch and dinner daily. OnlyInYourState (2021) puts it at about 40 years old. A Star Tribune story from Jan 2022 said the building was for sale but the business would keep running. 2026-27 hours were not seen on its own site (not fetchable).",
+  "checked": "2026-11-23"
+ },
+ "mammoth-mountain-ca": {
+  "line": "Wind-hold days at June Mountain, Mammoth's sheltered sister hill.",
+  "name": "June Mountain",
+  "url": "https://www.peakrankings.com/content/june-mountain",
+  "confidence": "medium",
+  "note": "PeakRankings: June's 'more sheltered footprint' gives resilient storm-day operations; 'the entire mountain will often still be operating when many of Mammoth's lifts are on wind hold'; far less traffic than Mammoth. 2026-27 opening Dec 19 per visitmammoth.com/events/june-mountain-opening-day/ (Mammoth's sister resort, ~20 min north, kids 12 and under ski free with the kids pass). Caveat: same owner as Mammoth, so the Director may see it as part of the resort; it is a separate hill not in the app's list. Rejected: Whitmore Pool (closed in winter), Wild Willy's (winter road access unconfirmed), Tamarack XC (resort-run, little character in sources), The Stove (just a good breakfast).",
+  "checked": "2026-11-23"
+ },
+ "mont-tremblant-qc": {
+  "line": "Nordic loops and wood-stove shacks at Domaine Saint-Bernard.",
+  "name": "Domaine Saint-Bernard",
+  "url": "https://www.tremblant.ca/things-to-do/activities/domaine-saint-bernard",
+  "confidence": "medium",
+  "note": "Tremblant's page: protected nature domain about 15 min from the resort; groomed classic and skate trails (2-13 km loops in an 80 km network), snowshoe trails, wood-heated shacks and a shelter with a wood stove along the trails, rentals and bistro on site. 2026-27 dates not posted (Domaine's own site not checked); the Diable River 'runs through it' claim on the page was not used.",
+  "checked": "2026-11-23"
+ },
+ "mount-bohemia-mi": {
+  "line": "Pasties at the Mohawk Superette, hot on Tuesdays and Fridays.",
+  "name": "Mohawk Superette",
+  "url": "https://www.visitkeweenaw.com/blog/post/your-guide-to-exploring-mohawk-area/",
+  "confidence": "medium",
+  "note": "Visit Keweenaw says the Mohawk Superette serves hot, ready-to-eat, award-winning pasties on Tuesdays and Fridays, plus smoked fish from Keweenaw Fish Co. It also appears on Visit Keweenaw's Keweenaw Pasty Trail and winter-spirit guide. Winter hours were not stated, but it is a year-round grocery on US-41, about 25 min from Bohemia. The alternative is Slim's Cafe in Mohawk (since 1957).",
+  "checked": "2026-11-23"
+ },
+ "mt-bachelor-or": {
+  "line": "Fireside breaks at Meissner, Bend's club-groomed Nordic trails.",
+  "name": "Virginia Meissner Sno-Park (Meissner Nordic)",
+  "url": "https://visitcentraloregon.com/things-to-do/attractions/meissner-sno-park-bend/",
+  "confidence": "high",
+  "note": "Visit Central Oregon: nonprofit Meissner Nordic Ski Club grooms nearly 50 km daily Dec-Mar; six warming huts, with a fire at Meissner Shelter; ~14 mi / 20 min from Bend on Century Dr (on the way to Bachelor). Visit Bend (updated June 2026) calls it a 'community supported ski area' funded by membership and trailhead donation box. Oregon Sno-Park permit required. Sources do not say grooming is volunteer-only, so line says 'club-groomed'.",
+  "checked": "2026-11-23"
+ },
+ "mt-baker-wa": {
+  "line": "Burritos at Wake 'N Bakery, born as a cart on a ski shop porch.",
+  "name": "Wake 'N Bakery, Glacier",
+  "url": "https://www.mountbakerexperience.com/stories/wake-n-bakery-glacier-institution-has-new-owners,680",
+  "confidence": "high",
+  "note": "Mount Baker Experience (2019): started as a coffee cart on the porch of the Glacier Ski Shop (first latte Christmas Eve 2004), moved to 6903 Bourne St in 2010; the stop on the way to Mt. Baker Ski Area and the community's gathering place. Still operating: Sunset, Oct 2026, calls it 'the only proper coffee shop in the area', known for breakfast burritos, with weekend lines. Current hours not confirmed (2019: 7 days, 7:30-5).",
+  "checked": "2026-11-23"
+ },
+ "okemo-vt": {
+  "line": "Singleton's, a third-generation store known for smoked meats.",
+  "name": "Singleton's General Store (Proctorsville)",
+  "url": "https://happyvermont.com/2026/01/24/vermont-general-stores-podcast/",
+  "confidence": "medium",
+  "note": "Happy Vermont (Jan 24, 2026): third-generation family business run by Dan and Alison Singleton, keeping up Bud Singleton's well-known smoked meats; author found it busy in October 2025. Vermont Journal (2023) adds it sells whiskey, guns and ammo, and recovered from the July 2023 flood. Winter hours not checked. About 10 min from Okemo.",
+  "checked": "2026-11-23"
+ },
+ "palisades-tahoe-ca": {
+  "line": "Kick and glide at Tahoe XC, Tahoe City's nonprofit Nordic trails.",
+  "name": "Tahoe XC (Tahoe Cross Country)",
+  "url": "https://tahoequarterly.com/?p=7189",
+  "confidence": "medium",
+  "note": "Tahoe Quarterly (2018): XC area on Tahoe City PUD land since the mid-1970s (Skip Reedy's Tahoe Nordic), run since 1999 by the nonprofit Tahoe Cross Country Ski Education Association; no downhill-resort or HOA backing. Still operating: Giving Tuesday 2025 page (tahoexc.networkforgood.com) marks TCCSEA's 25th year, lists free family/school ski programs and 2025-26 trail steward plates at the trailhead for 2026; tahoexc.org/about. 2026-27 opening date/pass prices not confirmed. A trailhead/lodge relocation project is underway (Tahoe Fund) - location may shift in future seasons.",
+  "checked": "2026-11-23"
+ },
+ "panorama-bc": {
+  "line": "Skate the Whiteway, a Guinness-record trail on Lake Windermere.",
+  "name": "Lake Windermere Whiteway",
+  "url": "https://fairmonthotsprings.com/things-to-do/lake-windermere-whiteway",
+  "confidence": "medium",
+  "note": "Over 30 km on the frozen lake between Invermere (Kinsmen Beach) and Windermere; named the world's longest skating trail by Guinness in 2014; maintained by the Toby Creek Nordic Ski Club. Ice-dependent: usually opens around January, so not guaranteed for December trips; 2026-27 opening not yet announced. Reused from the first pass because it passes the local test (community-built, club-maintained); Radium Hot Springs dropped as tour-book.",
+  "checked": "2026-11-23"
+ },
+ "park-city-ut": {
+  "line": "Skate laps at White Pine, Nordic track on the city golf course.",
+  "name": "White Pine Touring Nordic Center",
+  "url": "https://www.kpcw.org/park-city/2025-06-13/park-city-council-approves-new-5-year-extension-with-white-pine-touring",
+  "confidence": "high",
+  "note": "KPCW (Jun 2025): city council extended White Pine's contract to run Nordic at the municipal golf course through 2030; partnership 'for decades'. whitepinetouring.com: 20+ km classic/skate, 9-5 daily, 1541 Thaynes Canyon Dr. TownLift (Sep 2026) confirms 2026-27 passes on sale. Fairly plain pick; Park City lacked a stronger non-touristy option.",
+  "checked": "2026-11-23"
+ },
+ "powder-mountain-ut": {
+  "line": "Moonlight Glide at North Fork Park, the valley's dark-sky park.",
+  "name": "North Fork Park (Ogden Nordic Moonlight Glide)",
+  "url": "https://www.visitogden.com/events/moonlight-glide-2/",
+  "confidence": "medium",
+  "note": "Visit Ogden: Ogden Nordic hosts Moonlight Glide at North Fork Park, Liberty (Feb 28, 2026, 6:30-8:30 pm; headlamp, fire pit, cocoa; trail pass needed). DarkSky.org: Dark Sky Park since 2015. 2026-27 Glide dates not posted yet; trails themselves run each winter. Reused from first pass; it passes the local test.",
+  "checked": "2026-11-23"
+ },
+ "powder-ridge-ct": {
+  "line": "Ted's, steaming cheeseburgers in steel cabinets since 1959.",
+  "name": "Ted's Restaurant (Meriden)",
+  "url": "https://www.cp24.com/news/world/2026/11/17/in-connecticut-a-steamy-take-on-americas-original-sandwich/",
+  "confidence": "high",
+  "note": "AP story (Nov 17, 2026): Ted's opened 1959, cooks burgers and cheese in proprietary stainless steel steam cabinets; owner Bill Foreman since 2007 calls it 'one of the only ones left'. About 15 min from Powder Ridge.",
+  "checked": "2026-11-23"
+ },
+ "red-lodge-mt": {
+  "line": "Red Lodge Nordic, kept running by neighbors since 2002.",
+  "name": "Red Lodge Nordic Center",
+  "url": "https://beartoothtrails.squarespace.com/about-us",
+  "confidence": "medium",
+  "note": "Beartooth Trails: friends and neighbors formed BRTA in April 2002 to keep the Nordic Center running; mostly volunteer-run, yurt with fire and cookies. redlodge.com: ~2 mi west of town off Hwy 78, 15+ km groomed. Cross Culinary ski-and-food event held there Feb 21, 2026. 2026-27 dates not posted.",
+  "checked": "2026-11-23"
+ },
+ "revelstoke-bc": {
+  "line": "Indie ski films at the Roxy, Revelstoke's movie house since 1938.",
+  "name": "Roxy Theatre",
+  "url": "https://revelstokemountaineer.com/?p=325444",
+  "confidence": "high",
+  "note": "Revelstoke Mountaineer ('Still rolling: How the Roxy Theatre remains a Revelstoke staple', published after Nov 2024): first opened at its Mackenzie Ave location in 1938 (as the Avolie); owner-operator since 2020, crew largely local teens; shows blockbusters and indie ski films. Also listed in Tourism Revelstoke's 2026 winter guide. Showtimes vary.",
+  "checked": "2026-11-23"
+ },
+ "schweitzer-id": {
+  "line": "Films at the Panida, the 1927 theater Sandpoint restored.",
+  "name": "Panida Theater",
+  "url": "https://www.panida.org/about-us",
+  "confidence": "high",
+  "note": "Panida: opened 1927 as vaudeville/movie house; Sandpoint community fundraising restored and reopened it in 1985; nonprofit running films, film festivals, concerts, comedy. Check the calendar for winter dates. Reused from first pass.",
+  "checked": "2026-11-23"
+ },
+ "snowbasin-ut": {
+  "line": "Breakfast at The Oaks, Ogden Canyon's riverside stop since 1902.",
+  "name": "The Oaks",
+  "url": "https://chewandchat.com/2025/11/the-oaks-re-opens-in-ogden-canyon-nov-15.html",
+  "confidence": "medium",
+  "note": "Chew & Chat (Nov 2025): reopened Nov 15, 2025 under new owners Cora and David Neal, daily 8am-8pm, breakfast/lunch/dinner; founded 1902 per photo caption. KSL (Nov 2025): open 100+ years before closing in 2021. Ski Utah blog called it a locals' favorite. Closed 2021-25, so worth re-checking it is still open; year-round status not stated.",
+  "checked": "2026-11-23"
+ },
+ "snowbird-ut": {
+  "line": "Frosty-mug root beer at Hires Big H, family-run since 1959.",
+  "name": "Hires Big H (Midvale / Fort Union)",
+  "url": "https://hiresbigh.com/",
+  "confidence": "medium",
+  "note": "Operator site: family owned since 1959, signature root beer in frosty mugs, 'Utah's Original Drive-In'. Midvale location at 835 Fort Union Blvd is ~15-20 min from the canyon mouth; closed Sundays. It is a burger drive-in, so borderline 'just a restaurant'; chosen as the Salt Lake locals' institution nearest Little Cottonwood.",
+  "checked": "2026-11-23"
+ },
+ "solitude-ut": {
+  "line": "Breakfast at Silver Fork Lodge, skiers' canyon stop since 1947.",
+  "name": "Silver Fork Lodge & Restaurant",
+  "url": "https://Utah.com/articles/post/salt-lake-best-ski-breakfast-spots",
+  "confidence": "high",
+  "note": "Utah.com: in Big Cottonwood ~1.6 mi below Solitude, 'a favorite of skiers since 1947'. Ski Utah member page: open every day of the year for breakfast, lunch, dinner (hash browns, trout and eggs). Ski Utah blog calls it a classic; arrive by 7:45 on powder days.",
+  "checked": "2026-11-23"
+ },
+ "steamboat-co": {
+  "line": "Night laps at Howelsen, the town hill that made 100 Olympians.",
+  "name": "Howelsen Hill",
+  "url": "https://co-steamboatsprings.civicplus.com/840/Howelsen-Hill-Ski-Area",
+  "confidence": "medium",
+  "note": "City page confirms 1915 town-owned hill, 100 Olympians, night skiing. 2026-27 dates/hours not yet posted; Denver Gazette (Feb 2026) gives night skiing 5:30-8pm.",
+  "checked": "2026-11-23"
+ },
+ "stevens-pass-wa": {
+  "line": "After-work laps at Leavenworth Ski Hill and its 1936 CCC lodge.",
+  "name": "Leavenworth Ski Hill",
+  "url": "https://skileavenworth.com/locations/ski-hill",
+  "confidence": "high",
+  "note": "Run by the nonprofit Leavenworth Winter Sports Club (since 1928) under a Forest Service permit; CCC built the Ski Hill Lodge in 1936 for ski-jump crowds (Wikipedia: NRHP historic district 2013, 90m Bakke jump). Two rope tows, tubing, 8 km Nordic with 5 km lit. Hours page (2025-26): weekday afternoons/evenings 3:30-7:30/8pm, weekends 9-4; 2026-27 memberships on sale (skileavenworth.com/tickets/2026-2027-memberships), 2026-27 hours not yet posted; opens when it snows. ~45 min east of the pass in Leavenworth.",
+  "checked": "2026-11-23"
+ },
+ "stowe-vt": {
+  "line": "Cochran's, the family rope-tow hill that raised four Olympians.",
+  "name": "Cochran's Ski Area (Richmond)",
+  "url": "https://www.sevendaysvt.com/arts-culture/251-skiing-on-the-cheap-at-cochrans-in-richmond-37492377/",
+  "confidence": "medium",
+  "note": "Seven Days: Mickey and Ginny Cochran put a rope tow on the hill behind their house in 1961; all four Cochran siblings became Olympic alpine racers; nonprofit since 1998; cheap Friday skiing. A Feb 20, 2026 blog trip report shows it operated last winter; its site still says 'Closed for the season' (off-season), so 2026-27 opening date isn't posted yet. About 35-40 min from Stowe via Waterbury/I-89.",
+  "checked": "2026-11-23"
+ },
+ "stratton-vt": {
+  "line": "Magic Mountain, the comeback hill that caps daily tickets.",
+  "name": "Magic Mountain (Londonderry)",
+  "url": "https://www.stormskiing.com/p/magic-mountain-vermont-surrounded",
+  "confidence": "medium",
+  "note": "Storm Skiing Journal (Apr 22, 2026): dormant 1991-97 with lifts stripped, comeback over the past decade, record 2025-26 season, credits daily lift-ticket limits for a less-crowded experience. Homepage (https://magicmtn.com/) says it caps ticket sales and calls itself a classic Vermont ski area in Londonderry. 2026-27 opening date not explicitly posted. It is another ski area, allowed under the 'different local hill' rule.",
+  "checked": "2026-11-23"
+ },
+ "sugarbush-vt": {
+  "line": "Ole's, Nordic trails groomed around the Warren airport runway.",
+  "name": "Ole's Cross Country Center",
+  "url": "https://skivermont.com/oles-cross-country-center",
+  "confidence": "medium",
+  "note": "Ski Vermont lists Ole's (2355 Airport Rd, Warren) with 45 km of trail; Front Porch Forum listing says it's been part of the valley almost 50 years, at the Warren Airport, open 9-5 daily in season; Ski Maven posts (2010-Jan 2025) describe skiing the runway area. Most recent dated evidence is Jan 2025; 2026-27 operation not explicitly confirmed.",
+  "checked": "2026-11-23"
+ },
+ "sugarloaf-me": {
+  "line": "The Narrow Gauge, a two-foot railbed turned riverside ski path.",
+  "name": "Narrow Gauge Pathway (Carrabassett Valley)",
+  "url": "https://mainebyfoot.com/narrow-gauge-pathway-carrabassett-valley/",
+  "confidence": "medium",
+  "note": "Maine by Foot (updated Jan 2025): ~5 mi one way on a two-foot narrow-gauge line (1894, rails removed 1927), converted by the town in 2001; used for skiing. Bangor Daily News (Jan 2023, https://www.bangordailynews.com/2023/01/30/outdoors/nordic-skiing-most-unique-trail-maine-xoasq1i29i/) describes skiing it groomed beside the Carrabassett River. Who grooms and 2026-27 grooming not confirmed; it's a public town path so it exists year-round.",
+  "checked": "2026-11-23"
+ },
+ "sun-peaks-bc": {
+  "line": "A dog-friendly Nordic run out to the McGillivray Lake Outpost.",
+  "name": "McGillivray Lake Outpost (Sun Peaks Nordic)",
+  "url": "https://www.sunpeaksresort.com/nordic",
+  "confidence": "medium",
+  "note": "Sun Peaks Resort Nordic page: dog-friendly route to the McGillivray Lake Outpost, open daily 9-3:30 for warming up; Nordic season Nov 26, 2026 to Apr 4, 2027. Weakest pick on the local-favourite test: it is resort-run Nordic, not a separate town institution. Nothing better turned up (Sun Peaks' other non-ski options are generic: sleigh rides, dog sledding, ice fishing).",
+  "checked": "2026-11-23"
+ },
+ "sun-valley-id": {
+  "line": "Galena Lodge, the Nordic lodge skiers saved from demolition.",
+  "name": "Galena Lodge",
+  "url": "https://www.kivitv.com/news/outdoors/idaho-back-roads-saving-galena-lodge",
+  "confidence": "high",
+  "note": "KIVI: abandoned and at risk of demolition in the early 1990s; local cross-country skiers' Help Save Galena campaign raised $325k; now owned by Blaine County Recreation District; ~50 km ski trails, yurts, lunch. BCRD: 23 mi north of Ketchum. Eye on Sun Valley (Dec 2025): open daily for 2025-26. 30-35 min from Ketchum.",
+  "checked": "2026-11-23"
+ },
+ "sunday-river-me": {
+  "line": "Carter's, family-run Nordic with ski-in woodstove cabins.",
+  "name": "Carter's XC Ski Center (Bethel)",
+  "url": "https://www.indyskipass.com/our-resorts/carters-xc-ski-center",
+  "confidence": "high",
+  "note": "Indy Pass lists Carter's as a new member for 2026-27; family-run, started by Dave and Anne Carter. The Maine Mag (2021, https://www.themainemag.com/the-best-winter-escape-is-on-skis-and-off-the-grid-carters-xc-ski-center/): 55+ km of trails along the Androscoggin, off-grid Camp Fern cabin reached on skis with a woodstove a staffer lights each morning, plus trailside eco-cabins; daughter Jes now runs it.",
+  "checked": "2026-11-23"
+ },
+ "taos-nm": {
+  "line": "Burritos at Abe's, Arroyo Seco's family cantina since 1945.",
+  "name": "Abe's Cantina y Cocina",
+  "url": "https://taos.org/places/category/food-and-drink/arroyo-seco/",
+  "confidence": "medium",
+  "note": "Taos.org: 'a local favorite on the road to Taos Ski Valley', long-running Great Breakfast Burrito. Fodor's: family-owned since the 1940s, named for Abe Garcia, closed Sundays, no dinner. OnlyInYourState: 'Established in 1945'. No dated 2026 confirmation found beyond the current Taos.org listing.",
+  "checked": "2026-11-23"
+ },
+ "telluride-co": {
+  "line": "Rummage the Free Box, Telluride's take-and-leave since 1975.",
+  "name": "Telluride Free Box",
+  "url": "https://www.telluride.com/discover/blog/a-telluride-treasure-the-free-box/",
+  "confidence": "high",
+  "note": "Telluride.com (Aug 2025): community give-and-take box started 1975; moved Nov 2024 to 151 S. Willow St., across from the post office, on town-owned land; mayor called it 'protected forever'. No hours stated; it is an open shelving structure, not a staffed venue.",
+  "checked": "2026-11-23"
+ },
+ "timberline-or": {
+  "line": "Night laps at Skibowl, billed as America's largest night skiing.",
+  "name": "Mt. Hood Skibowl",
+  "url": "https://skibowl.com/winter-activities/best-terrain-on-mt-hood/",
+  "confidence": "high",
+  "note": "Skibowl's own page: 'America's Largest Night Ski Area', night skiing seven nights a week from 3pm on all four lifts; cites Ski Magazine for most night terrain in North America. Travel Oregon (updated Jan 2026): 3-10pm, 7 nights, 'largest night skiing terrain in the country'. Site banner is selling 26/27 season passes; opening date not posted. Independently owned (Kirk Hanna, per Wikipedia), across Hwy 26 from Government Camp. 'Largest' is a self/press claim, attributed to Skibowl. Wording echoes the Steamboat line ('Night laps at...'); swap verb if that reads as repetitive. Alternative if a non-ski pick is preferred: Huckleberry Inn, Government Camp, family-owned since 1966, huckleberry pancakes (Travel Oregon, 2024).",
+  "checked": "2026-11-23"
+ },
+ "vail-co": {
+  "line": "Ski the snowed-in Shrine Pass road from Vail Pass to Red Cliff.",
+  "name": "Shrine Pass Road (Vail Pass to Red Cliff)",
+  "url": "https://5280.com/ski-trail-we-like-shrine-pass-road",
+  "confidence": "medium",
+  "note": "5280 (2016): classic snow-covered road route, 10.4 mi one way from the Vail Pass trailhead (I-70 exit 190) to Red Cliff, under 600 ft climbing, shared with snowshoers and snowmobilers; needs a car shuttle, or ski to the pass and back (5.4 mi). Inside the Vail Pass Winter Recreation Area, which the White River NF still lists for winter XC/snowshoe; Aspen Times reports a Dec 1 season start and a $10 day pass ($65 season). 2026-27 opening not yet announced. Some side terrain off the road is avalanche terrain.",
+  "checked": "2026-11-23"
+ },
+ "welch-village-mn": {
+  "line": "Ski-jump hall of fame in Red Wing, home of the Sky Crasher.",
+  "name": "American Ski Jumping Hall of Fame & Museum (St. James Hotel)",
+  "url": "https://www.startribune.com/ski-jumping-history-minnesota-red-wing-st-paul/601201555",
+  "confidence": "medium",
+  "note": "A Star Tribune article (Jan 2025) says Red Wing's Aurora Ski Club held its first meet in 1887, where Mikkel Hemmestvedt set the first recognized American ski jumping record. Newspapers called him the 'Sky Crasher from Red Wing.' The article places the Hall of Fame inside the St. James Hotel. Redwing.org lists the museum at 406 Main St, with check-in at the hotel front desk, but no hours are posted; call 612-819-5705. It is about 20 min from Welch.",
+  "checked": "2026-11-23"
+ },
+ "whistler-blackcomb-bc": {
+  "line": "After-work Nordic laps on Lost Lake's lit loop.",
+  "name": "Lost Lake Nordic Trails (lit loop)",
+  "url": "https://www.whistler.ca/parks-recreation-culture/nordic-skiing-and-snowshoe/",
+  "confidence": "high",
+  "note": "Resort Municipality of Whistler page: lit 4 km loop from the entrance to the warming hut and around Lost Lake; open daily 8am-8pm with night rates after 3pm; 2026/27 season mid-Dec to late Mar, depending on snow (needs 50 cm base). Opening date depends on snow.",
+  "checked": "2026-11-23"
+ },
+ "whitecap-mountains-wi": {
+  "line": "Smoked ribs at the Kimball Inn, the scratch kitchen near Hurley.",
+  "name": "Kimball Inn",
+  "url": "https://www.travelwisconsin.com/food-drink/restaurants/kimball-inn",
+  "confidence": "medium",
+  "note": "Travel Wisconsin's current listing (6622 US Hwy 2, Hurley) highlights scratch-made smoked BBQ ribs, chicken and pulled pork. A 2011 Roads Traveled piece said it served dinner only and closed for a month before and after ski season, and that its quirky menu ran to sardine sandwiches and beef liver; that seasonal pattern may have changed. 2026-27 hours were not confirmed. It is about 20 min from Montreal.",
+  "checked": "2026-11-23"
+ },
+ "whitefish-mt": {
+  "line": "Night skiing on Glacier Nordic's lit loops at the golf course.",
+  "name": "Glacier Nordic Center",
+  "url": "https://flatheadbeacon.com/2026/01/03/a-cross-country-skiers-guide-to-the-flathead-valley-2",
+  "confidence": "high",
+  "note": "Flathead Beacon (Jan 2026): Whitefish Lake Golf Course, ~1 mi from downtown, 12 km groomed, ~4 km lit until 10 pm. Run by Glacier Nordic Club (2026-27 program registration forms are live). Club has held Tuesday night relay races in past seasons.",
+  "checked": "2026-11-23"
+ },
+ "wild-mountain-mn": {
+  "line": "Popovers under red velvet at the Dalles House supper club.",
+  "name": "Dalles House Restaurant & Lounge",
+  "url": "https://archive.stcroixvalleymag.com/node/34332",
+  "confidence": "medium",
+  "note": "St. Croix Valley Magazine (undated) describes a classic supper club in St. Croix Falls, WI, with red velvet chairs and curtains 'in locals' photos,' revived popovers, in-house steak cutting and bands on Saturdays. Travel Wisconsin's current listing (travelwisconsin.com/food-drink/restaurants/dalles-house-restaurant-lounge) classes it as a supper club, but no hours are posted. It is about 10 min from Wild Mountain. The fallback is Coffee Talk in Taylors Falls, a cafe in an 1800s house.",
+  "checked": "2026-11-23"
+ },
+ "winter-park-co": {
+  "line": "Night runs at the Fraser Tubing Hill, the valley's lit original.",
+  "name": "Fraser Tubing Hill",
+  "url": "https://www.playwinterpark.com/sledding-tubing",
+  "confidence": "medium",
+  "note": "Winter Park chamber lists the 'Historic Fraser Tubing Hill', groomed and lighted for evening tubing, lift back up, warming house. Uncover Colorado lists it as the 'original' hill, Dec-Mar, daily 10am-10pm; Grand County tourism listing updated Nov 2025. Denver Gazette (2019) adds the warming hut dates to 1971 and Fraser-raised brothers have run it since the 1980s. Operator site (frasertubinghill.com) could not be read, so 2026-27 hours/prices are unconfirmed; call 970-726-5954. Tubing is a generic category, included because this specific old-school hill is the valley institution.",
+  "checked": "2026-11-23"
+ },
+ "wolf-creek-co": {
+  "line": "Soak in the Overlook's rooftop tubs atop a 1920 Pagosa building.",
+  "name": "Overlook Hot Springs",
+  "url": "https://www.cohotspringsloop.com/hot-springs/overlook-hot-springs-spa/",
+  "confidence": "medium",
+  "note": "Colorado Historic Hot Springs Loop: two rooftop pools on a 1920 building in downtown Pagosa Springs with San Juan River views; notes locals often soak after skiing Wolf Creek. Uncover Colorado (https://www.uncovercolorado.com/hot-springs/overlook-hot-springs): open all year, daily 10am-10pm (11pm Fri-Sat). Operator site not checked directly; confirm hours. Wolf Creek Pass can close for storms.",
+  "checked": "2026-11-23"
+ }
+}

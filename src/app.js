@@ -1021,6 +1021,15 @@ function skiSchoolNotesValue(resort) {
     </button>
     <div class="stat-tile__basis body-sm" id="${id}" hidden>${escapeHtml(basis)}</div>`;
 }
+// P20: one local pick, a single sentence linked to its source with the same
+// external-link arrow Buzz uses. The arrow rides on the last word so it never
+// wraps onto a line of its own. No pick -> the general activities line.
+function offMountainValue(resort) {
+  const pick = OFF_MOUNTAIN[resort.id];
+  if (!pick) return escapeHtml(ACTIVITIES_COPY[resort.non_ski_activities] || "Not published by the resort");
+  const i = pick.line.lastIndexOf(" ");
+  return `<a class="offmtn-link" href="${escapeHtml(pick.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(pick.line.slice(0, i + 1))}<span class="offmtn-link__end">${escapeHtml(pick.line.slice(i + 1))}<span class="offmtn-link__out" aria-hidden="true">${ICONS.external}</span></span><span class="visually-hidden">(opens in a new tab)</span></a>`;
+}
 function buildDetailNotes(resort) {
   return `<dl class="notes-list">
     ${resort.terrain_pct ? "" : notesRow("Terrain", "Not published by the resort")}
@@ -1028,7 +1037,7 @@ function buildDetailNotes(resort) {
     ${notesRow("Pass", escapeHtml(PASS_COPY[resort.pass_affiliation] || resort.pass_affiliation || "Not published by the resort"))}
     ${notesRow("Ski school", skiSchoolNotesValue(resort))}
     ${APRES[resort.id] ? notesRow("Après", escapeHtml(APRES[resort.id])) : ""}
-    ${notesRow("Off the mountain", escapeHtml(ACTIVITIES_COPY[resort.non_ski_activities] || "Not published by the resort"))}
+    ${notesRow("Off the mountain", offMountainValue(resort))}
   </dl>`;
 }
 
