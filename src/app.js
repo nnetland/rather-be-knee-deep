@@ -492,11 +492,16 @@ const QUIZ_OPTIONS = {
     // didn't factor in how far this is, since you weren't sure yet."
     { value: "unsure", label: "Unsure" },
   ],
+  // Shortened 2026-11-23 (Director): four answers you can read at a glance
+  // rather than four small sentences. The trailing clauses ("and bars", "and
+  // low-key", "not too wild") only restated the first words. Capitalisation
+  // follows the rest of the quiz -- sentence case, hyphenated -- so this reads
+  // as "Family-friendly" rather than title case.
   q5: [
-    { value: "lively", label: "Buzzing nightlife and bars" },
-    { value: "chill", label: "Chill and low-key" },
-    { value: "family", label: "Family-friendly, not too wild" },
-    { value: "noPreference", label: "Doesn't matter, just here to ski" },
+    { value: "lively", label: "Buzzing nightlife" },
+    { value: "chill", label: "Chill" },
+    { value: "family", label: "Family-friendly" },
+    { value: "noPreference", label: "Don't care, just here to ski" },
   ],
 };
 
