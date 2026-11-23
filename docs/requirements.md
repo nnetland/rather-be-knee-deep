@@ -22,6 +22,20 @@ Changes Nicole wants but isn't ready to make. Nothing here is a decision until s
 
 **P15 · Resort badges in Quiver. PARKED 2026-11-21.** Show each resort's badge in the Quiver section, matching Chase and Picks, which already carry the badge at 44px list scale. This is the existing resort badges, not the per-ski-type stickers deferred in D9; Q5 (the ski call stays typographic) is unchanged.
 
+**P16 · Lodging line on resort pages. PARKED 2026-11-22.** A brief line on each resort page about where people stay — the common types of lodging (e.g. slopeside condos, hotels in town, motels down valley). A sibling to the après line (P9). Placement on the page not yet decided.
+
+**P17 · Shorten the top terrain label to "Advanced". PARKED 2026-11-22.** The terrain tile currently reads "Advanced & expert"; trim it to "Advanced", alongside "Beginner" and "Intermediate".
+
+**P18 · A rounded, floating bottom nav with four sub-containers. PARKED 2026-11-22.** Restyle the mobile bottom nav as a rounded bar floating above the page edge, with the items in four separate sub-containers. Open question: the nav has five items today (Chase, Quiver, Buzz, Plan, Picks), so four containers means grouping two, dropping one, or moving one elsewhere. Must keep N2's tap-target sizes and iOS Safari bottom-edge handling.
+
+**P19 · Check whether pages need more context now the intro lines are gone. PARKED 2026-11-22.** HR-27 cut the intro line under the h1 on Chase and Plan (and shortened Buzz and Quiver's). Review each page, especially for a friend landing cold from a shared link, and decide whether any needs a line back to say what it's for.
+
+**P21 · Consider running the app's content through Nicole's voice card. PARKED 2026-11-22.** Pass the written content (après lines, off-the-mountain picks, lodging, reasons, page copy) through Nicole's voice card so it sounds like her take. Needs a decision against R5 before it starts: today the app speaks in a neutral register and her opinions sit only in the labelled Hot Take block, so that endorsements read as hers and the app never implies she's been somewhere she hasn't (she has skied 44 of the 71). Options to weigh: voice everything; voice only resorts she has skied; or voice the app's chrome and keep resort facts neutral.
+
+**P22 · Favicon updated to the new avatar. PARKED 2026-11-22.** Regenerate the browser-tab favicon and the home-screen/install icons (P1) from the new avatar, replacing the crop of the earlier brand sticker. Same rules as P1: the tab icon must still read at 32px; the install icons sit inside the maskable safe zone.
+
+P20 (Off the mountain) shipped 2026-11-23; see *Off the mountain, 2026-11-23* below.
+
 Earlier items: on 2026-11-21 every item was worked through on the canvas: P1, P2 and P5–P10 were built (see *Round of 2026-11-21* below), P4 was promoted and waits on Nicole's Gemini art, and P3 was dropped at the Director's call (see C1). P14 (the desktop home button) was resolved by HR-8 on 2026-11-22 (see *Heuristic review fixes* below).
 
 ---
@@ -120,7 +134,7 @@ These came from the original brief and are non-negotiable unless Nicole changes 
 
 **T6 · Refresh opening dates before each season. AGREED, recurring.** `research/openings-2026-27.json` holds each resort's published 2026–27 opening day with its source, researched 2026-10-26: 45 of 71 published, 26 not yet announced, none confirmed open. Several dates came from Ikon/Vail press lists or local news because resort sites blocked fetching; conflicts are noted per row. A scheduled date flips the resort to Open on that day automatically. A slipped opening isn't modelled yet (see H5).
 
-**T7 · Refresh day-pass prices and après lines before each season. AGREED, recurring (added 2026-11-21).** `research/day-pass-2026-27.json` (31 of 71 resorts had published 2026–27 figures on 2026-11-21; sources per row) and `research/apres.json`. Resorts that publish prices later in the season can be added any time.
+**T7 · Refresh day-pass prices, après lines and off-the-mountain picks before each season. AGREED, recurring (added 2026-11-21).** `research/day-pass-2026-27.json` (31 of 71 resorts had published 2026–27 figures on 2026-11-21; sources per row), `research/apres.json` and `research/off-mountain.json` (P20; several picks are marked medium because 2026–27 hours weren't posted when checked). Resorts that publish prices later in the season can be added any time.
 
 **T5 · `terrain_pct` is null for 17 resorts. ACCEPTED, not a gap to close.** The matching model falls back to editorial fields rather than treating this as required input. Documented as permanent partial coverage. Since 2026-11-22 the resort page shows it as one "Terrain: Not published by the resort" row, not an empty tile (HR-15).
 
@@ -357,3 +371,13 @@ From the overnight review in the project doc `claude/Heuristic review 2026-11-21
 **HR-23 · Master-detail layout on desktop. PROPOSED.** Only worth it if desktop use turns out to be real.
 
 **HR-24 · Quiver defaults the day. PROPOSED.** Would make Q1's two steps one; needs a Director's call against Q1/Q3.
+
+---
+
+## Off the mountain, 2026-11-23 (branch `claude/off-the-mountain-local`)
+
+**P20 · "Off the mountain" is one local pick. SHIPPED, Director's call.** *"Knock it down to 1 thing… This shouldn't feel like the most important thing — skiing is still king… These shouldn't be the things I can find in any bland tour book."* The row on each resort page is now one sentence naming the thing a local would point a friend to — a town hill, a locals' Nordic track, a diner, a hut — not a tour-book attraction. It sits under Après in the same notes list, with no headline and no drive time, and the whole sentence links to its source with the external arrow Buzz uses. Steamboat set the bar: "Night laps at Howelsen, the town hill that made 100 Olympians." Rules, held by `verify_off_mountain.js`: one sentence of 65 characters or fewer; no distance; an https source per pick; no two resorts share a pick; the arrow never wraps alone; no sideways scroll at 320px. Data and per-row sources in `research/off-mountain.json`, refreshed under T7.
+
+67 of 71 resorts have a pick. Four keep the earlier general line, by choice rather than filler: Afton Alps and Buck Hill (suburban day hills, nothing genuinely local found), Alta (the only candidates were Salt Lake diners 40+ minutes away), and Arapahoe Basin (the locals' answer was skiing Loveland Pass and hitchhiking back up — avalanche terrain, not something the app should send a stranger to). Breckenridge's Ullr Fest was swapped for Francie's Cabin because the festival runs only three days in December. A first, two-pick research pass (tourist lens) was superseded; it survives in the project doc `claude/Off the mountain - draft.md`.
+
+Known soft spots, logged not fixed: many picks are marked medium because 2026–27 hours weren't posted on 2026-11-23; about a dozen are Nordic trails (honest for those towns, but repetitive across the app); Fernie's pick (Griz Days) is a single March weekend; Mammoth's (June Mountain) shares an owner with the resort.

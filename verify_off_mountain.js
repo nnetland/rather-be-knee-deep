@@ -24,7 +24,7 @@ function assert(label, ok, detail) {
   const picks = Object.entries(DATA).filter(([, v]) => v);
   const long = picks.filter(([, v]) => v.line.length > 65).map(([k, v]) => [k, v.line.length]);
   assert("every line is 65 characters or fewer", long.length === 0, long);
-  const notOneSentence = picks.filter(([, v]) => !/\.$/.test(v.line) || /\.\s+\S/.test(v.line)).map(([k]) => k);
+  const notOneSentence = picks.filter(([, v]) => !/\.$/.test(v.line) || /\.\s+\S/.test(v.line.replace(/\b(Mt|St|Dr|Jr)\./g, "$1"))).map(([k]) => k);
   assert("every line is one sentence ending in a period", notOneSentence.length === 0, notOneSentence);
   const badUrl = picks.filter(([, v]) => !/^https:\/\//.test(v.url || "")).map(([k]) => k);
   assert("every pick links to an https source", badUrl.length === 0, badUrl);
