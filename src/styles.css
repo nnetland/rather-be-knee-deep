@@ -1124,10 +1124,12 @@ ul { margin: 0; padding: 0; list-style: none; }
 }
 .quiver-search__icon svg { width: 18px; height: 18px; }
 .quiver-search__input {
-  width: 100%; min-height: 56px; padding: var(--space-3) var(--space-4) var(--space-3) var(--space-10);
-  /* Pill, to match the filter chips directly above it (Director, 2026-11-23):
-     a 12px-radius field under a row of 999px chips read as two systems. */
-  border-radius: var(--radius-pill); padding-right: var(--space-5);
+  /* Pill at the chips' own height (Director, 2026-11-23): the chips in a
+     .chip-row scroll strip are 44px, and a 56px field under them sat 12px
+     proud of the row it belongs to. 44px is the app's touch-target floor
+     exactly, so the padding comes down rather than the box being squeezed. */
+  width: 100%; min-height: 44px; padding: var(--space-2) var(--space-5) var(--space-2) var(--space-10);
+  border-radius: var(--radius-pill);
   border: var(--border-default-w) solid var(--border-interactive);
   background: var(--bg-surface); color: var(--text-primary);
   font-family: 'Manrope', sans-serif; font-weight: 500; font-size: 1rem;
