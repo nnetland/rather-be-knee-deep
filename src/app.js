@@ -423,18 +423,16 @@ function renderSplash(main) {
         <div class="splash-sticker" aria-hidden="true"><img src="${BRAND_STICKER_ART}" alt="" width="208" height="208" decoding="async"></div>
         <h1 class="display-h1 splash-title">Where should we ski?</h1>
         <div class="splash-modes">
-          ${tile("mode-plan", ICONS.mountain, "Plan", "Find a resort in 5 quick questions", true)}
           ${tile("mode-chase", ICONS.snow, "Chase", "Where it's dumping")}
           ${tile("mode-quiver", ICONS.skis, "Quiver", "Which skis to bring")}
-          ${tile("mode-buzz", ICONS.speech, "Buzz", "Subreddits by region")}
           ${tile("mode-nicoles", ICONS.list, "Picks", "Resort hot takes")}
+          ${tile("mode-plan", ICONS.mountain, "Plan", "Find a resort in 5 quick questions")}
         </div>
       </div>
     </div>`;
   document.getElementById("mode-plan").addEventListener("click", () => navigate("plan"));
   document.getElementById("mode-chase").addEventListener("click", () => navigate("chase"));
   document.getElementById("mode-quiver").addEventListener("click", () => navigate("quiver"));
-  document.getElementById("mode-buzz").addEventListener("click", () => navigate("buzz"));
   document.getElementById("mode-nicoles").addEventListener("click", () => navigate("nicoles"));
   document.title = "Rather Be Knee Deep — where should we ski?";
   setOgMeta({
