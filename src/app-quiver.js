@@ -42,7 +42,7 @@ function renderQuiver(main) {
 // explaining why has to be about skis rather than about rankings.
 function renderQuiverOffSeason(body) {
   body.innerHTML = `
-    ${pageHeaderHtml("Quiver", "Pick a resort and a day.")}
+    ${pageHeaderHtml("Quiver", null, { quiet: true })}
     <div class="center-state">
       ${ICONS.snow}
       <h2 class="display-h3">Nothing's open right now</h2>
@@ -110,7 +110,7 @@ function quiverUpcoming() {
 // ---------------------------------------------------------------------------
 function renderQuiverResortStep(body) {
   body.innerHTML = `
-    ${pageHeaderHtml("Quiver", "Pick a resort and a day.")}
+    ${pageHeaderHtml("Quiver", null, { quiet: true })}
     ${quiverPool().length ? "" : pageMetaHtml(["Nothing's open yet", quiverFirstUnlockText()], "quiver-unlock")}
     ${areaChipsHtml("quiver", state.quiver.area || "all", new Set(quiverPool().concat(quiverUpcoming()).map((r) => (areaOfResort(r) || {}).id).filter(Boolean)))}
     <div class="quiver-search">

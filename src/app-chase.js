@@ -17,7 +17,7 @@ function renderChase(main) {
 
   main.innerHTML = `
     <div class="page-column">
-      ${pageHeaderHtml("Chase")}
+      ${pageHeaderHtml("Chase", null, { quiet: true })}
       <div id="chase-freshness"></div>
       ${showControls ? `
         ${areaChipsHtml("chase", state.chaseAnswers.area, new Set(RESORTS.filter((r) => r.scale !== "day-trip").map((r) => (areaOfResort(r) || {}).id).filter(Boolean)))}` : ""}

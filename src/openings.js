@@ -132,7 +132,25 @@ function homeLinkHtml() {
   return `<a class="home-link" href="/" aria-label="Rather Be Knee Deep home"><img src="${BRAND_STICKER_ART}" alt="" width="44" height="44" decoding="async"></a>`;
 }
 
-function pageHeaderHtml(title, introHtml) {
+// Header 1 (Director, 2026-11-23): the list screens open on their content.
+// The nav label already names the screen and the chip row below says what it
+// filters, so a 32px title plus a subtitle restating it was three things
+// telling you the same thing before any content. Pass `{ quiet: true }` and
+// the h1 stays in the DOM but out of sight: it is still the page's heading for
+// assistive tech, still the anchor the route's skip link and focusHeading()
+// move to, and still what the document outline is built from. Screens whose
+// subtitle carries real information -- Quiver's "Which day at X?" -- keep the
+// visible header, and so does Picks: its subtitle is the page-level
+// first-person attribution R5a requires, not a restatement of the screen
+// name, so a quiet Picks header hides the title and keeps the line.
+function pageHeaderHtml(title, introHtml, opts) {
+  if (opts && opts.quiet) {
+    return `
+    <header class="page-header page-header--quiet">
+      <h1 class="display-h1 visually-hidden">${escapeHtml(title)}</h1>
+      ${introHtml ? `<p class="page-intro body-md">${introHtml}</p>` : ""}
+    </header>`;
+  }
   return `
     <header class="page-header">
       <div class="page-header__row">

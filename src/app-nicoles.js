@@ -49,7 +49,7 @@ function renderNicolesList(main) {
 
   main.innerHTML = `
     <div class="page-column">
-      ${pageHeaderHtml("Picks", "Hot takes from the resorts in my log book.")}
+      ${pageHeaderHtml("Picks", "Hot takes from the resorts in my log book.", { quiet: true })}
       ${areaChipsHtml("nicoles", state.nicolesFilters.region, new Set(rows.map((r) => r.areaId).filter(Boolean)))}
       <div id="nicoles-table-wrap"></div>
       ${pageAboutHtml("About this data", `
