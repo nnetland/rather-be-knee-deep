@@ -426,7 +426,7 @@ function renderSplash(main) {
           ${tile("mode-chase", ICONS.snow, "Chase", "Where it's dumping")}
           ${tile("mode-quiver", ICONS.skis, "Quiver", "Which skis to bring")}
           ${tile("mode-nicoles", ICONS.list, "Picks", "Resort hot takes")}
-          ${tile("mode-plan", ICONS.mountain, "Plan", "Find a resort in 5 questions")}
+          ${tile("mode-plan", ICONS.mountain, "Plan", "A resort in 5 questions")}
         </div>
       </div>
     </div>`;
