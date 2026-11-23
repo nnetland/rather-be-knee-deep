@@ -446,7 +446,7 @@ function renderSplash(main) {
 // ---------------------------------------------------------------------------
 function getQuizScreens(answers) {
   const screens = [
-    { key: "q1", topic: 1, topicLabel: "Who's coming" },
+    { key: "q1", topic: 1, topicLabel: "Group mix" },
     { key: "q2a", topic: 2, topicLabel: "Skill level" },
     { key: "q2b", topic: 2, topicLabel: "Terrain" },
     { key: "q3", topic: 3, topicLabel: "Budget" },
@@ -458,11 +458,18 @@ function getQuizScreens(answers) {
 }
 
 const QUIZ_OPTIONS = {
+  // Shortened 2026-11-23 (Director). The heading changed with them, and had
+  // to: "Who's coming, and is everyone about the same level?" asked two
+  // things and these four answer one of them. The app only ever wanted the
+  // one -- groupType decides whether the next step is multi-select and
+  // whether the engine reasons about a range; group size, kids and who they
+  // are were never stored or used anywhere. So the question now asks what it
+  // actually uses, and every option answers it.
   q1: [
-    { value: "solo", label: "Just me" },
-    { value: "matched", label: "We're all about the same level" },
-    { value: "mixed", label: "A mix — some newer, some more experienced" },
-    { value: "wide-mixed", label: "A wide mix — first-timers to experts" },
+    { value: "solo", label: "Solo trip" },
+    { value: "matched", label: "Same levels" },
+    { value: "mixed", label: "Somewhat mix" },
+    { value: "wide-mixed", label: "Broad mix" },
   ],
   q2a: [
     { value: "never-skied", label: "First time" },
@@ -541,7 +548,7 @@ function quizStepHtml(screen) {
   let title, helper = "", body;
 
   if (screen.key === "q1") {
-    title = "Who's coming, and is everyone about the same level?";
+    title = "How mixed is your group?";
     body = optionListHtml("q1", QUIZ_OPTIONS.q1, a.groupType, false);
   } else if (screen.key === "q2a") {
     const multi = a.groupType === "mixed" || a.groupType === "wide-mixed";
