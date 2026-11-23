@@ -19,6 +19,11 @@ async function run() {
     // Multi-select since 2026-11-23: a single pick, a pair, a wide appetite
     // and the Anything escape hatch, so the sweep covers every shape the
     // combining rule (mean of the two weakest) can be handed.
+    const PASS_CASES = [{}, { pass: 'none' },
+                        { pass: 'ikon', passRequired: 'preferred' },
+                        { pass: 'ikon', passRequired: 'required' },
+                        { pass: 'epic', passRequired: 'required' },
+                        { pass: 'indy', passRequired: 'required' }];
     const terrains = [['groomers'], ['steeps'], ['trees'], ['powder'], ['park'],
                       ['groomers', 'steeps'], ['steeps', 'trees', 'powder'],
                       ['groomers', 'steeps', 'trees', 'powder', 'park'], ['anything']];
@@ -41,7 +46,10 @@ async function run() {
               for (const region of travelMode === 'unsure' ? [null] : [regionIds[Math.floor(Math.random() * regionIds.length)]]) {
                 for (const vibe of vibes) {
                   total++;
-                  const answers = { groupType, skillLevels, terrain, budget, travelMode, region, vibe };
+                  // Pass axis added 2026-11-23: no pass, a preference, and the hard gate
+                  // (which can empty the pool and must fall back rather than crash).
+                  const passCase = PASS_CASES[(groupType.length + budget.length + vibe.length) % PASS_CASES.length];
+                  const answers = { groupType, skillLevels, terrain, budget, travelMode, region, vibe, ...passCase };
                   let result;
                   try {
                     result = matchTrip(answers, RESORTS);

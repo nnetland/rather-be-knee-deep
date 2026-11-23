@@ -96,6 +96,29 @@ function terrainSkillScore(resort, answers) {
   };
 }
 
+// --- Pass fit (10 pts, or a hard gate) ---------------------------------------
+// Every resort already carried its affiliation; nothing scored on it until
+// now. "Nice to have" is worth 10 points, the same order as the vibe axis.
+// "Has to be covered" is a gate instead, applied in matchTrip.
+const PASS_NAME = { ikon: "Ikon", epic: "Epic", indy: "Indy" };
+
+function passMatches(resort, answers) {
+  const want = PASS_NAME[answers.pass];
+  return !!want && resort.pass_affiliation === want;
+}
+
+function passScore(resort, answers) {
+  if (!PASS_NAME[answers.pass]) return 0;
+  return passMatches(resort, answers) ? 10 : 0;
+}
+
+// Ten of the 71 are on a pass but limited to five or seven days rather than
+// unlimited. "Covered" is not a yes or no for those, and a recommendation
+// that implied unlimited would be wrong.
+function passIsLimited(resort) {
+  return !!(resort.pass_note && /limited/i.test(resort.pass_note));
+}
+
 // --- Terrain appetite, multi-select (2026-11-23) -----------------------------
 // What you want to ski, as many as apply. Each type scores a resort 0-10 on
 // its own evidence; the combined score is the mean of the TWO WEAKEST picks.
@@ -235,7 +258,7 @@ function travelScore(resort, answers) {
 // --- Reason bullets (strategy.md §3.5 — never a bare score) -----------------
 function pluralize(n, unit) { return `${n} ${unit}${n === 1 ? "" : "s"}`; }
 
-function buildReasonBullets(resort, answers, breakdown) {
+function buildReasonBullets(resort, answers, breakdown, passFallback) {
   const bullets = [];
 
   // Bullet 1: group / terrain fit
@@ -269,13 +292,28 @@ function buildReasonBullets(resort, answers, breakdown) {
   }
 
   // Bullet 3: budget
-  const budgetLabel = { "$": "budget-conscious", "$$": "mid-range", "$$$": "splurge-friendly", "$$$$": "money's no object" }[answers.budget];
+  const budgetLabel = { "$": "budget-conscious", "$$": "mid-range", "$$$": "room to spend", "$$$$": "money's no object" }[answers.budget];
   if (answers.budget) {
     if (COST_TIERS.indexOf(resort.cost_tier) <= COST_TIERS.indexOf(answers.budget)) {
       bullets.push(`You said ${budgetLabel} — this comes in at ${resort.cost_tier}, right in that range.`);
     } else {
       bullets.push(`You said ${budgetLabel} — this runs a bit higher (${resort.cost_tier}), but it's the strongest overall fit for everything else you said.`);
     }
+  }
+
+  // Bullet 3b: the pass, said where it changes what you'd do. A match rides
+  // along on the budget line rather than taking a slot of its own; a failed
+  // "has to be covered" leads, because it is the one thing that would make
+  // this recommendation wrong if you missed it.
+  const passName = PASS_NAME[answers.pass];
+  if (passName && passFallback) {
+    bullets.unshift(`You said it has to be on ${passName} — nothing on ${passName} fits the rest of what you told me, so this is the closest that isn't. You'd be buying a ticket.`);
+  } else if (passName && passMatches(resort, answers) && bullets.length) {
+    const last = bullets.length - 1;
+    const tail = passIsLimited(resort)
+      ? ` It's on your ${passName} pass, though on limited days rather than unlimited.`
+      : ` It's on your ${passName} pass.`;
+    bullets[last] = bullets[last] + tail;
   }
 
   return bullets.slice(0, 3);
@@ -314,7 +352,8 @@ function noteShown(id) {
  */
 function matchTrip(answers, pool) {
   pool = pool || RESORTS;
-  const scored = [];
+  const hasFirstTimer = (answers.skillLevels || []).includes("never-skied");
+  let scored = [];
 
   for (const resort of pool) {
     const terrain = terrainSkillScore(resort, answers);
@@ -325,11 +364,40 @@ function matchTrip(answers, pool) {
 
     if (travel.excluded) continue; // hard gate — genuinely wrong answer, not just lower-scored
 
-    const total = terrain.total + budget + vibe + family + travel.score;
-    scored.push({ resort, total, breakdown: { terrain, budget, vibe, family, travel } });
+    // Hard gate, added 2026-11-23. If anyone in the group has never skied,
+    // a mountain whose beginner terrain is weak is a wrong answer, not a
+    // lower-scoring one -- Alta, Jackson Hole, Revelstoke, Kicking Horse and
+    // six others in the set.
+    //
+    // This rule is not new; it was never enforced. verify_engine has always
+    // asserted that a first-timer in a mixed group is never sent to those
+    // four, and it held because the ability bottleneck scored them so far
+    // down that nothing else could lift them -- while the pool was all 71
+    // resorts. Adding the pass gate above shrinks the pool, and the sweep
+    // immediately found Epic-required cases where Kicking Horse won anyway.
+    // A rule that only holds while the pool is large is not a rule, so it is
+    // a gate now. Solo first-timers are covered too, which the emergent
+    // version never guaranteed either.
+    if (hasFirstTimer && resort.beginner_friendliness === "weak") continue;
+
+    const pass = passScore(resort, answers);
+    const total = terrain.total + budget + vibe + family + travel.score + pass;
+    scored.push({ resort, total, onPass: passMatches(resort, answers),
+                  breakdown: { terrain, budget, vibe, family, travel, pass } });
   }
 
   if (!scored.length) return null;
+
+  // "Has to be covered" is a gate, and a gate that can empty the list: an Epic
+  // filter leaves 15 resorts nationwide and ten states in the set have none.
+  // Showing nothing would be the wrong answer to a real question, so when the
+  // gate empties the pool we fall back to the ungated ranking and mark it, and
+  // the result says plainly that this one is not on their pass.
+  let passFallback = false;
+  if (answers.passRequired === "required" && PASS_NAME[answers.pass]) {
+    const onPass = scored.filter((s) => s.onPass);
+    if (onPass.length) scored = onPass; else passFallback = true;
+  }
 
   scored.sort((a, b) => b.total - a.total);
 
@@ -357,7 +425,7 @@ function matchTrip(answers, pool) {
   const idx = Math.floor(rng() * pickPool.length);
   const winner = pickPool[idx];
 
-  const reasonBullets = buildReasonBullets(winner.resort, answers, winner.breakdown);
+  const reasonBullets = buildReasonBullets(winner.resort, answers, winner.breakdown, passFallback);
   noteShown(winner.resort.id);
 
   return {

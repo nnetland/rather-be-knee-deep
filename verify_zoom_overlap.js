@@ -144,6 +144,10 @@ async function run() {
     await page.waitForTimeout(700);
     await checkSurface(page, `[${scheme}] Quiz Q3`);
     await page.click('[data-group="q3"][data-value="$$"]');
+    // Pass step, added 2026-11-23. "No pass" keeps these runs on the
+    // shortest path: picking one opens the has-to-be-covered step too.
+    await page.waitForSelector('[data-group="q3b"]', { timeout: 10000 });
+    await page.click('[data-group="q3b"][data-value="none"]');
     await page.waitForTimeout(700);
     await checkSurface(page, `[${scheme}] Quiz Q4a`);
     await page.click('[data-group="q4a"][data-value="driving"]');
@@ -185,6 +189,10 @@ async function run() {
       await page.click('#quiz-continue');
       await page.waitForTimeout(500);
       await page.click('[data-group="q3"][data-value="$$"]');
+      // Pass step, added 2026-11-23. "No pass" keeps these runs on the
+      // shortest path: picking one opens the has-to-be-covered step too.
+      await page.waitForSelector('[data-group="q3b"]', { timeout: 10000 });
+      await page.click('[data-group="q3b"][data-value="none"]');
       await page.waitForTimeout(500);
       await page.click('[data-group="q4a"][data-value="unsure"]');
       await page.waitForTimeout(500);

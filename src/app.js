@@ -450,8 +450,15 @@ function getQuizScreens(answers) {
     { key: "q2a", topic: 2, topicLabel: "Skill level" },
     { key: "q2b", topic: 2, topicLabel: "Terrain" },
     { key: "q3", topic: 3, topicLabel: "Budget" },
-    { key: "q4a", topic: 4, topicLabel: "Travel" },
+    // The pass sits under topic 3, not a sixth topic of its own. A pass IS a
+    // budget fact -- the single biggest lever on what a trip costs -- and the
+    // quiz already runs more screens than topics (skill and terrain are both
+    // topic 2, travel and home region are both topic 4). So Home's "A resort
+    // in 5 questions" stays true: five topics, more screens.
+    { key: "q3b", topic: 3, topicLabel: "Pass" },
   ];
+  if (answers.pass && answers.pass !== "none") screens.push({ key: "q3c", topic: 3, topicLabel: "Pass" });
+  screens.push({ key: "q4a", topic: 4, topicLabel: "Travel" });
   if (answers.travelMode !== "unsure") screens.push({ key: "q4b", topic: 4, topicLabel: "Home region" });
   screens.push({ key: "q5", topic: 5, topicLabel: "Scene" });
   return screens;
@@ -501,8 +508,29 @@ const QUIZ_OPTIONS = {
   q3: [
     { value: "$", label: "Budget-conscious ($)" },
     { value: "$$", label: "Mid-range ($$)" },
-    { value: "$$$", label: "Splurge-friendly ($$$)" },
+    // "Splurge-friendly" was the odd one out: the other three name a budget
+    // and it named a mood (Director, 2026-11-23).
+    { value: "$$$", label: "Room to spend ($$$)" },
     { value: "$$$$", label: "Money's no object ($$$$)" },
+  ],
+  // Added 2026-11-23 (Director). Every resort already carries its
+  // affiliation and the engine ignored it completely -- it was printed on the
+  // resort page and nowhere else. Across the 71: Ikon 39, Epic 15, Indy 7,
+  // independent 9, Mountain Collective 1.
+  q3b: [
+    { value: "ikon", label: "Ikon" },
+    { value: "epic", label: "Epic" },
+    { value: "indy", label: "Indy" },
+    { value: "none", label: "No pass" },
+  ],
+  // Required is a hard gate and that spread is why it needs its own question.
+  // An Epic filter leaves 15 resorts nationwide, and ten states and provinces
+  // in the set have none at all, so "required" can realistically empty the
+  // list -- which the engine handles by falling back and saying so, rather
+  // than by showing nothing.
+  q3c: [
+    { value: "required", label: "Has to be covered" },
+    { value: "preferred", label: "Nice to have" },
   ],
   q4a: [
     { value: "driving", label: "Driving" },
@@ -583,6 +611,13 @@ function quizStepHtml(screen) {
   } else if (screen.key === "q3") {
     title = "What's the budget like?";
     body = optionListHtml("q3", QUIZ_OPTIONS.q3, a.budget, false);
+  } else if (screen.key === "q3b") {
+    title = "Skiing on a pass?";
+    body = optionListHtml("q3b", QUIZ_OPTIONS.q3b, a.pass, false);
+  } else if (screen.key === "q3c") {
+    title = `Does it have to be on ${a.pass === "ikon" ? "Ikon" : a.pass === "epic" ? "Epic" : "Indy"}?`;
+    helper = "If it has to be, I'll only offer resorts it covers.";
+    body = optionListHtml("q3c", QUIZ_OPTIONS.q3c, a.passRequired, false);
   } else if (screen.key === "q4a") {
     title = "Driving or flying?";
     body = optionListHtml("q4a", QUIZ_OPTIONS.q4a, a.travelMode, false);
@@ -666,6 +701,8 @@ function quizScreenHasAnswer(key) {
   if (key === "q2a") return a.groupType === "mixed" || a.groupType === "wide-mixed" ? !!(a.skillLevels && a.skillLevels.length) : !!(a.skillLevels && a.skillLevels.length === 1);
   if (key === "q2b") return !!(a.terrain && a.terrain.length);
   if (key === "q3") return !!a.budget;
+  if (key === "q3b") return !!a.pass;
+  if (key === "q3c") return !!a.passRequired;
   if (key === "q4a") return !!a.travelMode;
   if (key === "q4b") return !!a.region;
   if (key === "q5") return !!a.vibe;
@@ -817,6 +854,10 @@ function handleQuizSelect(key, value, evt) {
     }
   }
   else if (key === "q3") a.budget = value;
+  // Changing the pass drops any stored requirement: "has to be covered" is
+  // meaningless once the pass it referred to is gone.
+  else if (key === "q3b") { a.pass = value; if (value === "none") a.passRequired = null; }
+  else if (key === "q3c") a.passRequired = value;
   else if (key === "q4a") { a.travelMode = value; if (value === "unsure") a.region = null; }
   else if (key === "q4b") a.region = value;
   else if (key === "q5") a.vibe = value;
