@@ -3,7 +3,7 @@
 
 The home sticker is the one piece of badge art the app draws outside the resort
 badges — splash, nav and the resort page's home link — so it has to share their
-edge treatment exactly: art out to r=109 inside a white die-cut rim at r=119, on
+edge treatment exactly: art out to r=114 inside a white die-cut rim at r=119, on
 the badges' 240-unit geometry, rendered at 600x600 with transparent corners.
 
 A sticker generated in Gemini comes back on a white page, with its own rim at
@@ -35,7 +35,7 @@ BADGE_ART = os.path.join(ROOT, "src", "badge-art.js")
 
 OUT_PX = 600          # rendered size of the sticker
 R_RIM = 297.5         # white die-cut rim, = 119/120 of the half-frame
-R_ART = 272.5         # coloured field,   = 109/120 of the half-frame
+R_ART = 285.0         # coloured field,   = 114/120 of the half-frame
 SUPERSAMPLE = 4       # drawn at 4x, then downsampled, so the rim edge stays clean
 WHITE = 235           # a channel at or above this counts as the white page/rim
 

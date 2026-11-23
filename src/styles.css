@@ -505,10 +505,12 @@ ul { margin: 0; padding: 0; list-style: none; }
    the spec's ~200px hero-card scale (badge-system.md §8 "Legibility at
    scale"), with a smaller floor on the narrowest supported width so the
    badge and its surrounding padding never exceed the 320px card. */
+/* The framed, tinted panel is gone (Director, 2026-11-23): it boxed the badge
+   in and the real constraint was the 200px cap below, not the layout. The
+   badge is the hero on this page, so it sits straight on the card. */
 .badge-panel {
   display: flex; align-items: center; justify-content: center;
-  border-radius: var(--radius-lg); border: var(--border-default-w) solid var(--border-hairline);
-  padding: var(--space-4) 0; margin-bottom: var(--space-5); background: var(--bg-tint);
+  margin-bottom: var(--space-5);
 }
 /* Tightened per design review (2026-08-03): the badge previously sized off
    viewport width (42vw) against a panel whose actual width tracks the card's
@@ -521,8 +523,8 @@ ul { margin: 0; padding: 0; list-style: none; }
    height in lockstep with width without a second, independently-guessed
    clamp. Ceiling stays at badge-system.md §8's own 200px hero-card scale —
    this fix reaches that size sooner/more reliably, it doesn't exceed it. */
-.badge-panel svg { width: clamp(168px, 78%, 200px); aspect-ratio: 1 / 1; height: auto; display: block; }
-@media (min-width: 600px) { .badge-panel svg { width: 200px; height: 200px; } }
+.badge-panel svg { width: min(100%, 320px); aspect-ratio: 1 / 1; height: auto; display: block; }
+@media (min-width: 600px) { .badge-panel svg { width: 320px; height: 320px; } }
 .result-headline { margin-bottom: var(--space-5); }
 .result-headline .resort-name { color: var(--brand-primary-text); }
 .result-headline .location { display: block; color: var(--text-secondary); font-family: 'Manrope', sans-serif; font-weight: 500; font-size: .9375rem; margin-top: var(--space-1); }

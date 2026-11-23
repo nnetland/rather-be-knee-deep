@@ -1130,7 +1130,11 @@ function renderResult(main) {
     origin === "chase" ? leafBackHtml("result-leaf-back", "Back to Chase", true) :
     origin === "plan" ? leafBackHtml("result-leaf-back", "Back to your answers", true) :
     origin === "picks" ? leafBackHtml("result-leaf-back", "Back to Picks", true) :
-    "";
+    // A cold-landed visitor has no history to go back to, and the circular
+    // sticker that used to sit top-right read as an avatar, so it looked like
+    // a profile link (Director, 2026-11-23). The site name says what this is,
+    // which an icon cannot, and it is the one control these visitors need.
+    leafBackHtml("result-leaf-home", "Rather Be Knee Deep", false);
   // HR-10: "Your pick" only where the user actually made one, in Plan. A Chase
   // or Picks row is a resort you tapped, not your pick. A cold-landed link
   // keeps "Their pick": someone chose to send it.
@@ -1149,7 +1153,7 @@ function renderResult(main) {
     <div class="result-wrap">
       <div class="result-topbar">${backHtml || "<span></span>"}<span class="result-topbar__end">
         <button class="icon-btn" id="share-btn-top" type="button" aria-label="${escapeHtml(shareLabel)}">${ICONS.share}</button>
-        ${homeLinkHtml()}</span></div>
+      </span></div>
       <article class="result-card" id="result-card">
         ${eyebrow ? `<p class="result-eyebrow label reveal-hidden">${eyebrow}</p>` : ""}
         <div class="result-layout">
@@ -1199,6 +1203,8 @@ function renderResult(main) {
   };
   const leafBack = document.getElementById("result-leaf-back");
   if (leafBack) leafBack.addEventListener("click", goBackToOrigin);
+  const leafHome = document.getElementById("result-leaf-home");
+  if (leafHome) leafHome.addEventListener("click", () => navigate("splash"));
 
   document.getElementById("share-btn").addEventListener("click", () => shareResult(resort, shared));
   document.getElementById("share-btn-top").addEventListener("click", () => shareResult(resort, shared));

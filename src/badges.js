@@ -895,7 +895,7 @@ function buildBadgeSVG({ rid, paletteKey, layers, name, region, uid }){
   // badge's coloured field, so it sits inside the same r=109 clip the vector
   // motifs use and the white die-cut rim is still drawn here, once.
   const body = art
-    ? `<image href="${art}" x="11" y="11" width="218" height="218" preserveAspectRatio="xMidYMid slice"/>`
+    ? `<image href="${art}" x="6" y="6" width="228" height="228" preserveAspectRatio="xMidYMid slice"/>`
     : layers.map(l => {
         const [cx, cy, scale, rot] = l.box;
         const w = 100 * scale;
@@ -910,10 +910,10 @@ function buildBadgeSVG({ rid, paletteKey, layers, name, region, uid }){
   <title id="${uid}-title">${name} badge</title>
   <desc id="${uid}-desc">${desc}</desc>
   <defs>
-    <clipPath id="clip-${uid}"><circle cx="120" cy="120" r="109"/></clipPath>
+    <clipPath id="clip-${uid}"><circle cx="120" cy="120" r="114"/></clipPath>
   </defs>
   <circle cx="120" cy="120" r="119" fill="${WHITE}" stroke="${'#00000014'}" stroke-width="1"/>
-  <circle cx="120" cy="120" r="109" fill="${pal.bg}"/>
+  <circle cx="120" cy="120" r="114" fill="${pal.bg}"/>
   <g clip-path="url(#clip-${uid})">
     ${body}
   </g>
