@@ -849,7 +849,14 @@ ul { margin: 0; padding: 0; list-style: none; }
    the avatar existed at all; the avatar just consumed the last couple of
    spare px). 44px avoids the squeeze with margin to spare while staying
    clearly legible as a small badge. */
-.chase-row__avatar { flex: none; width: 44px; height: 44px; position: relative; }
+/* Chase badge 44 -> 64 (Director, 2026-11-23). Chase stays a scannable
+   list, so the badge grows inside the row it has rather than taking the
+   badge-led card Picks got. The row aligns to flex-start, so a 64px badge
+   only sets the row height where the text is shorter than that: the list
+   grows 186px over 54 rows, 3.2%, and the row heights actually tighten
+   from a 75-141px spread to 89-141px. The 480px and 700px steps below
+   are unchanged. */
+.chase-row__avatar { flex: none; width: 64px; height: 64px; position: relative; }
 @media (min-width: 480px) { .chase-row__avatar { width: 72px; height: 72px; } }
 @media (min-width: 700px) { .chase-row__avatar { width: 96px; height: 96px; } }
 .chase-row__avatar svg { width: 100%; height: 100%; display: block; }
