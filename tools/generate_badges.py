@@ -127,14 +127,49 @@ def load_shipped_art():
 
 # --- the API ----------------------------------------------------------------
 
+PLACEHOLDERS = {
+    "paste-your-key-here", "paste-your-key", "your-key-here", "your-api-key",
+    "...", "xxx", "<your-key>",
+}
+
+KEY_HELP = (
+    "Get a key at https://aistudio.google.com/apikey, then paste the real key\n"
+    "in place of the example, with no quotes and no spaces around the '=':\n"
+    "  export GEMINI_API_KEY=AIza...your-actual-key...\n"
+    "Check what is set with:  echo $GEMINI_API_KEY"
+)
+
+
 def api_key():
-    key = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
+    key = (os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY") or "")
+    key = key.strip().strip("'\"")
     if not key:
+        sys.exit("GEMINI_API_KEY is not set.\n\n" + KEY_HELP)
+    if key.lower() in PLACEHOLDERS:
         sys.exit(
-            "No API key. Get one at https://aistudio.google.com/apikey, then:\n"
-            "  export GEMINI_API_KEY=..."
+            "GEMINI_API_KEY is still the example text (%r), not a real key.\n\n%s"
+            % (key, KEY_HELP)
         )
     return key
+
+
+def api_error(e):
+    """Turn an HTTPError into the message the API actually sent."""
+    try:
+        body = json.loads(e.read().decode())
+        err = body.get("error", {})
+        msg = err.get("message") or json.dumps(body)[:300]
+        status = err.get("status", "")
+    except Exception:  # noqa: BLE001 - fall back to the bare status line
+        msg, status = e.reason or "", ""
+    text = "HTTP %s" % e.code
+    if status:
+        text += " %s" % status
+    if msg:
+        text += ": %s" % msg
+    if e.code in (400, 401, 403) and "key" in msg.lower():
+        text += "\n\n" + KEY_HELP
+    return text
 
 
 def request(url, key, payload=None, method="GET", timeout=300):
@@ -208,8 +243,7 @@ def generate_with_retry(key, model, prompt, refs, size, timeout, tries=4):
         try:
             return generate(key, model, prompt, refs, size, timeout)
         except urllib.error.HTTPError as e:
-            detail = e.read().decode(errors="replace")[:400]
-            last = "HTTP %s: %s" % (e.code, detail)
+            last = api_error(e)
             if e.code in (400, 401, 403, 404):
                 break  # bad key, bad model or bad request — retrying will not help
         except Exception as e:  # noqa: BLE001 - report anything else and retry
@@ -246,10 +280,17 @@ def main():
     args = ap.parse_args()
 
     if args.list_models:
-        for m in list_models(api_key()):
+        try:
+            models = list_models(api_key())
+        except urllib.error.HTTPError as e:
+            sys.exit(api_error(e))
+        except urllib.error.URLError as e:
+            sys.exit("Could not reach the Gemini API: %s" % e.reason)
+        for m in sorted(models, key=lambda m: m.get("name", "")):
             name = m.get("name", "").replace("models/", "")
             methods = ",".join(m.get("supportedGenerationMethods", []))
             print("%-36s %s" % (name, methods))
+        print("\n%d models. Image models have 'image' in the name." % len(models))
         return
 
     subjects = load_subjects()
