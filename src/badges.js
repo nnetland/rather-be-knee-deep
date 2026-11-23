@@ -1244,8 +1244,14 @@ badgeDedupeClusterMotifs(BADGE_ASSIGNED);
    them would leave the badge's description naming a background that is not
    on screen. Remove a pin only when that resort's art is regenerated. */
 const BADGE_PALETTE_PINNED = {
-  'timberline-or':   'cold',  // shipped art has the cold field baked in
-  'stevens-pass-wa': 'mint',  // shipped art has the mint field baked in
+  // Both still pinned after their 2026-11-23 redraw, but not for the original
+  // reason: the semantic assignment below gives timberline amber and stevens
+  // pass teal, while badge-subjects.json — and so the art that was drawn from
+  // it — uses cold and mint. The pin keeps the field colour and the drawing in
+  // agreement. Resolving it properly means deciding which reading of these two
+  // resorts is right and then redrawing, not just dropping the pin.
+  'timberline-or':   'cold',  // engine says amber (Western / budget)
+  'stevens-pass-wa': 'mint',  // engine says teal (deep powder)
 };
 BADGE_ASSIGNED.forEach((a) => {
   const pinned = BADGE_PALETTE_PINNED[a.resort.id];
