@@ -169,7 +169,7 @@ const route = (page) => page.evaluate(() => state.route);
   {
     const page = await (await browser.newContext(phone)).newPage();
     await page.goto(FILE_URL);
-    for (const r of ["chase", "quiver", "buzz", "plan", "nicoles"]) {
+    for (const r of ["chase", "quiver", "plan", "nicoles"]) {
       await page.click(`#bottom-nav .nav-item[data-route="${r}"]`);
       await page.waitForTimeout(200);
       assert(`HR-8: no home sticker on ${r}`, (await page.locator("#app-main .home-link").count()) === 0);
@@ -197,11 +197,22 @@ const route = (page) => page.evaluate(() => state.route);
     // HR-21: one chip row on desktop.
     const tops = await d.$$eval("#nicoles-area-chips .filter-chip", (els) => new Set(els.map((e) => Math.round(e.getBoundingClientRect().top))).size);
     assert("HR-21: region chips are one row on desktop", tops === 1, tops);
-    // HR-12: Plan first on home.
+    // HR-12 superseded 2026-11-23: the Director's call is that the four
+    // sections carry equal weight on Home, with Plan last (bottom right of the
+    // 2x2). Plan is the least-used entry point, so promoting it was selling the
+    // wrong door. What matters now is that there are exactly four equal tiles,
+    // none of them primary, and that Plan is the last of them.
     await d.click("#top-nav .nav-home");
     await d.waitForTimeout(200);
-    assert("HR-12: Plan is the first, primary tile on Home",
-      await d.evaluate(() => document.querySelector(".splash-modes .mode-card").id === "mode-plan" && document.getElementById("mode-plan").classList.contains("mode-card--primary")));
+    const home = await d.evaluate(() => {
+      const cards = [...document.querySelectorAll(".splash-modes .mode-card")];
+      return { ids: cards.map((c) => c.id),
+               primary: cards.filter((c) => c.classList.contains("mode-card--primary")).length,
+               wide: cards.filter((c) => c.classList.contains("mode-card--wide")).length };
+    });
+    assert("Home: four section tiles", home.ids.length === 4, home);
+    assert("Home: none is promoted over the others", home.primary === 0 && home.wide === 0, home);
+    assert("Home: Plan sits last", home.ids[home.ids.length - 1] === "mode-plan", home);
     await d.close();
   }
 
@@ -219,16 +230,8 @@ const route = (page) => page.evaluate(() => state.route);
     await page.close();
   }
 
-  // HR-18: Buzz.
-  {
-    const page = await (await browser.newContext(phone)).newPage();
-    await page.goto(FILE_URL);
-    await page.click('#bottom-nav .nav-item[data-route="buzz"]');
-    await page.waitForTimeout(200);
-    assert("HR-18: no 'Resorts' subhead", (await page.locator(".buzz-subhead").count()) === 0);
-    assert("HR-18: region headings are small group labels", (await page.locator(".buzz-region h2.display-h2").count()) === 0);
-    await page.close();
-  }
+  // HR-18 (Buzz) retired 2026-11-23: the section was folded into the resort
+  // pages, so there is no Buzz screen left to check.
 
   await browser.close();
   console.log(`\n${pass}/${pass + fail} passed`);

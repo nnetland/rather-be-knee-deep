@@ -118,14 +118,8 @@ async function topText(page) {
   assert('Quiver: the search keeps a label for assistive tech', await page.$eval('label[for="quiver-search-input"]', (el) => el.textContent.trim().length > 0));
   assert('Quiver: About this data is present and closed', await page.$eval('#app-main details.page-about', (el) => !el.open));
 
-  // ---- Buzz -----------------------------------------------------------
-  await page.click('#bottom-nav .nav-item[data-route="buzz"]');
-  await page.waitForTimeout(600);
-  const bTop = await firstContentTop(page, '.buzz-link');
-  assert(`Buzz: first link starts in the top half (${bTop}px)`, bTop != null && bTop < SCREEN / 2, bTop);
-  const bText = await topText(page);
-  for (const re of BANNED_TOP) assert(`Buzz: no "${re.source}" explainer`, !re.test(bText));
-  assert('Buzz: About these links is at the bottom and closed', await page.$eval('#app-main details.page-about', (el) => !el.open));
+  // Buzz was folded into the resort pages on 2026-11-23: the subreddit a
+  // resort has now shows on that resort's page, and the section is gone.
 
   // ---- Picks ----------------------------------------------------------
   await page.click('#bottom-nav .nav-item[data-route="nicoles"]');

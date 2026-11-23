@@ -438,7 +438,10 @@ ul { margin: 0; padding: 0; list-style: none; }
 .splash-sticker svg,
 .splash-sticker img { display: block; width: 100%; height: auto; }
 .splash-title { margin-top: var(--space-4); text-align: center; font-weight: 800; font-size: clamp(2rem, 7vw, 2.5rem); line-height: 1.05; text-wrap: balance; }
-.splash-modes { margin-top: var(--space-5); display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-3); }
+/* Equal-weight 2x2 (Director, 2026-11-23): all four sections carry the same
+   visual weight, so the rows are sized together rather than to their own
+   content -- Plan's two-line support text no longer makes its row taller. */
+.splash-modes { margin-top: var(--space-5); display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-rows: 1fr; gap: var(--space-3); }
 .mode-card {
   display: flex; flex-direction: column; gap: var(--space-1); text-align: left; min-width: 0;
   padding: var(--space-4); border-radius: var(--radius-lg); border: var(--border-hairline-w) solid var(--border-hairline);
@@ -446,7 +449,6 @@ ul { margin: 0; padding: 0; list-style: none; }
   transition: border-color var(--dur-fast) var(--ease-standard), background-color var(--dur-fast) var(--ease-standard);
 }
 .mode-card--wide { grid-column: 1 / -1; }
-/* HR-12: Plan is the one primary tile. */
 .mode-card--primary { background: var(--brand-primary); border-color: var(--brand-primary); color: #fff; }
 .mode-card--primary .mode-card__icon, .mode-card--primary .mode-card__support { color: rgba(255,255,255,.88); }
 .mode-card--primary:hover { background: color-mix(in srgb, var(--brand-primary) 88%, black); border-color: var(--brand-primary); }
