@@ -44,6 +44,21 @@ def apres_json():
     import json
     return json.dumps(json.load(open(path)), separators=(",", ":"), sort_keys=True, ensure_ascii=False)
 
+def offmtn_json():
+    """research/off-mountain.json -> {id: {"line", "url"}} (P20).
+
+    One local pick per resort, a single sentence linked to its source.
+    Resorts with null (nothing genuine found) are left out, so the page
+    falls back to the general non-ski-activities line."""
+    path = os.path.join(BASE, "research", "off-mountain.json")
+    if not os.path.exists(path):
+        return "{}"
+    import json
+    raw = json.load(open(path))
+    out = {k: {"line": v["line"], "url": v["url"]} for k, v in raw.items()
+           if isinstance(v, dict) and v.get("line") and v.get("url")}
+    return json.dumps(out, separators=(",", ":"), sort_keys=True, ensure_ascii=False)
+
 shell = read("shell.html")
 replacements = {
     "/*__STYLES__*/": read("styles.css"),
@@ -56,7 +71,8 @@ replacements = {
     "/*__OPENINGS_JS__*/": read("openings.js").replace(
         "/*__OPENINGS_JSON__*/{}", openings_json()).replace(
         "/*__DAY_PASS_JSON__*/{}", day_pass_json()).replace(
-        "/*__APRES_JSON__*/{}", apres_json()),
+        "/*__APRES_JSON__*/{}", apres_json()).replace(
+        "/*__OFFMTN_JSON__*/{}", offmtn_json()),
     "/*__REGIONS_JS__*/": read("regions.js"),
     "/*__QUIVER_JS__*/": read("quiver.js"),
     "/*__BUZZ_JS__*/": read("buzz.js"),

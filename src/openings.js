@@ -197,3 +197,9 @@ function dayPassLabel(rid) {
 // lifts close. Written 2026-11-21 in research/apres.json; venues named are
 // long-standing ones. Refresh alongside openings and day-pass prices.
 const APRES = /*__APRES_JSON__*/{};
+
+// Off the mountain (P20, 2026-11-23): one local favourite per resort, the
+// thing a local would point a friend to rather than a tour-book attraction.
+// A single sentence linked to its source. Written in research/off-mountain.json
+// with a source per row; refresh alongside openings, prices and après (T7).
+const OFF_MOUNTAIN = /*__OFFMTN_JSON__*/{};

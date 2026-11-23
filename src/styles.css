@@ -1392,3 +1392,13 @@ ul { margin: 0; padding: 0; list-style: none; }
 /* Desktop: the top nav already carries home (P14), so the resort page's own
    sticker would be a second one. */
 @media (min-width: 768px) { .result-topbar .home-link { display: none; } }
+
+/* Off the mountain (P20): one linked sentence in the notes list. Body text
+   colour, not link blue, so it reads as a quiet aside like Après; the
+   external arrow (as on Buzz) says it opens a source. */
+.offmtn-link { color: var(--text-primary); text-decoration: none; }
+.offmtn-link:hover { text-decoration: underline; text-underline-offset: 3px; }
+.offmtn-link:focus-visible { outline: 3px solid var(--brand-primary); outline-offset: 2px; border-radius: 4px; }
+.offmtn-link__end { white-space: nowrap; }
+.offmtn-link__out { display: inline-block; width: 16px; height: 16px; margin-left: 6px; vertical-align: -2px; color: var(--brand-primary-text); }
+.offmtn-link__out svg { width: 100%; height: 100%; display: block; }
