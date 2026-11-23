@@ -486,7 +486,11 @@ const QUIZ_OPTIONS = {
   q4a: [
     { value: "driving", label: "Driving" },
     { value: "flying", label: "Flying" },
-    { value: "unsure", label: "Not sure yet — show me both" },
+    // "Unsure", not "Not sure yet -- show me both" (Director, 2026-11-23):
+    // it now matches Driving and Flying in length, and the half of the old
+    // label that carried information is said properly on the result -- "We
+    // didn't factor in how far this is, since you weren't sure yet."
+    { value: "unsure", label: "Unsure" },
   ],
   q5: [
     { value: "lively", label: "Buzzing nightlife and bars" },
