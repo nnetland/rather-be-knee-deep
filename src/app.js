@@ -465,7 +465,7 @@ const QUIZ_OPTIONS = {
     { value: "wide-mixed", label: "A wide mix — first-timers to experts" },
   ],
   q2a: [
-    { value: "never-skied", label: "Never skied before" },
+    { value: "never-skied", label: "First time" },
     { value: "beginner", label: "Beginner" },
     { value: "intermediate", label: "Intermediate" },
     { value: "advanced", label: "Advanced" },
@@ -1061,11 +1061,11 @@ function buildRangeReadoutHtml(resort, range) {
             <span class="range-bridge__half range-bridge__half--ceiling ${weakCeiling ? "range-bridge__half--weak" : ""}"></span>
           </div>
           <div class="range-pin range-pin--floor ${floorAtEdge ? "range-pin--edge-start" : ""}" id="range-pin-floor" style="left:0">
-            <span class="range-pin__flag">${weakFloor ? `<span class="inline-icon-sm">${ICONS.warning}</span> ` : ""}${capitalize(range.floor)}</span>
+            <span class="range-pin__flag">${weakFloor ? `<span class="inline-icon-sm">${ICONS.warning}</span> ` : ""}${capitalize(SKILL_LABEL[range.floor])}</span>
             <span class="range-pin__marker range-pin__marker--circle"></span>
           </div>
           <div class="range-pin range-pin--ceiling ${ceilingAtEdge ? "range-pin--edge-end" : ""}" id="range-pin-ceiling" style="left:100%">
-            <span class="range-pin__flag">${weakCeiling ? `<span class="inline-icon-sm">${ICONS.warning}</span> ` : ""}${capitalize(range.ceiling)}</span>
+            <span class="range-pin__flag">${weakCeiling ? `<span class="inline-icon-sm">${ICONS.warning}</span> ` : ""}${capitalize(SKILL_LABEL[range.ceiling])}</span>
             <span class="range-pin__marker range-pin__marker--diamond"></span>
           </div>
         </div>

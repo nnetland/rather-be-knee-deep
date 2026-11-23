@@ -7,7 +7,11 @@
 
 const SKILL_LEVELS = ["never-skied", "beginner", "intermediate", "advanced", "expert"];
 const SKILL_LABEL = {
-  "never-skied": "never skied before",
+  // "first-timer", not "first time" (Director, 2026-11-23): this label is
+  // dropped into running sentences -- "your crew ranges from first-timer to
+  // expert" -- where a noun is what the grammar needs. The chip the user taps
+  // says "First time", which is what reads right on a button.
+  "never-skied": "first-timer",
   "beginner": "beginner",
   "intermediate": "intermediate",
   "advanced": "advanced",
