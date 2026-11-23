@@ -44,7 +44,7 @@ const CASES = [
     steps: [
       ["q1", "wide-mixed"],
       ["q2a", "never-skied"], ["q2a", "expert"],
-      ["q2b", "mix"],
+      ["q2b", "groomers"], ["q2b", "trees"],
       ["q3", "$$"],
       ["q4a", "driving"], ["q4b", "denver"],
       ["q5", "noPreference"],
@@ -55,7 +55,7 @@ const CASES = [
     steps: [
       ["q1", "solo"],
       ["q2a", "expert"],
-      ["q2b", "steep"],
+      ["q2b", "steeps"],
       ["q3", "$$$$"],
       ["q4a", "flying"], ["q4b", "bayarea"],
       ["q5", "chill"],
@@ -77,7 +77,7 @@ const CASES = [
     steps: [
       ["q1", "matched"],
       ["q2a", "intermediate"],
-      ["q2b", "mix"],
+      ["q2b", "groomers"], ["q2b", "trees"],
       ["q3", "$"],
       ["q4a", "driving"], ["q4b", "northeast"],
       ["q5", "lively"],
@@ -88,7 +88,7 @@ const CASES = [
     steps: [
       ["q1", "matched"],
       ["q2a", "advanced"],
-      ["q2b", "steep"],
+      ["q2b", "steeps"],
       ["q3", "$$$"],
       ["q4a", "unsure"],
       ["q5", "noPreference"],
@@ -99,7 +99,7 @@ const CASES = [
     steps: [
       ["q1", "wide-mixed"],
       ["q2a", "beginner"], ["q2a", "advanced"],
-      ["q2b", "mix"],
+      ["q2b", "groomers"], ["q2b", "trees"],
       ["q3", "$$$"],
       ["q4a", "flying"], ["q4b", "socal"],
       ["q5", "lively"],
@@ -157,7 +157,7 @@ async function runCase(page, kase) {
   await page.goto(FILE_URL);
   await page.waitForTimeout(200);
   const coldCheck = await page.evaluate(() => {
-    const answers = { groupType: "mixed", skillLevels: ["beginner", "advanced"], terrain: "mix", budget: "$$", travelMode: "driving", region: "denver", vibe: "family" };
+    const answers = { groupType: "mixed", skillLevels: ["beginner", "advanced"], terrain: ["groomers", "trees"], budget: "$$", travelMode: "driving", region: "denver", vibe: "family" };
     const result = matchTrip(answers, RESORTS);
     const payload = buildSharePayload(result, answers);
     return payload;

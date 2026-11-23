@@ -478,11 +478,25 @@ const QUIZ_OPTIONS = {
     { value: "advanced", label: "Advanced" },
     { value: "expert", label: "Expert" },
   ],
+  // Multi-select, 2026-11-23 (Director). Two consequences worth naming.
+  //
+  // "A mix of everything" is gone, and had to be: when you can tap Groomers
+  // and Steeps, tapping both IS the mix. A separate Mix option would be a
+  // second way to say the same thing.
+  //
+  // The options are the ones the data can actually back. Across the 71
+  // resorts: long-groomers 12, steeps 19, tree-skiing 21, deep-powder 18,
+  // terrain-park 15 -- every one a real tag, and powder additionally has
+  // avg_annual_snowfall_in behind it. Chutes and bowls were asked for and
+  // left out: there is no field, no tag and (chutes) not one mention in 71
+  // character notes, so they would have been labels over nothing.
   q2b: [
-    { value: "groomers", label: "Smooth, groomed trails" },
-    { value: "mix", label: "A mix of everything" },
-    { value: "steep", label: "Steep and challenging" },
-    { value: "noPreference", label: "Doesn't matter, just here to ski" },
+    { value: "groomers", label: "Groomers" },
+    { value: "steeps", label: "Steeps" },
+    { value: "trees", label: "Trees" },
+    { value: "powder", label: "Powder" },
+    { value: "park", label: "Park" },
+    { value: "anything", label: "Anything" },
   ],
   q3: [
     { value: "$", label: "Budget-conscious ($)" },
@@ -563,8 +577,9 @@ function quizStepHtml(screen) {
     // single-select needs the single stored value.
     body = optionListHtml("q2a", QUIZ_OPTIONS.q2a, multi ? (a.skillLevels || []) : (a.skillLevels && a.skillLevels[0]) || null, multi);
   } else if (screen.key === "q2b") {
-    title = "What terrain are you hoping for?";
-    body = optionListHtml("q2b", QUIZ_OPTIONS.q2b, a.terrain, false);
+    title = "What do you want to ski?";
+    helper = "Select as many as apply.";
+    body = optionListHtml("q2b", QUIZ_OPTIONS.q2b, a.terrain || [], true);
   } else if (screen.key === "q3") {
     title = "What's the budget like?";
     body = optionListHtml("q3", QUIZ_OPTIONS.q3, a.budget, false);
@@ -649,7 +664,7 @@ function quizScreenHasAnswer(key) {
   const a = state.quizAnswers;
   if (key === "q1") return !!a.groupType;
   if (key === "q2a") return a.groupType === "mixed" || a.groupType === "wide-mixed" ? !!(a.skillLevels && a.skillLevels.length) : !!(a.skillLevels && a.skillLevels.length === 1);
-  if (key === "q2b") return !!a.terrain;
+  if (key === "q2b") return !!(a.terrain && a.terrain.length);
   if (key === "q3") return !!a.budget;
   if (key === "q4a") return !!a.travelMode;
   if (key === "q4b") return !!a.region;
@@ -777,7 +792,7 @@ function wireQuizStepEvents(wrap, screen) {
 
 function handleQuizSelect(key, value, evt) {
   const a = state.quizAnswers;
-  const multi = key === "q2a" && (a.groupType === "mixed" || a.groupType === "wide-mixed");
+  const multi = key === "q2b" || (key === "q2a" && (a.groupType === "mixed" || a.groupType === "wide-mixed"));
 
   if (key === "q1") a.groupType = value;
   else if (key === "q2a") {
@@ -789,7 +804,18 @@ function handleQuizSelect(key, value, evt) {
       a.skillLevels = [value];
     }
   }
-  else if (key === "q2b") a.terrain = value;
+  else if (key === "q2b") {
+    // "Anything" is the escape hatch, so it clears the rest and the rest
+    // clear it -- "Anything, but specifically trees" is not a thing.
+    a.terrain = a.terrain || [];
+    if (value === "anything") {
+      a.terrain = a.terrain.includes("anything") ? [] : ["anything"];
+    } else {
+      a.terrain = a.terrain.filter((t) => t !== "anything");
+      const i = a.terrain.indexOf(value);
+      if (i >= 0) a.terrain.splice(i, 1); else a.terrain.push(value);
+    }
+  }
   else if (key === "q3") a.budget = value;
   else if (key === "q4a") { a.travelMode = value; if (value === "unsure") a.region = null; }
   else if (key === "q4b") a.region = value;

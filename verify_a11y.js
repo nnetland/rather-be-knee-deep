@@ -63,7 +63,9 @@ async function run() {
   await page.click('[data-group="q2a"][data-value="expert"]');
   await page.click('#quiz-continue');
   await page.waitForTimeout(500);
-  await page.click('[data-group="q2b"][data-value="mix"]');
+  // q2b is multi-select since 2026-11-23, so it does not auto-advance.
+  await page.click('[data-group="q2b"][data-value="groomers"]');
+  await page.click('#quiz-continue');
   await page.waitForTimeout(500);
   await page.click('[data-group="q3"][data-value="$$"]');
   await page.waitForTimeout(500);
@@ -106,7 +108,9 @@ async function run() {
   await page2.waitForTimeout(600); // single-select: relies on auto-advance
   await page2.click('[data-group="q2a"][data-value="intermediate"]');
   await page2.waitForTimeout(600);
-  await page2.click('[data-group="q2b"][data-value="mix"]');
+  // q2b is multi-select since 2026-11-23, so it does not auto-advance.
+  await page2.click('[data-group="q2b"][data-value="groomers"]');
+  await page2.click('#quiz-continue');
   await page2.waitForTimeout(600);
   await page2.click('[data-group="q3"][data-value="$$"]');
   await page2.waitForTimeout(600);

@@ -64,7 +64,9 @@ async function run() {
       await page.waitForTimeout(700);
       await page.click('[data-group="q2a"][data-value="intermediate"]');
       await page.waitForTimeout(700);
-      await page.click('[data-group="q2b"][data-value="mix"]');
+      // q2b is multi-select since 2026-11-23, so it does not auto-advance.
+      await page.click('[data-group="q2b"][data-value="groomers"]');
+      await page.click('#quiz-continue');
       await page.waitForTimeout(700);
       await page.click('[data-group="q3"][data-value="$$"]');
       await page.waitForTimeout(700);

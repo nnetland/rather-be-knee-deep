@@ -138,7 +138,9 @@ async function run() {
     await page.click('#quiz-continue');
     await page.waitForTimeout(700);
     await checkSurface(page, `[${scheme}] Quiz Q2b`);
-    await page.click('[data-group="q2b"][data-value="mix"]');
+    // q2b is multi-select since 2026-11-23, so it does not auto-advance.
+    await page.click('[data-group="q2b"][data-value="groomers"]');
+    await page.click('#quiz-continue');
     await page.waitForTimeout(700);
     await checkSurface(page, `[${scheme}] Quiz Q3`);
     await page.click('[data-group="q3"][data-value="$$"]');
@@ -178,7 +180,9 @@ async function run() {
       await page.waitForTimeout(120);
       await page.click('#quiz-continue');
       await page.waitForTimeout(500);
-      await page.click('[data-group="q2b"][data-value="mix"]');
+      // q2b is multi-select since 2026-11-23, so it does not auto-advance.
+      await page.click('[data-group="q2b"][data-value="groomers"]');
+      await page.click('#quiz-continue');
       await page.waitForTimeout(500);
       await page.click('[data-group="q3"][data-value="$$"]');
       await page.waitForTimeout(500);

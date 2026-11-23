@@ -48,7 +48,9 @@ async function run() {
 
     // Confirm this doesn't pollute the #result= share format: finish the
     // quiz and confirm the hash switches cleanly to #result=.
-    await page.click('[data-group="q2b"][data-value="mix"]');
+    // q2b is multi-select since 2026-11-23, so it does not auto-advance.
+    await page.click('[data-group="q2b"][data-value="groomers"]');
+    await page.click('#quiz-continue');
     await page.waitForTimeout(600);
     await page.click('[data-group="q3"][data-value="$$"]');
     await page.waitForTimeout(600);
@@ -93,7 +95,7 @@ async function run() {
     await page.click('[data-route="plan"]:visible');
     await page.waitForTimeout(300);
     const resumedTitle = await page.$eval('.quiz-title', (el) => el.textContent);
-    assert('Plan -> Chase -> Plan resumes at the step left off (Q2b), not Step 1', /terrain/i.test(resumedTitle), resumedTitle);
+    assert('Plan -> Chase -> Plan resumes at the step left off (Q2b), not Step 1', /what do you want to ski/i.test(resumedTitle), resumedTitle);
     const q1StillChecked = await page.evaluate(() => state.quizAnswers.groupType);
     assert('Underlying Q1 answer is still retained across the mode switch', q1StillChecked === 'solo', q1StillChecked);
 
@@ -180,7 +182,9 @@ async function run() {
     await page.click('[data-group="q2a"][data-value="expert"]');
     await page.click('#quiz-continue');
     await page.waitForTimeout(500);
-    await page.click('[data-group="q2b"][data-value="mix"]');
+    // q2b is multi-select since 2026-11-23, so it does not auto-advance.
+    await page.click('[data-group="q2b"][data-value="groomers"]');
+    await page.click('#quiz-continue');
     await page.waitForTimeout(500);
     await page.click('[data-group="q3"][data-value="$$"]');
     await page.waitForTimeout(500);

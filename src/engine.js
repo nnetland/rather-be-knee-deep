@@ -88,28 +88,68 @@ function terrainSkillScore(resort, answers) {
   const bottleneck = Math.min(floorScore, ceilingScore);
   const abilityFit = (bottleneck / 10) * 25;
 
-  let appetiteScore; // 0-10
-  const tp = resort.terrain_pct;
-  switch (answers.terrain) {
-    case "groomers":
-      appetiteScore = tp ? clamp((tp.intermediate / 45) * 10, 0, 10) : editorialLevelScore(resort, "intermediate");
-      break;
-    case "steep":
-      appetiteScore = levelScore(resort, "expert");
-      break;
-    case "mix": {
-      const b = levelScore(resort, "beginner"), i = levelScore(resort, "intermediate"), a = levelScore(resort, "expert");
-      appetiteScore = (b + i + a) / 3;
-      break;
-    }
-    default: // noPreference — flexible answer, zero weight on this axis
-      appetiteScore = 10;
-  }
+  const appetiteScore = terrainAppetiteScore(resort, answers.terrain); // 0-10
 
   return {
     total: clamp(abilityFit + appetiteScore, 0, 35),
     floor, ceiling, floorScore, ceilingScore, bottleneck,
   };
+}
+
+// --- Terrain appetite, multi-select (2026-11-23) -----------------------------
+// What you want to ski, as many as apply. Each type scores a resort 0-10 on
+// its own evidence; the combined score is the mean of the TWO WEAKEST picks.
+//
+// Why the two weakest, and not the minimum or the mean. The app's house rule
+// for group ability is "the bottleneck function -- the minimum, never the
+// average", because one person stuck on green runs ruins the trip. Terrain
+// appetite is softer: tapping five things is a wide appetite, not five hard
+// requirements, and a strict minimum would make a wide appetite score worse
+// than a narrow one at every resort in the set. Taking the two weakest keeps
+// the honesty (a resort has to be good at more than your easiest pick) without
+// punishing people for being open-minded.
+//
+// A type with no structured evidence scores 3 rather than 0: an untagged
+// resort is "not known for it", which is not the same as "has none".
+const TERRAIN_NEUTRAL = 3;
+
+function terrainTypeScore(resort, type) {
+  const tags = resort.best_for_tags || [];
+  const tp = resort.terrain_pct;
+  switch (type) {
+    case "groomers": {
+      // Two independent signals: the tag, and the share of the mountain that
+      // is intermediate terrain, which is what a groomer day is made of.
+      const pct = tp ? clamp((tp.intermediate / 45) * 10, 0, 10) : editorialLevelScore(resort, "intermediate");
+      return tags.includes("long-groomers") ? Math.max(pct, 8) : pct;
+    }
+    case "steeps": {
+      const lvl = levelScore(resort, "expert");
+      return tags.includes("steeps") ? Math.max(lvl, 8) : lvl;
+    }
+    case "powder": {
+      // The one tag-backed type with a real number behind it as well.
+      const snow = resort.avg_annual_snowfall_in;
+      const fromSnow = snow != null ? clamp(((snow - 150) / 250) * 10, 0, 10) : TERRAIN_NEUTRAL;
+      return tags.includes("deep-powder") ? Math.max(fromSnow, 8) : fromSnow;
+    }
+    case "trees":
+      return tags.includes("tree-skiing") ? 10 : TERRAIN_NEUTRAL;
+    case "park":
+      return tags.includes("terrain-park") ? 10 : TERRAIN_NEUTRAL;
+    default:
+      return 10;
+  }
+}
+
+function terrainAppetiteScore(resort, terrain) {
+  // Was a single string before 2026-11-23; coerce rather than crash.
+  const list = Array.isArray(terrain) ? terrain : (terrain ? [terrain] : []);
+  const picks = list.filter((t) => t !== "anything");
+  if (!picks.length) return 10; // "Anything", or nothing tapped: zero weight
+  const scores = picks.map((t) => terrainTypeScore(resort, t)).sort((a, b) => a - b);
+  const worst = scores.slice(0, 2);
+  return worst.reduce((s, n) => s + n, 0) / worst.length;
 }
 
 // --- Budget fit (15 pts) -----------------------------------------------------
@@ -209,10 +249,9 @@ function buildReasonBullets(resort, answers, breakdown) {
     }
   } else if (answers.skillLevels && answers.skillLevels.length) {
     const lvl = SKILL_LABEL[answers.skillLevels[0]];
-    if (answers.terrain === "steep") {
-      bullets.push(`You said steep and challenging — ${resort.name} delivers real advanced terrain to match your ${lvl} level.`);
-    } else if (answers.terrain === "groomers") {
-      bullets.push(`You said smooth, groomed trails — ${resort.name} has the cruising terrain to back it up.`);
+    const want = terrainPhrase(answers.terrain);
+    if (want) {
+      bullets.push(`You said ${want} — ${resort.name} is a genuine fit for that at your ${lvl} level.`);
     } else {
       bullets.push(`You said ${lvl} — ${resort.name} is a genuine fit for that level.`);
     }
@@ -240,6 +279,17 @@ function buildReasonBullets(resort, answers, breakdown) {
   }
 
   return bullets.slice(0, 3);
+}
+
+// "groomers", "groomers and trees", "groomers, trees and powder". Returns
+// null for Anything or an empty answer, so the bullet falls back to the plain
+// level sentence rather than claiming the user asked for something.
+const TERRAIN_WORD = { groomers: "groomers", steeps: "steeps", trees: "trees", powder: "powder", park: "park" };
+function terrainPhrase(terrain) {
+  const words = (terrain || []).filter((t) => TERRAIN_WORD[t]).map((t) => TERRAIN_WORD[t]);
+  if (!words.length) return null;
+  if (words.length === 1) return words[0];
+  return words.slice(0, -1).join(", ") + " and " + words[words.length - 1];
 }
 
 // --- Session-seeded weighted random (§3.3 tie-break step 3) -----------------

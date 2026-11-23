@@ -16,7 +16,12 @@ async function run() {
       ['never-skied', 'expert'], ['never-skied', 'intermediate'], ['beginner', 'advanced'],
       ['never-skied', 'beginner', 'intermediate', 'advanced', 'expert'],
     ];
-    const terrains = ['groomers', 'mix', 'steep', 'noPreference'];
+    // Multi-select since 2026-11-23: a single pick, a pair, a wide appetite
+    // and the Anything escape hatch, so the sweep covers every shape the
+    // combining rule (mean of the two weakest) can be handed.
+    const terrains = [['groomers'], ['steeps'], ['trees'], ['powder'], ['park'],
+                      ['groomers', 'steeps'], ['steeps', 'trees', 'powder'],
+                      ['groomers', 'steeps', 'trees', 'powder', 'park'], ['anything']];
     const budgets = ['$', '$$', '$$$', '$$$$', undefined];
     const travelModes = ['driving', 'flying', 'unsure'];
     const regionIds = REGIONS.map((r) => r.id).concat([null]);
@@ -69,7 +74,7 @@ async function run() {
     for (const budget of ['$', '$$', '$$$', '$$$$']) {
       for (const travelMode of ['driving', 'flying', 'unsure']) {
         for (const vibe of ['lively', 'chill', 'family', 'noPreference']) {
-          const answers = { groupType: 'wide-mixed', skillLevels: ['never-skied', 'expert'], terrain: 'mix', budget, travelMode, region: travelMode === 'unsure' ? null : 'denver', vibe };
+          const answers = { groupType: 'wide-mixed', skillLevels: ['never-skied', 'expert'], terrain: ['steeps', 'trees'], budget, travelMode, region: travelMode === 'unsure' ? null : 'denver', vibe };
           const result = matchTrip(answers, RESORTS);
           if (result && bannedForMixedFirstTimer.has(result.resort.id)) {
             strictViolations.push({ answers, resortId: result.resort.id });
