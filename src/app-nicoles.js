@@ -175,15 +175,34 @@ function nicolesRowHtml(row) {
     </tr>`;
 }
 
-// Opens the result card for a place on Picks. Same honest reason set as a
-// Chase row seen off-season: published facts only, nothing from a quiz.
-function showPicksResort(rid) {
+// The Picks places that open a resort page, in the order they're on screen
+// (area filter applied), for swiping through resort pages.
+function picksBrowseSeq() {
+  const ids = [];
+  document.querySelectorAll("#nicoles-table-wrap .nicoles-place[data-rid]").forEach((el) => {
+    if (!ids.includes(el.dataset.rid)) ids.push(el.dataset.rid);
+  });
+  return ids;
+}
+
+// Route params for a Picks resort page. Same honest reason set as a Chase row
+// seen off-season: published facts only, nothing from a quiz. Shared by a row
+// tap and by a swipe from the neighbouring resort page.
+function picksResultParams(rid) {
   const resort = RESORTS_BY_ID[rid];
-  if (!resort) return;
+  if (!resort) return null;
   // HR-15: the published-facts reason only. Average snowfall has its own tile
   // and crowds their own row on the same page.
   const bullets = [];
   if (resort.character_note) bullets.push(sanitizeDatasetProse(resort.character_note));
   const payload = { v: 1, rid: resort.id, reasonBullets: bullets.slice(0, 3), showRangeReadout: false, range: null };
-  navigate("result", { shared: payload, shareToken: b64urlEncode(JSON.stringify(payload)), fresh: true, origin: "picks" });
+  return { shared: payload, shareToken: b64urlEncode(JSON.stringify(payload)), fresh: true, origin: "picks" };
+}
+
+// Opens the result card for a place on Picks.
+function showPicksResort(rid) {
+  const params = picksResultParams(rid);
+  if (!params) return;
+  params.seq = picksBrowseSeq();
+  navigate("result", params);
 }
