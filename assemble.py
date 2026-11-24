@@ -81,6 +81,8 @@ replacements = {
     "/*__APP_QUIVER_JS__*/": read("app-quiver.js"),
     "/*__APP_NICOLES_JS__*/": read("app-nicoles.js"),
     "/*__APP_BUZZ_JS__*/": read("app-buzz.js"),
+    "/*__GAME_CONTENT_JS__*/": read("game-content.js"),
+    "/*__APP_GAME_JS__*/": read("app-game.js"),
 }
 
 out = shell
