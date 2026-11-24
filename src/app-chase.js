@@ -419,9 +419,24 @@ function renderChaseOffSeason(body) {
   });
 }
 
-function showChaseRowDetail(rid) {
+// The Chase list in the order it's on screen, for swiping through resort
+// pages (2026-11-23, Director's call). Read from the DOM at tap time so it is
+// exactly the list you were looking at: open resorts, then opening soon, then
+// Canada, with the area filter applied.
+function chaseBrowseSeq() {
+  const ids = [];
+  document.querySelectorAll("#chase-body .chase-row[data-rid]").forEach((el) => {
+    const panel = el.closest("[hidden]");
+    if (!panel && !ids.includes(el.dataset.rid)) ids.push(el.dataset.rid);
+  });
+  return ids;
+}
+
+// Route params for a Chase resort page. Shared by a row tap and by a swipe
+// from the neighbouring resort page.
+function chaseResultParams(rid) {
   const resort = RESORTS_BY_ID[rid];
-  if (!resort) return;
+  if (!resort) return null;
   // Reuses the trip-planner result-card component with a minimal, honest
   // reason set built purely from Chase-the-Snow context (no quiz answers to
   // draw from in this mode).
@@ -444,7 +459,14 @@ function showChaseRowDetail(rid) {
   // so it shares that route's dead-end problem and its fix. Back returns to the
   // ranked list, which is still in state.chaseCache and re-renders without a
   // refetch.
-  navigate("result", { shared: payload, shareToken: b64urlEncode(JSON.stringify(payload)), fresh: true, origin: "chase" });
+  return { shared: payload, shareToken: b64urlEncode(JSON.stringify(payload)), fresh: true, origin: "chase" };
+}
+
+function showChaseRowDetail(rid) {
+  const params = chaseResultParams(rid);
+  if (!params) return;
+  params.seq = chaseBrowseSeq();
+  navigate("result", params);
 }
 
 function revealListRows(rows) {

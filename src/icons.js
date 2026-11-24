@@ -19,6 +19,8 @@ const ICONS = {
   diamondGlyph: `<svg viewBox="0 0 24 24" fill="currentColor"><rect x="5" y="5" width="14" height="14" rx="1" transform="rotate(45 12 12)"/></svg>`,
   doubleDiamondGlyph: `<svg viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="5" width="11" height="11" rx="1" transform="rotate(45 8.5 10.5)"/><rect x="10" y="8" width="11" height="11" rx="1" transform="rotate(45 15.5 13.5)"/></svg>`,
   arrowRight: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>`,
+  chevronLeft: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg>`,
+  chevronRight: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>`,
   chevronDown: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>`,
   // A pair of skis stood tips-up in the snow: two straight shafts, each with
   // a pronounced hooked tip. An earlier version added a binding crossbar

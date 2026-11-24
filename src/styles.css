@@ -1402,3 +1402,22 @@ ul { margin: 0; padding: 0; list-style: none; }
 .offmtn-link__end { white-space: nowrap; }
 .offmtn-link__out { display: inline-block; width: 16px; height: 16px; margin-left: 6px; vertical-align: -2px; color: var(--brand-primary-text); }
 .offmtn-link__out svg { width: 100%; height: 100%; display: block; }
+
+/* Browse resort pages (2026-11-23): neighbours on the Chase or Picks list,
+   with the position between them. Swipe does the same thing. */
+.result-pager {
+  display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center;
+  gap: var(--space-2); margin: 0 0 var(--space-3);
+}
+.result-pager__btn {
+  display: inline-flex; align-items: center; gap: var(--space-1); min-height: 44px; min-width: 44px; max-width: 100%;
+  padding: 0 var(--space-2); border: none; border-radius: 22px; background: none;
+  color: var(--brand-primary-text); font: inherit; font-size: .875rem; cursor: pointer;
+}
+.result-pager__btn--prev { justify-self: start; }
+.result-pager__btn--next { justify-self: end; }
+.result-pager__btn svg { width: 18px; height: 18px; flex: none; }
+.result-pager__name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+.result-pager__btn:hover { background: var(--bg-tint); }
+.result-pager__btn:focus-visible { outline: 2px solid var(--brand-primary-text); outline-offset: 2px; }
+.result-pager__count { font-size: .8125rem; color: var(--text-secondary); white-space: nowrap; }
