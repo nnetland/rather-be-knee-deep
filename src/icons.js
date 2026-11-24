@@ -1,6 +1,8 @@
 // Small inline icon set — every icon used in the app is paired with a visible
 // text label somewhere adjacent (never icon-only meaning), per copy-deck §8.
 const ICONS = {
+  // Sticker Check's home tile: a round sticker with a peeled corner.
+  sticker: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-9-9"/><path d="M21 12c-4.5 0-9-4.5-9-9"/><path d="M12 3c0 4.5 4.5 9 9 9"/></svg>`,
   mountain: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 19h18L14.5 6 10 13l-2.5-3L3 19z"/></svg>`,
   check: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>`,
   checkCircle: `<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/><path d="M8 12.5l2.5 2.5L16 9" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>`,

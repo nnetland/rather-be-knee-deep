@@ -37,6 +37,9 @@ const state = {
   quiverForecast: null,     // { resortId, status, days, timeZone, isLive }
   // Buzz: the region filter only. Not in the URL; entering from the nav resets it.
   buzz: { region: "all" },
+  // Sticker Check (app-game.js): the round in progress, kept in memory so a
+  // trip out to a resort page and Back lands on the same sticker.
+  game: null,
 };
 
 const COST_LABEL = { "$": "budget-conscious", "$$": "mid-range", "$$$": "splurge-friendly", "$$$$": "money's no object" };
@@ -219,6 +222,9 @@ function navigate(route, params) {
     }
   }
   if (route === "buzz") state.buzz.region = "all";
+  // The home tile always opens the game's front page. Coming back from a
+  // resort page goes through history instead, which keeps the round.
+  if (route === "game") state.game = { phase: "home" };
 
   if (route === "plan") {
     // HR-3 (heuristic review 2026-11-21): re-tapping the Plan tab, or going
@@ -369,7 +375,7 @@ function render() {
   // HR-8 (heuristic review 2026-11-21): the resort page carries the nav too.
   // It was a nav-less island, and a friend who opened a shared pick had an
   // unlabelled sticker as the only way into the rest of the app.
-  const chromeRoutes = ["splash", "plan", "chase", "quiver", "nicoles", "buzz", "result"];
+  const chromeRoutes = ["splash", "plan", "chase", "quiver", "nicoles", "buzz", "result", "game"];
   const showNav = chromeRoutes.includes(state.route);
   document.getElementById("bottom-nav").hidden = !showNav;
   document.getElementById("top-nav").hidden = !showNav;
@@ -383,6 +389,7 @@ function render() {
   if (state.route === "nicoles") return renderNicolesList(main);
   if (state.route === "buzz") return renderBuzzRoute(main);
   if (state.route === "result") return renderResult(main);
+  if (state.route === "game") return renderGameRoute(main);
   renderSplash(main);
 }
 
@@ -427,6 +434,7 @@ function renderSplash(main) {
           ${tile("mode-quiver", ICONS.skis, "Quiver", "Which skis to bring")}
           ${tile("mode-nicoles", ICONS.list, "Picks", "Resort hot takes")}
           ${tile("mode-plan", ICONS.mountain, "Plan", "A resort in 5 questions")}
+          ${tile("mode-game", ICONS.sticker, "Sticker Check", "Name 5 resort badges", true).replace(" mode-card--primary", "")}
         </div>
       </div>
     </div>`;
@@ -434,6 +442,8 @@ function renderSplash(main) {
   document.getElementById("mode-chase").addEventListener("click", () => navigate("chase"));
   document.getElementById("mode-quiver").addEventListener("click", () => navigate("quiver"));
   document.getElementById("mode-nicoles").addEventListener("click", () => navigate("nicoles"));
+  // Sticker Check: the home tile is its only way in (Director, 2026-11-23).
+  document.getElementById("mode-game").addEventListener("click", () => navigate("game"));
   document.title = "Rather Be Knee Deep — where should we ski?";
   setOgMeta({
     title: "Where should we ski?",
@@ -1220,6 +1230,7 @@ function renderResult(main) {
     origin === "chase" ? leafBackHtml("result-leaf-back", "Back to Chase", true) :
     origin === "plan" ? leafBackHtml("result-leaf-back", "Back to your answers", true) :
     origin === "picks" ? leafBackHtml("result-leaf-back", "Back to Picks", true) :
+    origin === "game" ? leafBackHtml("result-leaf-back", "Back to Sticker Check", true) :
     // A cold-landed visitor has no history to go back to, and the circular
     // sticker that used to sit top-right read as an avatar, so it looked like
     // a profile link (Director, 2026-11-23). The site name says what this is,
@@ -1289,6 +1300,7 @@ function renderResult(main) {
     if (canGoBackInApp()) { history.back(); return; }
     origin === "picks" ? navigate("nicoles", { focusResort: resort.id })
       : origin === "chase" ? navigate("chase", { focusResort: resort.id })
+      : origin === "game" ? navigate("game")
       : navigate("plan");
   };
   const leafBack = document.getElementById("result-leaf-back");
