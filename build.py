@@ -6,7 +6,8 @@
     chrome purple around a page that is always dark.
 
 Runs assemble.py to stitch src/ into one self-contained HTML file, then
-injects the hosting-only <head> tags (icons, manifest, share image) and
+injects the hosting-only <head> tags (icons, manifest, share image, and the
+service-worker registration that lets the home-screen app open offline) and
 writes the result to public/index.html.
 
     python build.py
@@ -25,6 +26,8 @@ HEAD_EXTRAS = """<link rel="icon" href="/icon.svg" type="image/svg+xml">
 <meta name="apple-mobile-web-app-title" content="Knee Deep">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<script>if("serviceWorker" in navigator&&location.protocol==="https:"){addEventListener("load",function(){navigator.serviceWorker.register("/sw.js").catch(function(){});});}</script>
 <meta property="og:image" content="/og-image.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -46,7 +49,7 @@ out = ROOT / "public" / "index.html"
 out.write_text(html)
 print(f"Wrote {out} ({len(html.encode()):,} bytes)")
 
-for required in ("icon.svg", "manifest.webmanifest", "og-image.png", "apple-touch-icon.png"):
+for required in ("icon.svg", "manifest.webmanifest", "og-image.png", "apple-touch-icon.png", "sw.js"):
     if not (ROOT / "public" / required).exists():
         print(f"  WARNING: public/{required} is missing")
 

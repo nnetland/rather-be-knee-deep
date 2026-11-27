@@ -292,7 +292,10 @@ ul { margin: 0; padding: 0; list-style: none; }
 .bottom-nav .nav-item:active > span:first-child { background: color-mix(in srgb, var(--brand-primary) 30%, transparent); }
 /* viewport-fit=cover lets the page run under a landscape notch; keep content
    and the nav inside the safe area. */
-.app-shell { padding-left: env(safe-area-inset-left, 0px); padding-right: env(safe-area-inset-right, 0px); }
+/* padding-top: the home-screen app uses a translucent status bar
+   (apple-mobile-web-app-status-bar-style, build.py), so the page runs under
+   the clock and battery. In a normal browser tab the top inset is 0. */
+.app-shell { padding-top: env(safe-area-inset-top, 0px); padding-left: env(safe-area-inset-left, 0px); padding-right: env(safe-area-inset-right, 0px); }
 .bottom-nav { padding-left: env(safe-area-inset-left, 0px); padding-right: env(safe-area-inset-right, 0px); }
 @media (prefers-reduced-motion: reduce) { .bottom-nav .nav-item > span:first-child { transition: none; } }
 
