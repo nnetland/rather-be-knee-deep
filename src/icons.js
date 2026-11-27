@@ -1,6 +1,9 @@
 // Small inline icon set — every icon used in the app is paired with a visible
 // text label somewhere adjacent (never icon-only meaning), per copy-deck §8.
 const ICONS = {
+  // Rope Drop's home tile: the rope across two posts that patrol drops when a
+  // run opens.
+  rope: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4v16M19 4v16"/><circle cx="5" cy="4" r="1"/><circle cx="19" cy="4" r="1"/><path d="M5 7c3 8 11 8 14 0"/><path d="M3 20h4M17 20h4"/></svg>`,
   // Sticker Check's home tile: a round sticker with a peeled corner.
   sticker: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-9-9"/><path d="M21 12c-4.5 0-9-4.5-9-9"/><path d="M12 3c0 4.5 4.5 9 9 9"/></svg>`,
   mountain: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 19h18L14.5 6 10 13l-2.5-3L3 19z"/></svg>`,

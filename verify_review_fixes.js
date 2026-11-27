@@ -210,14 +210,16 @@ const route = (page) => page.evaluate(() => state.route);
                primary: cards.filter((c) => c.classList.contains("mode-card--primary")).length,
                wide: cards.filter((c) => c.classList.contains("mode-card--wide")).length };
     });
-    // 2026-11-23: Sticker Check joins Home as one full-width tile under the
-    // four sections (Director: its only way in). The four stay equal, with Plan
-    // last among them, and the game tile is wide but not primary.
-    const sections = home.ids.filter((id) => id !== "mode-game");
+    // 2026-11-23: Sticker Check joined Home under the four sections. 2026-11-26:
+    // Rope Drop joins it, and the two games share the bottom row as two equal
+    // tiles. The four sections stay equal, with Plan last among them, and no
+    // tile is wide or primary.
+    const games = ["mode-game", "mode-rope"];
+    const sections = home.ids.filter((id) => !games.includes(id));
     assert("Home: four section tiles", sections.length === 4, home);
-    assert("Home: none is promoted over the others", home.primary === 0 && home.wide === 1, home);
+    assert("Home: none is promoted over the others", home.primary === 0 && home.wide === 0, home);
     assert("Home: Plan sits last of the sections", sections[sections.length - 1] === "mode-plan", home);
-    assert("Home: Sticker Check sits under the sections", home.ids[home.ids.length - 1] === "mode-game", home);
+    assert("Home: the two games sit under the sections", home.ids.slice(-2).join() === games.join(), home);
     await d.close();
   }
 

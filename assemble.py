@@ -83,6 +83,8 @@ replacements = {
     "/*__APP_BUZZ_JS__*/": read("app-buzz.js"),
     "/*__GAME_CONTENT_JS__*/": read("game-content.js"),
     "/*__APP_GAME_JS__*/": read("app-game.js"),
+    "/*__ROPE_DROP_QUESTIONS_JS__*/": read("rope-drop-questions.js"),
+    "/*__APP_ROPE_DROP_JS__*/": read("app-rope-drop.js"),
 }
 
 out = shell
