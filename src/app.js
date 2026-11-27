@@ -1249,12 +1249,14 @@ function renderResult(main) {
     origin === "plan" ? `<button class="btn-text" id="result-change-answer" type="button" style="text-align:center">Change an answer</button>` :
     "";
   const hasReasons = displayBullets.length > 0;
+  const pagerHtml = resultPagerHtml(state.routeParams, resort);
 
   main.innerHTML = `
     <div class="result-wrap">
       <div class="result-topbar">${backHtml || "<span></span>"}<span class="result-topbar__end">
         <button class="icon-btn" id="share-btn-top" type="button" aria-label="${escapeHtml(shareLabel)}">${ICONS.share}</button>
       </span></div>
+      ${pagerHtml}
       <article class="result-card" id="result-card">
         ${eyebrow ? `<p class="result-eyebrow label reveal-hidden">${eyebrow}</p>` : ""}
         <div class="result-layout">
@@ -1352,7 +1354,14 @@ function renderResult(main) {
     image: `data:image/svg+xml;base64,${btoa(badge)}`,
   });
 
-  revealResultCard(document.getElementById("result-card"), { hasRangeReadout: shared.showRangeReadout, hasHotTake });
+  const browseDir = state.routeParams.browseDir;
+  if (browseDir) {
+    delete state.routeParams.browseDir;
+    slideInResultCard(document.getElementById("result-card"), browseDir);
+  } else {
+    revealResultCard(document.getElementById("result-card"), { hasRangeReadout: shared.showRangeReadout, hasHotTake });
+  }
+  wireResultBrowse(main);
 
   // M9 fix: every other route calls focusHeading(main); renderResult never
   // did, so keyboard users landing on the result screen (finishing the quiz,
@@ -1361,8 +1370,170 @@ function renderResult(main) {
   // revealResultCard is a good belt, but a live-region update firing this
   // close to initial page load is a known race with some AT — a focus move
   // is reliably detected regardless of load timing.
-  focusHeading(main);
+  const keepFocus = state.routeParams.browseFocus;
+  delete state.routeParams.browseFocus;
+  const pagerBtn = keepFocus && document.getElementById(keepFocus);
+  if (pagerBtn && !pagerBtn.disabled) pagerBtn.focus({ preventScroll: true });
+  else focusHeading(main);
 }
+
+// ---------------------------------------------------------------------------
+// Browse through resort pages (2026-11-23, Director's call). A resort page
+// opened from Chase or Picks carries that list's order in `seq`, so you can
+// swipe (or tap the arrows, or press ←/→) to the next resort on the list
+// without going back to it each time. A swipe swaps the page in place and
+// replaces the history entry rather than pushing one: Back still goes
+// straight to the list, landing on the resort you were last looking at
+// (HR-11), not back through every page you swiped past.
+// ---------------------------------------------------------------------------
+const BROWSE_LIST_NAME = { chase: "Chase", picks: "Picks" };
+
+function resultBrowsePosition(params) {
+  const seq = params && params.seq;
+  if (!seq || seq.length < 2 || !BROWSE_LIST_NAME[params.origin] || !params.shared) return null;
+  const idx = seq.indexOf(params.shared.rid);
+  if (idx < 0) return null;
+  return { seq, idx, prev: idx > 0 ? seq[idx - 1] : null, next: idx < seq.length - 1 ? seq[idx + 1] : null };
+}
+
+function resultPagerHtml(params, resort) {
+  const pos = resultBrowsePosition(params);
+  if (!pos) return "";
+  const listName = BROWSE_LIST_NAME[params.origin];
+  const btn = (id, rid, dir) => {
+    const r = rid && RESORTS_BY_ID[rid];
+    const label = r ? `${dir === "prev" ? "Previous" : "Next"} on ${listName}: ${r.name}` : "";
+    const icon = dir === "prev" ? ICONS.chevronLeft : ICONS.chevronRight;
+    const name = r ? `<span class="result-pager__name">${escapeHtml(r.name)}</span>` : "";
+    return r
+      ? `<button type="button" class="result-pager__btn result-pager__btn--${dir}" id="${id}" data-rid="${escapeHtml(rid)}" aria-label="${escapeHtml(label)}">${dir === "prev" ? icon + name : name + icon}</button>`
+      : `<span class="result-pager__btn result-pager__btn--${dir} result-pager__btn--end" aria-hidden="true"></span>`;
+  };
+  return `<nav class="result-pager" aria-label="Browse ${listName}">
+      ${btn("result-pager-prev", pos.prev, "prev")}
+      <span class="result-pager__count data-inline" aria-hidden="true">${pos.idx + 1} / ${pos.seq.length}</span>
+      ${btn("result-pager-next", pos.next, "next")}
+    </nav>`;
+}
+
+function resultParamsForBrowse(origin, rid) {
+  if (origin === "chase" && typeof chaseResultParams === "function") return chaseResultParams(rid);
+  if (origin === "picks" && typeof picksResultParams === "function") return picksResultParams(rid);
+  return null;
+}
+
+// dir: 1 = next, -1 = previous. focusId: the pager button to keep focus on
+// when the arrows were used, so a keyboard user can keep pressing.
+function browseResult(dir, focusId) {
+  if (state.route !== "result") return false;
+  const cur = state.routeParams || {};
+  const pos = resultBrowsePosition(cur);
+  if (!pos) return false;
+  const rid = dir > 0 ? pos.next : pos.prev;
+  if (!rid) {
+    // End of the list: a small nudge says so, rather than nothing happening.
+    const card = document.getElementById("result-card");
+    if (card && !reduceMotion()) {
+      const x = dir > 0 ? -10 : 10;
+      card.animate([{ transform: "translateX(0)" }, { transform: `translateX(${x}px)` }, { transform: "translateX(0)" }], { duration: 220, easing: "cubic-bezier(.2,0,0,1)" });
+    }
+    announce("reveal-announcer", dir > 0 ? `That's the last one on ${BROWSE_LIST_NAME[cur.origin]}.` : `That's the first one on ${BROWSE_LIST_NAME[cur.origin]}.`);
+    return true;
+  }
+  const params = resultParamsForBrowse(cur.origin, rid);
+  if (!params) return false;
+  params.seq = pos.seq;
+  params.browseDir = dir;
+  if (focusId) params.browseFocus = focusId;
+  state.routeParams = params;
+  try {
+    const depth = history.state && history.state.rbkd ? history.state.depth : 0;
+    const snap = historySnapshot(depth);
+    snap.params = Object.assign({}, snap.params);
+    delete snap.params.browseDir;
+    delete snap.params.browseFocus;
+    history.replaceState(snap, "", location.href);
+  } catch (e) { /* ignore */ }
+  syncHash();
+  window.scrollTo(0, 0);
+  render();
+  const r = RESORTS_BY_ID[rid];
+  announce("reveal-announcer", `${r.name}, ${pos.seq.indexOf(rid) + 1} of ${pos.seq.length} on ${BROWSE_LIST_NAME[cur.origin]}.`);
+  return true;
+}
+
+function slideInResultCard(card, dir) {
+  if (!card) return;
+  card.querySelectorAll(".reveal-hidden").forEach((n) => { n.classList.remove("reveal-hidden"); n.style.opacity = ""; });
+  ["#range-bridge", "#range-pin-floor", "#range-pin-ceiling"].forEach((sel) => {
+    const node = card.querySelector(sel);
+    if (node) node.classList.add("is-revealed");
+  });
+  if (reduceMotion()) {
+    card.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 120, easing: "ease", fill: "both" });
+    return;
+  }
+  const from = dir > 0 ? 32 : -32;
+  card.animate(
+    [{ opacity: 0, transform: `translateX(${from}px)` }, { opacity: 1, transform: "translateX(0)" }],
+    { duration: 240, easing: "cubic-bezier(.16,1,.3,1)", fill: "both" }
+  );
+}
+
+function wireResultBrowse(main) {
+  if (!resultBrowsePosition(state.routeParams)) return;
+  const prev = document.getElementById("result-pager-prev");
+  const next = document.getElementById("result-pager-next");
+  if (prev) prev.addEventListener("click", () => browseResult(-1, "result-pager-prev"));
+  if (next) next.addEventListener("click", () => browseResult(1, "result-pager-next"));
+
+  // Swipe: a deliberate, mostly-horizontal flick. Touches that start at the
+  // very edge of the screen are left alone, since that's the phone's own
+  // back/forward gesture, and so are touches inside anything that scrolls
+  // sideways on its own.
+  const wrap = main.querySelector(".result-wrap");
+  if (!wrap) return;
+  let start = null;
+  wrap.addEventListener("touchstart", (e) => {
+    if (e.touches.length !== 1) { start = null; return; }
+    const t = e.touches[0];
+    const edge = 24;
+    if (t.clientX < edge || t.clientX > window.innerWidth - edge || inSideScroller(e.target, wrap)) { start = null; return; }
+    start = { x: t.clientX, y: t.clientY, t: Date.now() };
+  }, { passive: true });
+  wrap.addEventListener("touchend", (e) => {
+    if (!start) return;
+    const t = e.changedTouches[0];
+    const dx = t.clientX - start.x, dy = t.clientY - start.y, dt = Date.now() - start.t;
+    start = null;
+    if (dt > 800 || Math.abs(dx) < 60 || Math.abs(dx) < Math.abs(dy) * 1.8) return;
+    browseResult(dx < 0 ? 1 : -1);
+  }, { passive: true });
+  wrap.addEventListener("touchcancel", () => { start = null; }, { passive: true });
+}
+
+function inSideScroller(node, stop) {
+  for (let el = node; el && el !== stop; el = el.parentElement) {
+    if (el.scrollWidth > el.clientWidth + 1) {
+      const ox = getComputedStyle(el).overflowX;
+      if (ox === "auto" || ox === "scroll") return true;
+    }
+  }
+  return false;
+}
+
+// ←/→ on a resort page opened from Chase or Picks. Not while typing, and not
+// with a modifier held (Alt+← is the browser's own Back).
+document.addEventListener("keydown", (e) => {
+  if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
+  if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey || e.defaultPrevented) return;
+  if (state.route !== "result" || !resultBrowsePosition(state.routeParams)) return;
+  const t = e.target;
+  if (t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))) return;
+  e.preventDefault();
+  const fromPager = t && t.id && t.id.startsWith("result-pager-") ? (e.key === "ArrowRight" ? "result-pager-next" : "result-pager-prev") : null;
+  browseResult(e.key === "ArrowRight" ? 1 : -1, fromPager);
+});
 
 // --- Reveal choreography — motion-spec.md §2.5, adapted to our DOM ----------
 function revealResultCard(card, { hasRangeReadout, hasHotTake }) {
